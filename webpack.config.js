@@ -1,9 +1,8 @@
-const { HotModuleReplacementPlugin, ProvidePlugin } = require('webpack');
+const { ProvidePlugin } = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { EsbuildPlugin } = require('esbuild-loader');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
@@ -28,7 +27,7 @@ module.exports = ({ production } = {}) => ({
     historyApiFallback: true,
     compress: true,
     liveReload: false,
-    port: 8888,
+    port: 3000,
     host: 'localhost',
     // open: true,
   },
@@ -79,7 +78,6 @@ module.exports = ({ production } = {}) => ({
     poll: 1000, // Check for changes every second
   },
   plugins: [
-    new TsconfigPathsPlugin({}),
     new ProvidePlugin({
       '$': 'jquery',
       'jQuery': 'jquery',
@@ -106,7 +104,6 @@ module.exports = ({ production } = {}) => ({
     }),
     // Note that the usage of following plugin cleans the webpack output directory before build.
     new CleanWebpackPlugin(),
-    new ForkTsCheckerWebpackPlugin(),
-    new HotModuleReplacementPlugin(),
+    new ForkTsCheckerWebpackPlugin()
   ]
 });
