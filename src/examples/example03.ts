@@ -122,8 +122,8 @@ export class Example3 {
         sortable: true,
         filterable: true,
         // filter: { model: Filters.compoundInput },
-        // formatter: Formatters.dollar,
         formatter: Formatters.dollar,
+        exportWithFormatter: true,
         groupTotalsFormatter: GroupTotalFormatters.sumTotalsDollar,
         type: FieldType.number,
         grouping: {
@@ -352,6 +352,7 @@ export class Example3 {
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
       const randomFinish = new Date(randomFinishYear, (randomMonth + 1), randomDay);
+      const randomCost = Math.round(Math.random() * 10000) / 100;
 
       tmpArray[i] = {
         id: i,
@@ -360,7 +361,7 @@ export class Example3 {
         percentComplete: Math.round(Math.random() * 100),
         start: new Date(randomYear, randomMonth, randomDay),
         finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
-        cost: (i % 33 === 0) ? null : Math.round(Math.random() * 10000) / 100,
+        cost: (i % 33 === 0) ? -randomCost : randomCost,
         effortDriven: (i % 5 === 0)
       };
 
