@@ -1,5 +1,4 @@
 // import all CSS required by Slickgrid-Universal
-import 'multiple-select-modified/src/multiple-select.css';
 import 'flatpickr/dist/flatpickr.min.css';
 import './styles.scss';
 

@@ -3,6 +3,7 @@ import {
   BindingEventService,
   Column,
   ColumnEditorDualInput,
+  EditCommand,
   Editors,
   FieldType,
   Filters,
@@ -14,13 +15,14 @@ import {
 } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-import { fetch } from 'whatwg-fetch';
+import fetchJsonp from 'fetch-jsonp';
+// import { fetch } from 'whatwg-fetch';
 
 import { ExampleGridOptions } from './example-grid-options';
 import './example04.scss';
 
-const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
-const URL_COUNTRY_NAMES_COLLECTION = 'assets/data/country_names.json';
+// const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
+// const URL_COUNTRY_NAMES_COLLECTION = 'assets/data/country_names.json';
 
 // you can create custom validator to pass to an inline editor
 const myCustomTitleValidator = (value) => {
@@ -48,13 +50,13 @@ const customEditableInputFormatter: Formatter<ReportItem> = (_row: number, _cell
   return item.title;
 };
 
-export class Example4 {
+export default class Example4 {
   private _bindingEventService: BindingEventService;
-  columnDefinitions: Column<ReportItem & { action: string; }>[];
+  columnDefinitions: Column<ReportItem & { action?: string; }>[];
   gridOptions: GridOption;
   dataset: any[];
   dataViewObj: SlickDataView;
-  commandQueue = [];
+  commandQueue: EditCommand[] = [];
   frozenColumnCount = 2;
   frozenRowCount = 3;
   isFrozenBottom = false;
@@ -66,7 +68,7 @@ export class Example4 {
 
   attached() {
     const dataset = this.initializeGrid();
-    const gridContainerElm = document.querySelector<HTMLDivElement>(`.grid4`);
+    const gridContainerElm = document.querySelector(`.grid4`) as HTMLDivElement;
 
     // this._bindingEventService.bind(gridContainerElm, 'onclick', handleOnClick);
     this._bindingEventService.bind(gridContainerElm, 'onvalidationerror', this.handleOnValidationError.bind(this));
@@ -123,7 +125,7 @@ export class Example4 {
           editorOptions: {
             filter: true // adds a filter on top of the multi-select dropdown
           },
-          model: Editors.multipleSelect,
+          model: Editors.singleSelect,
         },
       },
       {
@@ -243,22 +245,14 @@ export class Example4 {
           placeholder: '🔎︎ search city',
 
           // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
-          // use your own autocomplete options, instead of $.ajax, use HttpClient or FetchClient
-          // here we use $.ajax just because I'm not sure how to configure HttpClient with JSONP and CORS
+          // use your own autocomplete options, instead of fetch-jsonp, use HttpClient or FetchClient
           editorOptions: {
             minLength: 3,
             fetch: (searchText, updateCallback) => {
-              $.ajax({
-                url: 'http://gd.geobytes.com/AutoCompleteCity',
-                dataType: 'jsonp',
-                data: {
-                  q: searchText
-                },
-                success: (data) => {
-                  const finalData = (data.length === 1 && data[0] === '') ? [] : data; // invalid result should be [] instead of [''
-                  updateCallback(finalData);
-                }
-              });
+              fetchJsonp(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
+                .then((response) => response.json())
+                .then((json) => updateCallback(json))
+                .catch((ex) => console.log('invalid JSONP response', ex));
             },
           } as AutocompleterOption,
         },
@@ -281,22 +275,15 @@ export class Example4 {
           // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
           // collectionAsync: fetch(URL_COUNTRIES_COLLECTION),
 
-          // OR use your own autocomplete options, instead of $.ajax, use HttpClient or FetchClient
-          // here we use $.ajax just because I'm not sure how to configure HttpClient with JSONP and CORS
+          // OR use your own autocomplete options, instead of fetchJsonp, use HttpClient or FetchClient
+          // here we use fetchJsonp just because I'm not sure how to configure HttpClient with JSONP and CORS
           filterOptions: {
             minLength: 3,
             fetch: (searchText, updateCallback) => {
-              $.ajax({
-                url: 'http://gd.geobytes.com/AutoCompleteCity',
-                dataType: 'jsonp',
-                data: {
-                  q: searchText
-                },
-                success: (data) => {
-                  const finalData = (data.length === 1 && data[0] === '') ? [] : data; // invalid result should be [] instead of ['']
-                  updateCallback(finalData);
-                }
-              });
+              fetchJsonp(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
+                .then((response) => response.json())
+                .then((json) => updateCallback(json))
+                .catch((ex) => console.log('invalid JSONP response', ex));
             },
           } as AutocompleterOption,
         }
@@ -485,8 +472,8 @@ export class Example4 {
   }
 
   setFrozenColumns(frozenCols: number) {
-    this.sgb?.slickGrid.setOptions({ frozenColumn: frozenCols, alwaysShowVerticalScroll: false });
-    this.gridOptions = this.sgb?.slickGrid.getOptions();
+    this.sgb?.slickGrid?.setOptions({ frozenColumn: frozenCols, alwaysShowVerticalScroll: false });
+    this.gridOptions = this.sgb?.slickGrid?.getOptions() ?? {};
   }
 
   /** toggle dynamically, through slickgrid "setOptions()" the top/bottom pinned location */

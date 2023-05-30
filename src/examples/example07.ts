@@ -47,18 +47,20 @@ export class Example7 {
     this.isSortingEnabled = true;
   }
 
-  attached() {
+  async attached() {
     this.initializeGrid();
     this.dataset = this.loadData(500);
-    const gridContainerElm = document.querySelector<HTMLDivElement>(`.grid7`);
+    const gridContainerElm = document.querySelector(`.grid7`) as HTMLDivElement;
     this._bindingEventService.bind(gridContainerElm, 'oncellchange', this.handleOnCellChange.bind(this));
     this._bindingEventService.bind(gridContainerElm, 'onvalidationerror', this.handleValidationError.bind(this));
     this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
+    document.body.classList.add('material-theme');
   }
 
   dispose() {
     this.sgb?.dispose();
     this._bindingEventService.unbindAll();
+    document.body.classList.remove('material-theme');
   }
 
   initializeGrid() {
@@ -82,7 +84,7 @@ export class Example7 {
               command: 'command1', titleKey: 'DELETE_ROW',
               iconCssClass: 'mdi mdi-close color-danger', cssClass: 'has-text-danger', textCssClass: 'bold',
               action: (_e, args) => {
-                if (confirm(`Do you really want to delete row (${args.row + 1}) with "${args.dataContext.title}"?`)) {
+                if (confirm(`Do you really want to delete row (${args.row! + 1}) with "${args.dataContext.title}"?`)) {
                   this.sgb?.gridService.deleteItemById(args.dataContext.id);
                 }
               }
@@ -95,8 +97,8 @@ export class Example7 {
           ],
           optionTitleKey: 'CHANGE_COMPLETED_FLAG',
           optionItems: [
-            { option: true, titleKey: 'TRUE', iconCssClass: 'mdi mdi-check-box-outline', action: (e, args) => this.changeCompletedOption(args.dataContext, args.item.option) },
-            { option: false, titleKey: 'FALSE', iconCssClass: 'mdi mdi-checkbox-blank-outline', action: (e, args) => this.changeCompletedOption(args.dataContext, args.item.option) },
+            { option: true, titleKey: 'TRUE', iconCssClass: 'mdi mdi-check-box-outline', action: (_e, args) => this.changeCompletedOption(args.dataContext, args.item.option) },
+            { option: false, titleKey: 'FALSE', iconCssClass: 'mdi mdi-checkbox-blank-outline', action: (_e, args) => this.changeCompletedOption(args.dataContext, args.item.option) },
           ]
         }
       },
@@ -107,9 +109,7 @@ export class Example7 {
       },
       {
         id: 'percentComplete', nameKey: 'PERCENT_COMPLETE', field: 'percentComplete', type: 'number',
-        filterable: true, sortable: true,
-        filter: { model: Filters.compoundSlider, minValue: 0, maxValue: 100, operator: '>=' },
-        editor: { model: Editors.slider, minValue: 0, maxValue: 100, },
+        filterable: true, sortable: true, editor: { model: Editors.slider, minValue: 0, maxValue: 100, },
       },
       {
         id: 'start', nameKey: 'START', field: 'start', formatter: Formatters.dateIso,
@@ -291,10 +291,10 @@ export class Example7 {
     // wrap into a timer to simulate a backend async call
     setTimeout(() => {
       // at any time, we can poke the "collection" property and modify it
-      const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
+      const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites') as Column;
       if (requisiteColumnDef) {
-        const collectionEditor = requisiteColumnDef.editor.collection;
-        const collectionFilter = requisiteColumnDef.filter.collection;
+        const collectionEditor = requisiteColumnDef.editor!.collection;
+        const collectionFilter = requisiteColumnDef.filter!.collection;
 
         if (Array.isArray(collectionEditor) && Array.isArray(collectionFilter)) {
           // add the new row to the grid
@@ -344,30 +344,31 @@ export class Example7 {
       </div>
     </div>`;
 
-    $(DOMPurify.sanitize(modalHtml)).appendTo('body');
+    const elm = document.createElement('div');
+    elm.innerHTML = DOMPurify.sanitize(modalHtml);
+    document.body.appendChild(elm.querySelector('div') as HTMLDivElement);
 
-    $('.btn-close').on('click', function () {
-      if (grid?.slickGrid.getOptions().showHeaderRow) {
+    this._bindingEventService.bind(document.querySelectorAll('.modal-card-foot .btn-close'), 'click', () => {
+      if (grid?.slickGrid?.getOptions().showHeaderRow) {
         grid?.showHeaderRow(true);
       }
-      document.getElementById('modal-allFilter').remove();
+      document.getElementById('modal-allFilter')?.remove();
     });
 
-    $('#btn-clear-all').on('click', function () {
-      document.getElementById('modal-allFilter').remove();
+    this._bindingEventService.bind(document.querySelector('#btn-clear-all') as HTMLButtonElement, 'click', () => {
+      document.getElementById('modal-allFilter')?.remove();
       grid?.filterService.clearFilters();
     });
 
     for (const columnFilter of grid?.columnDefinitions) {
       if (columnFilter.filterable) {
         const filterElm = `modal-allfilter-${columnFilter.id}`;
-        $('#modal-allFilter-table')
-          .append(
-            `<div class="row slick-headerrow-columns">
+        const innerHtml = document.querySelector('#modal-allFilter-table')!.innerHTML;
+        document.querySelector('#modal-allFilter-table')!.innerHTML = innerHtml +
+          `<div class="row slick-headerrow-columns">
               <div class="column">${columnFilter.name}</div>
               <div id="${filterElm}" class="column ui-state-default slick-headerrow-column"></div>
-            </div>`
-          );
+            </div>`;
         grid?.filterService.drawFilterTemplate(columnFilter, `#${filterElm}`);
       }
     }
@@ -383,10 +384,10 @@ export class Example7 {
 
   /** Delete last inserted row */
   deleteItem() {
-    const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites');
+    const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites') as Column;
     if (requisiteColumnDef) {
-      const collectionEditor = requisiteColumnDef.editor.collection;
-      const collectionFilter = requisiteColumnDef.filter.collection;
+      const collectionEditor = requisiteColumnDef.editor!.collection;
+      const collectionFilter = requisiteColumnDef.filter!.collection;
 
       if (Array.isArray(collectionEditor) && Array.isArray(collectionFilter)) {
         // sort collection in descending order and take out last option from the collection
@@ -399,7 +400,7 @@ export class Example7 {
 
   loadData(itemCount: number, startingIndex = 0) {
     // Set up some test columns.
-    const tempDataset = [];
+    const tempDataset: any[] = [];
     for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
       tempDataset.push({
         id: i,
@@ -422,7 +423,7 @@ export class Example7 {
   onBeforeMoveRow(e: Event, data: { rows: number[]; insertBefore: number; }) {
     for (const rowIdx of data.rows) {
       // no point in moving before or after itself
-      if (rowIdx === data.insertBefore || (rowIdx === data.insertBefore - 1 && ((data.insertBefore - 1) !== this.sgb.dataView.getItemCount()))) {
+      if (rowIdx === data.insertBefore || (rowIdx === data.insertBefore - 1 && ((data.insertBefore - 1) !== this.sgb.dataView?.getItemCount()))) {
         e.stopPropagation();
         return false;
       }
@@ -436,24 +437,24 @@ export class Example7 {
     // which is not always the case so we will recalcualte them and we won't use these reference afterward
     const rows = args.rows as number[];
     const insertBefore = args.insertBefore;
-    const extractedRows = [];
+    const extractedRows: any[] = [];
 
     // when moving rows, we need to cancel any sorting that might happen
     // we can do this by providing an undefined sort comparer
     // which basically destroys the current sort comparer without resorting the dataset, it basically keeps the previous sorting
-    this.sgb.dataView.sort(undefined, true);
+    this.sgb.dataView?.sort(undefined as any, true);
 
     // the dataset might be filtered/sorted,
     // so we need to get the same dataset as the one that the SlickGrid DataView uses
-    const tmpDataset = this.sgb.dataView.getItems();
-    const filteredItems = this.sgb.dataView.getFilteredItems();
+    const tmpDataset = this.sgb.dataView?.getItems() as any[];
+    const filteredItems = this.sgb.dataView?.getFilteredItems() as any[];
 
-    const itemOnRight = this.sgb.dataView.getItem(insertBefore);
-    const insertBeforeFilteredIdx = itemOnRight ? this.sgb.dataView.getIdxById(itemOnRight.id) : this.sgb.dataView.getItemCount();
+    const itemOnRight = this.sgb.dataView?.getItem(insertBefore);
+    const insertBeforeFilteredIdx = (itemOnRight ? this.sgb.dataView?.getIdxById(itemOnRight.id) : this.sgb.dataView?.getItemCount()) as number;
 
-    const filteredRowItems = [];
-    rows.forEach(row => filteredRowItems.push(filteredItems[row]));
-    const filteredRows = filteredRowItems.map(item => this.sgb.dataView.getIdxById(item.id));
+    const filteredRowItems: any[] = [];
+    rows.forEach(row => filteredRowItems.push(filteredItems[row] as any));
+    const filteredRows = (filteredRowItems.map(item => this.sgb.dataView?.getIdxById(item.id))) as number[];
 
     const left = tmpDataset.slice(0, insertBeforeFilteredIdx);
     const right = tmpDataset.slice(insertBeforeFilteredIdx, tmpDataset.length);
@@ -462,7 +463,7 @@ export class Example7 {
     // we need to resort with
     rows.sort((a: number, b: number) => a - b);
     for (const filteredRow of filteredRows) {
-      extractedRows.push(tmpDataset[filteredRow]);
+      extractedRows.push(tmpDataset[filteredRow as number]);
     }
     filteredRows.reverse();
     for (const row of filteredRows) {
@@ -530,9 +531,9 @@ export class Example7 {
     // you MUST use "getAllColumnDefinitions()" from the GridService, using this will be ALL columns including the 1st column that is created internally
     // for example if you use the Checkbox Selector (row selection), you MUST use the code below
     /*
-      const allColumns = this.sgb.gridService.getAllColumnDefinitions();
-      allColumns.push(newCol);
-      this.sgb.columnDefinitions = [...allColumns]; // (or use slice) reassign to column definitions for framework to do dirty checking
+      const allOriginalColumns = this.sgb.gridService.getAllColumnDefinitions();
+      allOriginalColumns.push(newCol);
+      this.sgb.columnDefinitions = [...allOriginalColumns]; // (or use slice) reassign to column definitions for framework to do dirty checking
     */
   }
 
@@ -544,8 +545,8 @@ export class Example7 {
     // you MUST use the code below, first you must reassign the Editor facade (from the internalColumnEditor back to the editor)
     // in other words, SlickGrid is not using the same as Slickgrid-Universal uses (editor with a "model" and other properties are a facade, SlickGrid only uses what is inside the model)
     /*
-    const allOriginalColumns = this.slickerGridInstance.gridService.getAllColumnDefinitions();
-    const allOriginalColumns = allOriginalColumns.map((column) => {
+    const allColumns = this.slickerGridInstance.gridService.getAllColumnDefinitions();
+    const allOriginalColumns = allColumns.map((column) => {
       column.editor = column.internalColumnEditor;
       return column;
     });
@@ -585,11 +586,11 @@ export class Example7 {
 
   toggleFilter() {
     this.sgb.filterService.toggleFilterFunctionality();
-    this.isFilteringEnabled = this.sgb.slickGrid.getOptions().enableFiltering;
+    this.isFilteringEnabled = this.sgb.slickGrid?.getOptions().enableFiltering ?? false;
   }
 
   toggleSorting() {
     this.sgb.sortService.toggleSortFunctionality();
-    this.isSortingEnabled = this.sgb.slickGrid.getOptions().enableSorting;
+    this.isSortingEnabled = this.sgb.slickGrid?.getOptions().enableSorting ?? false;
   }
 }

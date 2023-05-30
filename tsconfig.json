@@ -18,7 +18,6 @@
     ],
     "types": [
       "moment",
-      "jquery",
       "node"
     ],
     "typeRoots": [

@@ -1,4 +1,3 @@
-const { ProvidePlugin } = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { EsbuildPlugin } = require('esbuild-loader');
@@ -78,12 +77,6 @@ module.exports = ({ production } = {}) => ({
     poll: 1000, // Check for changes every second
   },
   plugins: [
-    new ProvidePlugin({
-      '$': 'jquery',
-      'jQuery': 'jquery',
-      'window.jQuery': 'jquery',
-      'window.$': 'jquery',
-    }),
     new HtmlWebpackPlugin({
       template: 'index.ejs',
       favicon: `${srcDir}/favicon.ico`,
