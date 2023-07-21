@@ -17,7 +17,6 @@
       "dom"
     ],
     "types": [
-      "moment",
       "node"
     ],
     "typeRoots": [
