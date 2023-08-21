@@ -15,8 +15,9 @@ import DOMPurify from 'dompurify';
 import { TranslateService } from '../translate.service';
 import { ExampleGridOptions } from './example-grid-options';
 import './example07.scss';
+import '../material-styles.scss';
 
-export class Example7 {
+export default class Example7 {
   private _bindingEventService: BindingEventService;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -298,7 +299,7 @@ export class Example7 {
 
         if (Array.isArray(collectionEditor) && Array.isArray(collectionFilter)) {
           // add the new row to the grid
-          this.sgb.gridService.addItem(newRows[0], { highlightRow: false });
+          this.sgb.gridService.addItem(newRows[0], { position: 'bottom', highlightRow: false });
 
           // then refresh the Editor/Filter "collection", we have 2 ways of doing it
 
@@ -317,7 +318,6 @@ export class Example7 {
   clearFilters() {
     this.sgb.filterService.clearFilters();
   }
-
 
   allFilters() {
     const grid = this.sgb;

@@ -87,12 +87,12 @@ export class Example12 {
   gridOptions: GridOption;
   dataset: any[] = [];
   isGridEditable = true;
-  editQueue = [];
+  editQueue: Array<{ item, columns: Column[], editCommand }> = [];
   editedItems = {};
   isCompositeDisabled = false;
   isMassSelectionDisabled = true;
   gridContainerElm: HTMLDivElement;
-  cellCssStyleQueue = [];
+  cellCssStyleQueue: string[] = [];
   complexityLevelList = [
     { value: 0, label: 'Very Simple' },
     { value: 1, label: 'Simple' },
@@ -104,7 +104,7 @@ export class Example12 {
   // you would typically use `SlickVanillaGridBundle` instead, we use `VanillaForceGridBundle` just to test that Salesforce package
   sgb: VanillaForceGridBundle;
 
-  get slickerGridInstance(): SlickerGridInstance {
+  get slickerGridInstance(): SlickerGridInstance | undefined {
     return this.sgb?.instances;
   }
 
@@ -116,7 +116,7 @@ export class Example12 {
   attached() {
     this.initializeGrid();
     this.dataset = this.loadData(500);
-    this.gridContainerElm = document.querySelector<HTMLDivElement>(`.grid12`);
+    this.gridContainerElm = document.querySelector<HTMLDivElement>(`.grid12`) as HTMLDivElement;
 
     this.sgb = new Slicker.GridBundle(this.gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions });
     this.sgb.dataset = this.dataset;
@@ -139,7 +139,7 @@ export class Example12 {
   dispose() {
     this.sgb?.dispose();
     this._bindingEventService.unbindAll();
-    this.gridContainerElm = null;
+    this.gridContainerElm.remove();
   }
 
   initializeGrid() {
@@ -384,8 +384,8 @@ export class Example12 {
               },
               action: (_event, args) => {
                 const dataContext = args.dataContext;
-                if (confirm(`Do you really want to delete row (${args.row + 1}) with "${dataContext.title}"`)) {
-                  this.slickerGridInstance.gridService.deleteItemById(dataContext.id);
+                if (confirm(`Do you really want to delete row (${args.row! + 1}) with "${dataContext.title}"`)) {
+                  this.slickerGridInstance?.gridService.deleteItemById(dataContext.id);
                 }
               }
             },
@@ -454,7 +454,7 @@ export class Example12 {
           if (prevSerializedValue !== serializedValue || serializedValue === '') {
             const finalColumn = Array.isArray(editCommand.prevSerializedValue) ? editorColumns[index] : column;
             this.editedItems[this.gridOptions.datasetIdPropertyName || 'id'] = item; // keep items by their row indexes, if the row got edited twice then we'll keep only the last change
-            this.sgb.slickGrid.invalidate();
+            this.sgb.slickGrid?.invalidate();
             editCommand.execute();
 
             this.renderUnsavedCellStyling(item, finalColumn, editCommand);
@@ -474,7 +474,7 @@ export class Example12 {
 
   loadData(count: number) {
     // mock data
-    const tmpArray = [];
+    const tmpArray: any[] = [];
     for (let i = 0; i < count; i++) {
       const randomItemId = Math.floor(Math.random() * this.mockProducts().length);
       const randomYear = 2000 + Math.floor(Math.random() * 10);
@@ -505,15 +505,17 @@ export class Example12 {
       };
 
       if (!(i % 8)) {
-        delete tmpArray[i].finish; // also test with undefined properties
-        delete tmpArray[i].percentComplete; // also test with undefined properties
+        // also test with undefined properties
+        delete tmpArray[i].finish;
+        delete tmpArray[i].percentComplete;
+        delete tmpArray[i].analysis.percentComplete;
       }
     }
     return tmpArray;
   }
 
   handleValidationError(event) {
-    const args = event.detail && event.detail.args;
+    const args = event.detail?.args;
     console.log('handleValidationError', event.detail);
     if (args.validationResults) {
       let errorMsg = args.validationResults.msg || '';
@@ -535,13 +537,13 @@ export class Example12 {
   }
 
   handleItemDeleted(event) {
-    const itemId = event && event.detail;
+    const itemId = event?.detail;
     console.log('item deleted with id:', itemId);
   }
 
   handleOnBeforeEditCell(event) {
-    const eventData = event.detail.eventData;
-    const args = event && event.detail && event.detail.args;
+    const eventData = event.detail?.eventData;
+    const args = event?.detail?.args;
     const { column, item, grid } = args;
 
     if (column && item) {
@@ -555,8 +557,8 @@ export class Example12 {
   }
 
   handleOnCellChange(event) {
-    const args = event && event.detail && event.detail.args;
-    const dataContext = args && args.item;
+    const args = event?.detail?.args;
+    const dataContext = args?.item;
     console.log('cell change', args);
 
     // when the field "completed" changes to false, we also need to blank out the "finish" date
@@ -567,8 +569,8 @@ export class Example12 {
   }
 
   handleOnCellClicked(event) {
-    const args = event && event.detail && event.detail.args;
-    const eventData = event && event.detail && event.detail.eventData;
+    const args = event?.detail?.args;
+    const eventData = event?.detail?.eventData;
     console.log(eventData, args);
     // if (eventData.target.classList.contains('mdi-help-circle-outline')) {
     //   alert('please HELP!!!');
@@ -618,7 +620,7 @@ export class Example12 {
 
   handleOnGridStateChanged(event) {
     // console.log('handleOnGridStateChanged', event?.detail ?? '')
-    const gridState = event && event.detail && event.detail.gridState;
+    const gridState = event?.detail?.gridState;
     if (Array.isArray(gridState?.rowSelection.dataContextIds)) {
       this.isMassSelectionDisabled = gridState.rowSelection.dataContextIds.length === 0;
     }
@@ -647,7 +649,7 @@ export class Example12 {
   removeUnsavedStylingFromCell(_item: any, column: Column, row: number) {
     // remove unsaved css class from that cell
     const cssStyleKey = `unsaved_highlight_${[column.id]}${row}`;
-    this.sgb.slickGrid.removeCellCssStyles(cssStyleKey);
+    this.sgb.slickGrid?.removeCellCssStyles(cssStyleKey);
     const foundIdx = this.cellCssStyleQueue.findIndex(styleKey => styleKey === cssStyleKey);
     if (foundIdx >= 0) {
       this.cellCssStyleQueue.splice(foundIdx, 1);
@@ -656,7 +658,7 @@ export class Example12 {
 
   removeAllUnsavedStylingFromCell() {
     for (const cssStyleKey of this.cellCssStyleQueue) {
-      this.sgb.slickGrid.removeCellCssStyles(cssStyleKey);
+      this.sgb.slickGrid?.removeCellCssStyles(cssStyleKey);
     }
     this.cellCssStyleQueue = [];
   }
@@ -676,11 +678,11 @@ export class Example12 {
 
   renderUnsavedCellStyling(item, column, editCommand) {
     if (editCommand && item && column) {
-      const row = this.sgb.dataView.getRowByItem(item);
+      const row = this.sgb.dataView?.getRowByItem(item) ?? 0;
       if (row >= 0) {
         const hash = { [row]: { [column.id]: 'unsaved-editable-field' } };
         const cssStyleKey = `unsaved_highlight_${[column.id]}${row}`;
-        this.sgb.slickGrid.setCellCssStyles(`unsaved_highlight_${[column.id]}${row}`, hash);
+        this.sgb.slickGrid?.setCellCssStyles(`unsaved_highlight_${[column.id]}${row}`, hash);
         this.cellCssStyleQueue.push(cssStyleKey);
       }
     }
@@ -713,12 +715,12 @@ export class Example12 {
       for (const lastEditColumn of lastEdit.columns) {
         this.removeUnsavedStylingFromCell(lastEdit.item, lastEditColumn, lastEditCommand.row);
       }
-      this.sgb.slickGrid.invalidate();
+      this.sgb.slickGrid?.invalidate();
 
 
       // optionally open the last cell editor associated
       if (showLastEditor) {
-        this.sgb?.slickGrid.gotoCell(lastEditCommand.row, lastEditCommand.cell, false);
+        this.sgb?.slickGrid?.gotoCell(lastEditCommand.row, lastEditCommand.cell, false);
       }
     }
   }
@@ -735,7 +737,7 @@ export class Example12 {
         }
       }
     }
-    this.sgb.slickGrid.invalidate(); // re-render the grid only after every cells got rolled back
+    this.sgb.slickGrid?.invalidate(); // re-render the grid only after every cells got rolled back
     this.editQueue = [];
   }
 

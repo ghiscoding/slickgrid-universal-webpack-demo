@@ -64,6 +64,7 @@ export class Example1 {
       ...this.gridOptions1,
       ...{
         gridHeight: 255,
+        headerRowHeight: 40,
         columnPicker: {
           onColumnsChanged: (e, args) => console.log('onColumnPickerColumnsChanged - visible columns count', args.visibleColumns.length),
         },

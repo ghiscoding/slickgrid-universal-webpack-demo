@@ -37,7 +37,7 @@ export class Example5 {
   attached() {
     this.initializeGrid();
     this.dataset = [];
-    const gridContainerElm = document.querySelector<HTMLDivElement>('.grid5');
+    const gridContainerElm = document.querySelector('.grid5') as HTMLDivElement;
 
     this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions });
     this.dataset = this.loadData(NB_ITEMS);
@@ -63,10 +63,12 @@ export class Example5 {
     // the following event is a special use case for our project and is commented out
     // so that we still have code ref if we still need to test the use case
     // this._bindingEventService.bind(gridContainerElm, 'onselectedrowschanged', this.handleOnSelectedRowsChanged.bind(this));
+    document.body.classList.add('material-theme');
   }
 
   dispose() {
     this.sgb?.dispose();
+    document.body.classList.remove('material-theme');
   }
 
   hideSpinner() {
@@ -84,8 +86,8 @@ export class Example5 {
    * @param {Object} itemObj - selected item object
    * @returns {Array<number>}
    */
-  getTreeIds(itemObj) {
-    let treeIds = [];
+  getTreeIds(itemObj: any) {
+    let treeIds: any[] = [];
     if (itemObj.__hasChildren && itemObj.treeLevel === 0) {
       treeIds = this.sgb.dataset
         .filter(item => item.parentId === itemObj.id)
@@ -101,11 +103,11 @@ export class Example5 {
    * @param {Array<number>} - we must provide the selected rows prior to the checkbox toggling, we can get this directly from the `onselectedrowschanged` event
    */
   getTreeSelectedCount(rootParentItemObj, previousSelectedRows: number[]) {
-    let treeIds = [];
-    const selectedIds = this.sgb.dataView.mapRowsToIds(previousSelectedRows);
+    let treeIds: any[] = [];
+    const selectedIds = this.sgb.dataView?.mapRowsToIds(previousSelectedRows);
     if (rootParentItemObj.__hasChildren && rootParentItemObj.treeLevel === 0) {
       treeIds = this.sgb.dataset.filter(item => item.parentId === rootParentItemObj.id)
-        .filter(item => selectedIds.some(selectedId => selectedId === item.id))
+        .filter(item => selectedIds?.some(selectedId => selectedId === item.id))
         .map(child => child.id);
     }
     return treeIds.length;
@@ -123,7 +125,7 @@ export class Example5 {
 
       if (changedRowIndex !== null) {
         const isRowBeingUnselected = (args.changedUnselectedRows.length && changedRowIndex === args.changedUnselectedRows[0]);
-        let selectedRowItemObj = this.sgb.dataView.getItem(changedRowIndex);
+        let selectedRowItemObj = this.sgb.dataView?.getItem(changedRowIndex);
 
         // the steps we'll do below are the same for both the if/else
         // 1. we will find all of its children Ids
@@ -134,33 +136,33 @@ export class Example5 {
           // when it's a parent we'll make sure to expand the current tree on first level (if not yet expanded) and then return all tree Ids
           this.sgb.treeDataService.dynamicallyToggleItemState([{ itemId: selectedRowItemObj.id, isCollapsed: false }]);
           treeIds = this.getTreeIds(selectedRowItemObj);
-        } else if ((selectedRowItemObj.__hasChildren && selectedRowItemObj.treeLevel === 1) || (!selectedRowItemObj.__hasChildren && selectedRowItemObj.parentId && !this.getTreeSelectedCount(this.sgb.dataView.getItemById(selectedRowItemObj.parentId), args.previousSelectedRows))) {
+        } else if ((selectedRowItemObj.__hasChildren && selectedRowItemObj.treeLevel === 1) || (!selectedRowItemObj.__hasChildren && selectedRowItemObj.parentId && !this.getTreeSelectedCount(this.sgb.dataView?.getItemById(selectedRowItemObj.parentId), args.previousSelectedRows))) {
           // if we're toggling a child item that is also a parent item (e.g. a switchboard inside an INEQ) then we'll do the following
           // circle back to its root parent and perform (in other word use the parent of this parent)
           // then same as previous condition, we'll return the Ids of that that tree
-          const selectedItem = this.sgb.dataView.getItem(changedRowIndex);
-          selectedRowItemObj = this.sgb.dataView.getItemById(selectedItem.parentId);
-          changedRowIndex = this.sgb.dataView.mapIdsToRows([selectedItem.parentId])?.[0];
+          const selectedItem = this.sgb.dataView?.getItem(changedRowIndex);
+          selectedRowItemObj = this.sgb.dataView?.getItemById(selectedItem.parentId);
+          changedRowIndex = this.sgb.dataView?.mapIdsToRows([selectedItem.parentId])?.[0] as number;
           treeIds = this.getTreeIds(selectedRowItemObj);
         }
 
         // step 2) do the toggle select/unselect of that tree when necessary (we only toggle on a parent item)
         if (treeIds.length > 0) {
-          const currentSelectedRows = this.sgb.slickGrid.getSelectedRows();
+          const currentSelectedRows = this.sgb.slickGrid?.getSelectedRows();
           for (const leafId of treeIds) {
-            const childIndexes = this.sgb.dataView.mapIdsToRows([leafId]);
+            const childIndexes = this.sgb.dataView?.mapIdsToRows([leafId]);
             if (Array.isArray(childIndexes) && childIndexes.length > 0) {
               childItemsIdxAndIds.push({ itemId: leafId, rowIdx: childIndexes[0] });
             }
           }
           const childrenRowIndexes = childItemsIdxAndIds.map(childItem => childItem.rowIdx);
-          const currentSelectionPlusChildrenIndexes: number[] = Array.from(new Set(currentSelectedRows.concat(childrenRowIndexes))); // use Set to remove duplicates
+          const currentSelectionPlusChildrenIndexes: number[] = Array.from(new Set(currentSelectedRows?.concat(childrenRowIndexes))); // use Set to remove duplicates
 
           // if we are unselecting the row then we'll remove the children from the final list of selections else just use that entire tree Ids
           const finalSelection = isRowBeingUnselected
             ? currentSelectionPlusChildrenIndexes.filter(rowIdx => !childrenRowIndexes.includes(rowIdx))
             : currentSelectionPlusChildrenIndexes;
-          this.sgb.slickGrid.setSelectedRows(finalSelection);
+          this.sgb.slickGrid?.setSelectedRows(finalSelection);
         }
       }
     }
@@ -276,7 +278,7 @@ export class Example5 {
     const newTreeLevel = 1;
     // find first parent object and add the new item as a child
     const childItemFound = this.sgb.dataset.find((item) => item[treeLevelPropName] === newTreeLevel);
-    const parentItemFound = this.sgb.dataView.getItemByIdx(childItemFound[parentPropName]);
+    const parentItemFound = this.sgb.dataView?.getItemByIdx(childItemFound[parentPropName]);
 
     if (childItemFound && parentItemFound) {
       const newItem = {
@@ -293,13 +295,30 @@ export class Example5 {
       // use the Grid Service to insert the item,
       // it will also internally take care of updating & resorting the hierarchical dataset
       this.sgb.gridService.addItem(newItem);
+
+      // or insert multiple items
+      // const itemCount = 15;
+      // const newItems: any[] = [];
+      // for (let i = 0; i < itemCount; i++) {
+      //   newItems.push({
+      //     id: newId + i,
+      //     parentId: parentItemFound.id,
+      //     title: `Task ${newId + i}`,
+      //     duration: '1 day',
+      //     percentComplete: 99,
+      //     start: new Date(),
+      //     finish: new Date(),
+      //     effortDriven: false
+      //   });
+      // }
+      // this.sgb.gridService.addItems(newItems);
     }
   }
 
   updateFirstRow() {
     // to update any of the grid rows, we CANNOT simply pass a new updated object
     // we MUST read it from the DataView first (that will include all mutated Tree Data props, like `__treeLevel`, `__parentId`, ...) and then update it
-    const item = this.sgb.dataView.getItemById<any>(0);
+    const item = this.sgb.dataView?.getItemById<any>(0);
 
     // option 1
     /*
@@ -309,7 +328,6 @@ export class Example5 {
     item.start = new Date();
     item.finish = new Date();
     item.effortDriven = false;
-
     // finally we can now update the item which includes our updated props + the Tree Data props (`__treeLevel`, ...)
     this.sgb.gridService.updateItem(item);
     */
@@ -346,8 +364,8 @@ export class Example5 {
   loadData(rowCount: number) {
     this.isLargeDataset = rowCount > 5000; // we'll show a spinner when it's large, else don't show show since it should be fast enough
     let indent = 0;
-    const parents = [];
-    const data = [];
+    const parents: any[] = [];
+    const data: any[] = [];
 
     // prepare the data
     for (let i = 0; i < rowCount; i++) {
@@ -401,17 +419,17 @@ export class Example5 {
     return data;
   }
 
-  handleOnTreeFullToggleEnd(e: CustomEvent<TreeToggleStateChange>) {
-    const treeToggleExecution = e.detail;
+  handleOnTreeFullToggleEnd(e: Event) {
+    const treeToggleExecution = (e as CustomEvent<TreeToggleStateChange>).detail;
     console.log('Tree Data changes', treeToggleExecution);
     this.hideSpinner();
   }
 
   /** Whenever a parent is being toggled, we'll keep a reference of all of these changes so that we can reapply them whenever we want */
-  handleOnTreeItemToggled(e: CustomEvent<TreeToggleStateChange>) {
+  handleOnTreeItemToggled(e: Event) {
     this.hasNoExpandCollapseChanged = false;
-    const treeToggleExecution = e.detail;
-    this.treeToggleItems = treeToggleExecution.toggledItems;
+    const treeToggleExecution = (e as CustomEvent<TreeToggleStateChange>).detail;
+    this.treeToggleItems = treeToggleExecution.toggledItems as TreeToggledItem[];
     console.log('Tree Data changes', treeToggleExecution);
   }
 
@@ -419,9 +437,9 @@ export class Example5 {
     this.hasNoExpandCollapseChanged = false;
     const gridStateChange = e.detail;
 
-    if (gridStateChange.change.type === GridStateType.treeData) {
-      console.log('Tree Data gridStateChange', gridStateChange.gridState.treeData);
-      this.treeToggleItems = gridStateChange.gridState.treeData.toggledItems;
+    if (gridStateChange.change?.type === GridStateType.treeData) {
+      console.log('Tree Data gridStateChange', gridStateChange.gridState?.treeData);
+      this.treeToggleItems = gridStateChange.gridState?.treeData?.toggledItems as TreeToggledItem[];
     }
   }
 
@@ -436,7 +454,7 @@ export class Example5 {
 
     // find first parent object and toggle it
     const childItemFound = this.sgb.dataset.find((item) => item[treeLevelPropName] === newTreeLevel);
-    const parentItemFound = this.sgb.dataView.getItemByIdx(childItemFound[parentPropName]);
+    const parentItemFound = this.sgb.dataView?.getItemByIdx(childItemFound[parentPropName]);
 
     if (childItemFound && parentItemFound) {
       this.sgb.treeDataService.dynamicallyToggleItemState([{ itemId: parentItemFound.id, isCollapsed: !parentItemFound.__collapsed }]);
