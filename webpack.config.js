@@ -59,6 +59,7 @@ module.exports = ({ production } = {}) => ({
       {
         test: /\.ts?$/,
         loader: 'esbuild-loader',
+        include: [srcDir],
         options: { loader: 'ts', target: 'es2020' }
       },
     ],
