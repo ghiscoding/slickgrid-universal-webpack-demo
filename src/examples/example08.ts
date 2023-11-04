@@ -18,8 +18,8 @@ export class Example08 {
   columnDefinitions2: Column[];
   gridOptions1: GridOption;
   gridOptions2: GridOption;
-  dataset1 = [];
-  dataset2 = [];
+  dataset1: any[] = [];
+  dataset2: any[] = [];
   sgb1: SlickVanillaGridBundle;
   sgb2: SlickVanillaGridBundle;
   grid2SearchSelectedColumn: Column;
@@ -36,8 +36,8 @@ export class Example08 {
     // populate the dataset once the grid is ready
     this.dataset1 = this.loadData(500);
     this.dataset2 = this.loadData(500);
-    const gridContainerElm1 = document.querySelector<HTMLDivElement>(`.grid1`);
-    const gridContainerElm2 = document.querySelector<HTMLDivElement>(`.grid2`);
+    const gridContainerElm1 = document.querySelector(`.grid1`) as HTMLDivElement;
+    const gridContainerElm2 = document.querySelector(`.grid2`) as HTMLDivElement;
     this.sgb1 = new Slicker.GridBundle(gridContainerElm1, this.columnDefinitions1, { ...ExampleGridOptions, ...this.gridOptions1 }, this.dataset1);
     this.sgb2 = new Slicker.GridBundle(gridContainerElm2, this.columnDefinitions2, { ...ExampleGridOptions, ...this.gridOptions2 }, this.dataset2);
     this.populategrid2SearchColumnsDropdown();
@@ -117,7 +117,7 @@ export class Example08 {
 
   loadData(count: number) {
     // Set up some test columns.
-    const mockDataset = [];
+    const mockDataset: any[] = [];
     for (let i = 0; i < count; i++) {
       mockDataset[i] = {
         id: i,
@@ -134,8 +134,8 @@ export class Example08 {
   }
 
   setFrozenColumns2(frozenCols: number) {
-    this.sgb2.slickGrid.setOptions({ frozenColumn: frozenCols, alwaysShowVerticalScroll: false });
-    this.gridOptions2 = this.sgb2.slickGrid.getOptions();
+    this.sgb2.slickGrid?.setOptions({ frozenColumn: frozenCols, alwaysShowVerticalScroll: false });
+    this.gridOptions2 = this.sgb2.slickGrid!.getOptions();
   }
 
   /**
@@ -167,7 +167,7 @@ export class Example08 {
   //
 
   cleargrid2SearchInput() {
-    const searchInput = document.querySelector<HTMLInputElement>('input.search');
+    const searchInput = document.querySelector('input.search') as HTMLInputElement;
     searchInput.value = '';
     this.grid2SearchValue = '';
     searchInput.focus();
@@ -175,25 +175,25 @@ export class Example08 {
   }
 
   populategrid2SearchColumnsDropdown() {
-    const columnSelect = document.querySelector('.selected-column');
+    const columnSelect = document.querySelector('.selected-column') as HTMLElement;
 
     for (const columnDef of this.columnDefinitions2) {
       if (columnDef.id === 'sel') {
         continue;
       }
-      const selectOption = document.createElement('option');
+      const selectOption = document.createElement('option') as HTMLOptionElement;
       selectOption.value = `${columnDef.id}`;
-      selectOption.label = columnDef.name;
+      selectOption.label = columnDef.name as string;
       columnSelect.appendChild(selectOption);
     }
-    this.grid2SearchSelectedColumn = this.columnDefinitions2.find(col => col.id === 'title');
+    this.grid2SearchSelectedColumn = this.columnDefinitions2.find(col => col.id === 'title') as Column;
   }
 
   populategrid2SearchOperatorDropdown() {
-    const operatorSelect = document.querySelector('.selected-operator');
+    const operatorSelect = document.querySelector('.selected-operator') as HTMLOptionElement;
 
     for (const operator of this.operatorList) {
-      const selectOption = document.createElement('option');
+      const selectOption = document.createElement('option') as HTMLOptionElement;
       selectOption.value = operator;
       selectOption.label = operator;
       operatorSelect.appendChild(selectOption);
@@ -207,7 +207,7 @@ export class Example08 {
   }
 
   selectedColumnChanged(selectedColumnId: string) {
-    this.grid2SearchSelectedColumn = this.columnDefinitions2.find(col => col.id === selectedColumnId);
+    this.grid2SearchSelectedColumn = this.columnDefinitions2.find(col => col.id === selectedColumnId) as Column;
     this.updateFilter();
   }
 

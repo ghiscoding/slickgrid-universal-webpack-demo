@@ -63,7 +63,7 @@ export interface ViewDefinition {
   pinning?: CurrentPinning;
 }
 
-export default class Example11 {
+export class Example11 {
   private _bindingEventService: BindingEventService;
   allColumnIds = ['title', 'duration', 'cost', 'percentComplete', 'start', 'finish', 'completed', 'product', 'countryOfOrigin', 'action'];
   columnDefinitions: Column[];

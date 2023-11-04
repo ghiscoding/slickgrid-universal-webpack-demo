@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import sparkline from '@fnando/sparkline';
+import * as sparkline from '@fnando/sparkline';
 import {
   Aggregators,
   Column,
@@ -11,44 +11,35 @@ import {
   GridOption,
   GroupTotalFormatters,
 } from '@slickgrid-universal/common';
-import './example18.scss';
 import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { ExampleGridOptions } from './example-grid-options';
+import './example18.scss';
+import '../material-styles.scss';
 
 const NB_ITEMS = 200;
 
-const currencyFormatter: Formatter = (cell: number, row: number, value: string) =>
+const currencyFormatter: Formatter = (_cell: number, _row: number, value: string) =>
   `<img src="https://flags.fmcdn.net/data/flags/mini/${value.substring(0, 2).toLowerCase()}.png" width="20"/> ${value}`;
 
-const priceFormatter: Formatter = (cell: number, row: number, value: number, col: Column, dataContext: any) => {
+const priceFormatter: Formatter = (_cell: number, _row: number, value: number, _col: Column, dataContext: any) => {
   const direction = dataContext.priceChange >= 0 ? 'up' : 'down';
   return `<span class="mdi mdi-arrow-${direction} color-${direction === 'up' ? 'success' : 'danger'}"></span> ${value}`;
 };
 
-const transactionTypeFormatter: Formatter = (row: number, cell: number, value: string) =>
+const transactionTypeFormatter: Formatter = (_row: number, _cell: number, value: string) =>
   `<span class="mdi mdi-16px mdi-v-align-sub mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'color-info' : 'color-warning'}"></span> ${value}`;
 
-const historicSparklineFormatter: Formatter = (row: number, cell: number, value: string, col: Column, dataContext: any) => {
+const historicSparklineFormatter: Formatter = (_row: number, _cell: number, _value: string, _col: Column, dataContext: any) => {
   const svgElem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svgElem.setAttributeNS(null, 'width', '135');
   svgElem.setAttributeNS(null, 'height', '30');
   svgElem.setAttributeNS(null, 'stroke-width', '2');
   svgElem.classList.add('sparkline');
-  sparkline(svgElem, dataContext.historic, { interactive: true });
+  sparkline.sparkline(svgElem, dataContext.historic, { interactive: true });
   return svgElem.outerHTML;
 };
 
-export class Example34 {
-  title = 'Example 34: Real-Time Stock Trading';
-  subTitle = `Simulate a stock trading platform with lot of price changes
-  <ul>
-    <li>you can start/stop the simulation</li>
-    <li>optionally change random numbers, between 0 and 10 symbols, per cycle (higher numbers means more changes)</li>
-    <li>optionally change the simulation changes refresh rate in ms (lower number means more changes).</li>
-    <li>you can Group by 1 of these columns: Currency, Market or Type</li>
-    <li>to show SlickGrid HUGE PERF., do the following: (1) lower Changes Rate (2) increase both Changes per Cycle and (3) lower Highlight Duration
-  </ul>`;
-
+export class Example18 {
   columnDefinitions: Column[] = [];
   dataset: any[] = [];
   gridOptions!: GridOption;
@@ -68,16 +59,18 @@ export class Example34 {
 
     // mock some data (different in each dataset)
     this.dataset = this.getData(NB_ITEMS);
-    this.sgb = new Slicker.GridBundle(document.querySelector<HTMLDivElement>(`.grid18`), this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
+    this.sgb = new Slicker.GridBundle(document.querySelector(`.grid18`) as HTMLDivElement, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
 
     setTimeout(() => {
       this.startSimulation();
     }, this.refreshRate);
+    document.body.classList.add('material-theme');
   }
 
   dispose() {
     this.stopSimulation();
     this.sgb?.dispose();
+    document.body.classList.remove('material-theme');
   }
 
   /* Define grid Options and Columns */
@@ -194,7 +187,7 @@ export class Example34 {
 
   getData(itemCount: number) {
     // mock a dataset
-    const datasetTmp = [];
+    const datasetTmp: any[] = [];
     for (let i = 0; i < itemCount; i++) {
       const randomPercent = Math.round(Math.random() * 100);
       const randomLowQty = this.randomNumber(1, 50);
@@ -263,7 +256,7 @@ export class Example34 {
       // }
 
       // update the data
-      this.sgb.dataView.updateItem(itemTmp.id, itemTmp);
+      this.sgb.dataView?.updateItem(itemTmp.id, itemTmp);
       // NOTE: we should also invalidate/render the row after updating cell data to see the new data rendered in the UI
       // but the cell highlight actually does that for us so we can skip it
     }
@@ -281,10 +274,10 @@ export class Example34 {
 
   renderCellHighlighting(item: any, column: Column, priceChange: number) {
     if (item && column) {
-      const row = this.sgb.dataView.getRowByItem(item) as number;
+      const row = this.sgb.dataView?.getRowByItem(item) as number;
       if (row >= 0) {
         const hash = { [row]: { [column.id]: priceChange >= 0 ? 'changed-gain' : 'changed-loss' } };
-        this.sgb.slickGrid.setCellCssStyles(`highlight_${[column.id]}${row}`, hash);
+        this.sgb.slickGrid?.setCellCssStyles(`highlight_${[column.id]}${row}`, hash);
 
         // remove highlight after x amount of time
         setTimeout(() => this.removeCellStyling(item, column, row), this.highlightDuration);

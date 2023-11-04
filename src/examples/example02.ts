@@ -19,6 +19,7 @@ import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bu
 
 import { ExampleGridOptions } from './example-grid-options';
 import './example02.scss';
+import '../material-styles.scss';
 
 const NB_ITEMS = 500;
 
@@ -40,7 +41,7 @@ export class Example2 {
   attached() {
     this.initializeGrid();
     this.dataset = this.loadData(NB_ITEMS);
-    const gridContainerElm = document.querySelector<HTMLDivElement>(`.grid2`);
+    const gridContainerElm = document.querySelector<HTMLDivElement>('.grid2') as HTMLDivElement;
 
     this._bindingEventService.bind(gridContainerElm, 'onbeforeexporttoexcel', () => this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-22px');
     this._bindingEventService.bind(gridContainerElm, 'onafterexporttoexcel', () => this.loadingClass = '');
@@ -48,11 +49,16 @@ export class Example2 {
 
     // you could group by duration on page load (must be AFTER the DataView is created, so after GridBundle)
     // this.groupByDuration();
+
+    // override CSS template to be Material Design
+    // await import('@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material.scss');
+    document.body.classList.add('material-theme');
   }
 
   dispose() {
     this.sgb?.dispose();
     this._bindingEventService.unbindAll();
+    document.body.classList.remove('material-theme');
   }
 
   initializeGrid() {
@@ -81,7 +87,7 @@ export class Example2 {
         filter: {
           model: Filters.slider,
           operator: '>=',
-          filterOptions: { hideSliderNumber: true, enableSliderTrackColoring: true } as SliderOption
+          filterOptions: { hideSliderNumber: true, enableSliderTrackColoring: true, sliderTrackFilledColor: '#9ac49c' } as SliderOption
         },
         sortable: true,
         type: FieldType.number,
@@ -176,7 +182,6 @@ export class Example2 {
 
     this.gridOptions = {
       autoResize: {
-        container: '.demo-container',
         bottomPadding: 30,
         rightPadding: 10
       },
@@ -210,7 +215,7 @@ export class Example2 {
 
   loadData(rowCount: number) {
     // mock a dataset
-    const tmpArray = [];
+    const tmpArray: any[] = [];
     for (let i = 0; i < rowCount; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
@@ -227,7 +232,7 @@ export class Example2 {
         percentCompleteNumber: randomPercent,
         start: new Date(randomYear, randomMonth, randomDay),
         finish: new Date(randomYear, (randomMonth + 1), randomDay),
-        cost: i % 3 ? randomCost : -randomCost,
+        cost: i % 3 ? randomCost : randomCost !== null ? -randomCost : null,
         effortDriven: (i % 5 === 0)
       };
     }
@@ -238,15 +243,15 @@ export class Example2 {
   }
 
   clearGrouping() {
-    this.sgb?.dataView.setGrouping([]);
+    this.sgb?.dataView?.setGrouping([]);
   }
 
   collapseAllGroups() {
-    this.sgb?.dataView.collapseAllGroups();
+    this.sgb?.dataView?.collapseAllGroups();
   }
 
   expandAllGroups() {
-    this.sgb?.dataView.expandAllGroups();
+    this.sgb?.dataView?.expandAllGroups();
   }
 
   exportToExcel() {
@@ -254,7 +259,7 @@ export class Example2 {
   }
 
   groupByDuration() {
-    this.sgb?.dataView.setGrouping({
+    this.sgb?.dataView?.setGrouping({
       getter: 'duration',
       formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
       comparer: (a, b) => SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc),
@@ -267,13 +272,13 @@ export class Example2 {
     } as Grouping);
 
     // you need to manually add the sort icon(s) in UI
-    this.sgb?.slickGrid.setSortColumns([{ columnId: 'duration', sortAsc: true }]);
-    this.sgb?.slickGrid.invalidate(); // invalidate all rows and re-render
+    this.sgb?.slickGrid?.setSortColumns([{ columnId: 'duration', sortAsc: true }]);
+    this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 
   groupByDurationOrderByCount(aggregateCollapsed) {
-    this.sgb?.slickGrid.setSortColumns([]);
-    this.sgb?.dataView.setGrouping({
+    this.sgb?.slickGrid?.setSortColumns([]);
+    this.sgb?.dataView?.setGrouping({
       getter: 'duration',
       formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
       comparer: (a, b) => a.count - b.count,
@@ -284,12 +289,12 @@ export class Example2 {
       aggregateCollapsed,
       lazyTotalsCalculation: true
     } as Grouping);
-    this.sgb?.slickGrid.invalidate(); // invalidate all rows and re-render
+    this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 
   groupByDurationEffortDriven() {
-    this.sgb?.slickGrid.setSortColumns([]);
-    this.sgb?.dataView.setGrouping([
+    this.sgb?.slickGrid?.setSortColumns([]);
+    this.sgb?.dataView?.setGrouping([
       {
         getter: 'duration',
         formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
@@ -314,13 +319,13 @@ export class Example2 {
 
     // you need to manually add the sort icon(s) in UI
     const sortColumns = [{ columnId: 'duration', sortAsc: true }, { columnId: 'effortDriven', sortAsc: true }];
-    this.sgb?.slickGrid.setSortColumns(sortColumns);
-    this.sgb?.slickGrid.invalidate(); // invalidate all rows and re-render
+    this.sgb?.slickGrid?.setSortColumns(sortColumns);
+    this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 
   groupByDurationEffortDrivenPercent() {
-    this.sgb?.slickGrid.setSortColumns([]);
-    this.sgb?.dataView.setGrouping([
+    this.sgb?.slickGrid?.setSortColumns([]);
+    this.sgb?.dataView?.setGrouping([
       {
         getter: 'duration',
         formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
@@ -358,7 +363,7 @@ export class Example2 {
       { columnId: 'effortDriven', sortAsc: true },
       { columnId: 'percentComplete', sortAsc: true }
     ];
-    this.sgb?.slickGrid.setSortColumns(sortColumns);
-    this.sgb?.slickGrid.invalidate(); // invalidate all rows and re-render
+    this.sgb?.slickGrid?.setSortColumns(sortColumns);
+    this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 }

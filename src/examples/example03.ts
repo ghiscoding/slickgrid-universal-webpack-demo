@@ -18,6 +18,7 @@ import {
   SortDirectionNumber,
 } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { TextExportService } from '@slickgrid-universal/text-export';
 import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import { ExampleGridOptions } from './example-grid-options';
@@ -57,7 +58,7 @@ export class Example3 {
   attached() {
     this.initializeGrid();
     this.dataset = this.loadData(500);
-    const gridContainerElm = document.querySelector<HTMLDivElement>(`.grid3`);
+    const gridContainerElm = document.querySelector(`.grid3`) as HTMLDivElement;
 
     this._bindingEventService.bind(gridContainerElm, 'onclick', this.handleOnClick.bind(this));
     this._bindingEventService.bind(gridContainerElm, 'oncellchange', this.handleOnCellChange.bind(this));
@@ -286,11 +287,12 @@ export class Example3 {
       enableAutoSizeColumns: true,
       enableAutoResize: true,
       enableCellNavigation: true,
+      enableTextExport: true,
       enableExcelExport: true,
       excelExportOptions: {
         exportWithFormatter: true
       },
-      registerExternalResources: [this.excelExportService],
+      registerExternalResources: [new TextExportService(), this.excelExportService],
       enableFiltering: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
@@ -345,7 +347,7 @@ export class Example3 {
 
   loadData(count: number) {
     // mock data
-    const tmpArray = [];
+    const tmpArray: any[] = [];
     for (let i = 0; i < count; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomFinishYear = (new Date().getFullYear() - 3) + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
@@ -386,18 +388,16 @@ export class Example3 {
   }
 
   clearGrouping() {
-    if (this.draggableGroupingPlugin?.setDroppedGroups) {
-      this.draggableGroupingPlugin.clearDroppedGroups();
-    }
-    this.sgb?.slickGrid.invalidate(); // invalidate all rows and re-render
+    this.draggableGroupingPlugin?.clearDroppedGroups();
+    this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 
   collapseAllGroups() {
-    this.sgb?.dataView.collapseAllGroups();
+    this.sgb?.dataView?.collapseAllGroups();
   }
 
   expandAllGroups() {
-    this.sgb?.dataView.expandAllGroups();
+    this.sgb?.dataView?.expandAllGroups();
   }
 
   exportToExcel() {
@@ -412,7 +412,7 @@ export class Example3 {
     if (this.draggableGroupingPlugin?.setDroppedGroups) {
       this.showPreHeader();
       this.draggableGroupingPlugin.setDroppedGroups('duration');
-      this.sgb?.slickGrid.invalidate(); // invalidate all rows and re-render
+      this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
     }
   }
 
@@ -423,8 +423,8 @@ export class Example3 {
 
     // you need to manually add the sort icon(s) in UI
     const sortColumns = sortedByCount ? [] : [{ columnId: 'duration', sortAsc: true }];
-    this.sgb?.slickGrid.setSortColumns(sortColumns);
-    this.sgb?.slickGrid.invalidate(); // invalidate all rows and re-render
+    this.sgb?.slickGrid?.setSortColumns(sortColumns);
+    this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 
   groupByDurationEffortDriven() {
@@ -432,20 +432,20 @@ export class Example3 {
     if (this.draggableGroupingPlugin?.setDroppedGroups) {
       this.showPreHeader();
       this.draggableGroupingPlugin.setDroppedGroups(['duration', 'effortDriven']);
-      this.sgb?.slickGrid.invalidate(); // invalidate all rows and re-render
+      this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
     }
   }
 
   showPreHeader() {
-    this.sgb?.slickGrid.setPreHeaderPanelVisibility(true);
+    this.sgb?.slickGrid?.setPreHeaderPanelVisibility(true);
   }
 
   toggleDraggableGroupingRow() {
     this.clearGroupsAndSelects();
-    this.sgb?.slickGrid.setPreHeaderPanelVisibility(!this.sgb?.slickGrid.getOptions().showPreHeaderPanel);
+    this.sgb?.slickGrid?.setPreHeaderPanelVisibility(!this.sgb?.slickGrid?.getOptions().showPreHeaderPanel);
   }
 
-  onGroupChanged(change: { caller?: string; groupColumns: Grouping[] }) {
+  onGroupChanged(change: { caller?: string; groupColumns: Grouping[]; }) {
     const caller = change && change.caller || [];
     const groups = change && change.groupColumns || [];
 
@@ -506,7 +506,7 @@ export class Example3 {
     const command = this.editCommandQueue.pop();
     if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
       command.undo();
-      this.sgb?.slickGrid.gotoCell(command.row, command.cell, false);
+      this.sgb?.slickGrid?.gotoCell(command.row, command.cell, false);
     }
   }
 }

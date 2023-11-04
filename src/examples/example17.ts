@@ -3,9 +3,9 @@ import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bu
 import { ExampleGridOptions } from './example-grid-options';
 
 // use any of the Styling Theme
-import '../material-styles.scss';
 // import '../salesforce-styles.scss';
 import './example17.scss';
+import '../material-styles.scss';
 
 const NB_ITEMS = 300;
 
@@ -30,15 +30,17 @@ export class Example17 {
     this.dataset1 = this.mockData(NB_ITEMS);
     this.dataset2 = this.mockData(NB_ITEMS);
 
-    this.sgb1 = new Slicker.GridBundle(document.querySelector<HTMLDivElement>(`.grid17-1`), this.columnDefinitions1, { ...ExampleGridOptions, ...this.gridOptions1 }, this.dataset1);
-    this.sgb2 = new Slicker.GridBundle(document.querySelector<HTMLDivElement>(`.grid17-2`), this.columnDefinitions2, { ...ExampleGridOptions, ...this.gridOptions2 }, this.dataset2);
+    this.sgb1 = new Slicker.GridBundle(document.querySelector(`.grid17-1`) as HTMLDivElement, this.columnDefinitions1, { ...ExampleGridOptions, ...this.gridOptions1 }, this.dataset1);
+    this.sgb2 = new Slicker.GridBundle(document.querySelector(`.grid17-2`) as HTMLDivElement, this.columnDefinitions2, { ...ExampleGridOptions, ...this.gridOptions2 }, this.dataset2);
 
     this.setOptions();
+    document.body.classList.add('material-theme');
   }
 
   dispose() {
     this.sgb1?.dispose();
     this.sgb2?.dispose();
+    document.body.classList.remove('material-theme');
   }
 
   /* Define grid Options and Columns */
@@ -90,7 +92,7 @@ export class Example17 {
 
   mockData(count: number) {
     // mock a dataset
-    const mockDataset = [];
+    const mockDataset: any[] = [];
     for (let i = 0; i < count; i++) {
       const someDates = ['2009-01-01', '2009-02-02', '2009-03-03'];
       mockDataset[i] = {
@@ -112,7 +114,7 @@ export class Example17 {
   }
 
   groupByDuration1() {
-    this.sgb1.dataView.setGrouping({
+    this.sgb1.dataView?.setGrouping({
       getter: 'duration',
       formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
       aggregators: [
@@ -125,7 +127,7 @@ export class Example17 {
   }
 
   groupByDuration2() {
-    this.sgb2.dataView.setGrouping({
+    this.sgb2.dataView?.setGrouping({
       getter: 'duration',
       formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
       aggregators: [
@@ -146,7 +148,7 @@ export class Example17 {
   }
 
   setOptions() {
-    this.sgb1.slickGrid.setSelectionModel(new SlickCellSelectionModel({
+    this.sgb1.slickGrid?.setSelectionModel(new SlickCellSelectionModel({
       selectActiveCell: true,
       cellRangeSelector: new SlickCellRangeSelector({
         selectionCss: {
@@ -159,7 +161,7 @@ export class Example17 {
       })
     }));
 
-    this.sgb2.slickGrid.setSelectionModel(new SlickRowSelectionModel({
+    this.sgb2.slickGrid?.setSelectionModel(new SlickRowSelectionModel({
       cellRangeSelector: new SlickCellRangeSelector({
         selectionCss: {
           border: 'none'
@@ -170,24 +172,24 @@ export class Example17 {
         accelerateInterval: +this.delayCursor
       })
     }));
-    this.sgb1.slickGrid.invalidate();
-    this.sgb2.slickGrid.invalidate();
+    this.sgb1.slickGrid?.invalidate();
+    this.sgb2.slickGrid?.invalidate();
   }
 
   toggleGroup() {
-    (this.sgb1.dataView.getGrouping() && this.sgb1.dataView.getGrouping().length > 0) ? this.sgb1.dataView.setGrouping([]) : this.groupByDuration1();
-    (this.sgb2.dataView.getGrouping() && this.sgb2.dataView.getGrouping().length > 0) ? this.sgb2.dataView.setGrouping([]) : this.groupByDuration2();
+    (this.sgb1.dataView?.getGrouping() && this.sgb1.dataView?.getGrouping().length > 0) ? this.sgb1.dataView?.setGrouping([]) : this.groupByDuration1();
+    (this.sgb2.dataView?.getGrouping() && this.sgb2.dataView?.getGrouping().length > 0) ? this.sgb2.dataView?.setGrouping([]) : this.groupByDuration2();
   }
 
   toggleFrozen() {
-    const option = this.sgb1.slickGrid.getOptions();
+    const option = this.sgb1.slickGrid?.getOptions() as GridOption;
     const frozenRow = option.frozenRow;
     const frozenColumn = option.frozenColumn;
     const newOption = {
       frozenColumn: frozenColumn === -1 ? 1 : -1,
       frozenRow: frozenRow === -1 ? 3 : -1
     };
-    this.sgb1.slickGrid.setOptions(newOption);
-    this.sgb2.slickGrid.setOptions(newOption);
+    this.sgb1.slickGrid?.setOptions(newOption);
+    this.sgb2.slickGrid?.setOptions(newOption);
   }
 }

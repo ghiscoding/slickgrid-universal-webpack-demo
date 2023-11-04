@@ -32,7 +32,7 @@ export class Example09 {
 
   attached() {
     this.initializeGrid();
-    const gridContainerElm = document.querySelector<HTMLDivElement>(`.grid9`);
+    const gridContainerElm = document.querySelector(`.grid9`) as HTMLDivElement;
 
     this._bindingEventService.bind(gridContainerElm, 'ongridstatechanged', this.gridStateChanged.bind(this));
     // this._bindingEventService.bind(gridContainerElm, 'onbeforeexporttoexcel', () => console.log('onBeforeExportToExcel'));
@@ -87,7 +87,7 @@ export class Example09 {
         }
       },
       { id: 'company', name: 'Company', field: 'company', filterable: true, sortable: true },
-      { id: 'category_name', name: 'Category', field: 'category/name', filterable: true, sortable: true}
+      { id: 'category_name', name: 'Category', field: 'category/name', filterable: true, sortable: true }
     ];
 
     this.gridOptions = {
@@ -174,7 +174,7 @@ export class Example09 {
     }
 
     // once pagination totalItems is filled, we can update the dataset
-    this.sgb.paginationOptions.totalItems = totalItemCount;
+    this.sgb.paginationOptions!.totalItems = totalItemCount;
     this.sgb.dataset = this.odataVersion === 4 ? data.value : data.d.results;
     this.odataQuery = data['query'];
   }
@@ -195,7 +195,7 @@ export class Example09 {
     // the mock is returning a Promise, just like a WebAPI typically does
     return new Promise((resolve) => {
       const queryParams = query.toLowerCase().split('&');
-      let top: number;
+      let top = 0;
       let skip = 0;
       let orderBy = '';
       let countTotalItems = 100;
@@ -431,9 +431,9 @@ export class Example09 {
   }
 
   private resetOptions(options: Partial<OdataOption>) {
-    const odataService = this.gridOptions.backendServiceApi.service;
+    const odataService = this.gridOptions.backendServiceApi!.service;
     odataService.updateOptions(options);
-    odataService.clearFilters();
+    odataService.clearFilters?.();
     this.sgb?.filterService.clearFilters();
   }
 }

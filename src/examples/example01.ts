@@ -1,34 +1,39 @@
 import { Column, ExtensionName, FieldType, Formatters, GridOption } from '@slickgrid-universal/common';
 import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { ExampleGridOptions } from './example-grid-options';
+// import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss?inline';
+// import cssCode from '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss?url';
 
 // use any of the Styling Theme
 // import '../material-styles.scss';
-import '../salesforce-styles.scss';
+// import '../salesforce-styles.scss';
 import './example01.scss';
 
 const NB_ITEMS = 995;
 
 export class Example1 {
-  gridOptions1: GridOption;
-  gridOptions2: GridOption;
-  columnDefinitions1: Column[];
-  columnDefinitions2: Column[];
-  dataset1: any[];
-  dataset2: any[];
-  sgb1: SlickVanillaGridBundle;
-  sgb2: SlickVanillaGridBundle;
+  gridOptions1!: GridOption;
+  gridOptions2!: GridOption;
+  columnDefinitions1!: Column[];
+  columnDefinitions2!: Column[];
+  dataset1!: any[];
+  dataset2!: any[];
+  sgb1!: SlickVanillaGridBundle;
+  sgb2!: SlickVanillaGridBundle;
   isGrid2WithPagination = true;
 
   attached() {
+    // override CSS template to be Material Design
+    // await import('@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss');
+
     this.defineGrids();
 
     // mock some data (different in each dataset)
     this.dataset1 = this.mockData(NB_ITEMS);
     this.dataset2 = this.mockData(NB_ITEMS);
 
-    this.sgb1 = new Slicker.GridBundle(document.querySelector<HTMLDivElement>(`.grid1`), this.columnDefinitions1, { ...ExampleGridOptions, ...this.gridOptions1 }, this.dataset1);
-    this.sgb2 = new Slicker.GridBundle(document.querySelector<HTMLDivElement>(`.grid2`), this.columnDefinitions2, { ...ExampleGridOptions, ...this.gridOptions2 }, this.dataset2);
+    this.sgb1 = new Slicker.GridBundle(document.querySelector(`.grid1`) as HTMLDivElement, this.columnDefinitions1, { ...ExampleGridOptions, ...this.gridOptions1 }, this.dataset1);
+    this.sgb2 = new Slicker.GridBundle(document.querySelector(`.grid2`) as HTMLDivElement, this.columnDefinitions2, { ...ExampleGridOptions, ...this.gridOptions2 }, this.dataset2);
 
     // setTimeout(() => {
     //   this.slickgridLwc2.dataset = this.dataset2;
@@ -66,14 +71,42 @@ export class Example1 {
         gridHeight: 255,
         headerRowHeight: 40,
         columnPicker: {
-          onColumnsChanged: (e, args) => console.log('onColumnPickerColumnsChanged - visible columns count', args.visibleColumns.length),
+          onColumnsChanged: (_e, args) => console.log('onColumnPickerColumnsChanged - visible columns count', args.visibleColumns.length),
         },
         gridMenu: {
-          // commandItems: [
-          //   { command: 'help', title: 'Help', positionOrder: 70, action: (e, args) => console.log(args) },
-          //   { command: '', divider: true, positionOrder: 72 },
-          //   { command: 'hello', title: 'Hello', positionOrder: 69, action: (e, args) => alert('Hello World'), cssClass: 'red', tooltip: 'Hello World', iconCssClass: 'mdi mdi-close' },
-          // ],
+          subItemChevronClass: 'mdi mdi-chevron-down mdi-rotate-270',
+          commandItems: [
+            { command: '', divider: true, positionOrder: 98 },
+            {
+              // we can also have multiple nested sub-menus
+              command: 'export', title: 'Exports', positionOrder: 99,
+              commandItems: [
+                { command: 'exports-txt', title: 'Text (tab delimited)' },
+                {
+                  command: 'sub-menu', title: 'Excel', cssClass: 'green', subMenuTitle: 'available formats', subMenuTitleCssClass: 'text-italic orange',
+                  commandItems: [
+                    { command: 'exports-csv', title: 'Excel (csv)' },
+                    { command: 'exports-xlsx', title: 'Excel (xlsx)' },
+                  ]
+                }
+              ]
+            },
+            {
+              command: 'feedback', title: 'Feedback', positionOrder: 100,
+              commandItems: [
+                { command: 'request-update', title: 'Request update from supplier', iconCssClass: 'mdi mdi-star', tooltip: 'this will automatically send an alert to the shipping team to contact the user for an update' },
+                'divider',
+                {
+                  command: 'sub-menu', title: 'Contact Us', iconCssClass: 'mdi mdi-account', subMenuTitle: 'contact us...', subMenuTitleCssClass: 'italic',
+                  commandItems: [
+                    { command: 'contact-email', title: 'Email us', iconCssClass: 'mdi mdi-pencil-outline' },
+                    { command: 'contact-chat', title: 'Chat with us', iconCssClass: 'mdi mdi-message-text-outline' },
+                    { command: 'contact-meeting', title: 'Book an appointment', iconCssClass: 'mdi mdi-coffee' },
+                  ]
+                }
+              ]
+            }
+          ],
           // menuUsabilityOverride: () => false,
           onBeforeMenuShow: () => {
             console.log('onGridMenuBeforeMenuShow');
@@ -81,11 +114,18 @@ export class Example1 {
           },
           onAfterMenuShow: () => console.log('onGridMenuAfterMenuShow'),
           onColumnsChanged: (_e, args) => console.log('onGridMenuColumnsChanged', args),
-          onCommand: (e, args) => {
+          onCommand: (_e, args) => {
             // e.preventDefault(); // preventing default event would keep the menu open after the execution
-            console.log('onGridMenuCommand', args.command);
+            const command = args.item?.command;
+            if (command.includes('exports-')) {
+              alert('Exporting as ' + args?.item.title);
+            } else if (command.includes('contact-')) {
+              alert('Command: ' + args?.command);
+            } else {
+              console.log('onGridMenuCommand', args.command);
+            }
           },
-          onMenuClose: (e, args) => console.log('onGridMenuMenuClose - visible columns count', args.visibleColumns.length),
+          onMenuClose: (_e, args) => console.log('onGridMenuMenuClose - visible columns count', args.visibleColumns.length),
         },
         enableFiltering: true,
         enablePagination: true,
@@ -110,7 +150,7 @@ export class Example1 {
 
   mockData(count: number) {
     // mock a dataset
-    const mockDataset = [];
+    const mockDataset: any[] = [];
     for (let i = 0; i < count; i++) {
       const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomMonth = Math.floor(Math.random() * 11);
