@@ -35,14 +35,14 @@ export class Example11Modal {
     if (bindings) {
       if (bindings.columnDefinitions) {
         this.columnDefinitions = bindings.columnDefinitions;
-        this.gridContainerElm = document.querySelector<HTMLDivElement>(`.modal-grid`);
+        this.gridContainerElm = document.querySelector(`.modal-grid`) as HTMLDivElement;
         this._bindingEventService.bind(this.gridContainerElm, 'onvalidationerror', this.handleValidationError.bind(this));
 
         const dataset = [this.createEmptyItem(bindings.columnDefinitions)];
         this.sgb = new Slicker.GridBundle(this.gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, dataset);
 
         // force editor to open (top-left)
-        setTimeout(() => this.sgb.slickGrid.gotoCell(0, 0, true), 50);
+        setTimeout(() => this.sgb.slickGrid?.gotoCell(0, 0, true), 50);
       }
       this.remoteCallbackFn = bindings.remoteCallback;
       this.selectedIds = bindings.selectedIds || [];
@@ -52,7 +52,7 @@ export class Example11Modal {
   dispose() {
     this.sgb?.dispose();
     this._bindingEventService.unbindAll();
-    this.gridContainerElm = null;
+    this.gridContainerElm = null as any;
   }
 
   initializeGrid() {
@@ -88,7 +88,7 @@ export class Example11Modal {
 
   handleOnModalClose() {
     this.sgb?.dispose();
-    this.gridContainerElm = emptyElement(this.gridContainerElm);
+    this.gridContainerElm = emptyElement(this.gridContainerElm) as HTMLDivElement;
     this.closeBulmaModal();
   }
 
@@ -120,7 +120,7 @@ export class Example11Modal {
 
   saveMassUpdate(updateType: 'selection' | 'mass') {
     this.handleOnModalClose();
-    const editedItem = this.sgb.dataView.getItemByIdx(0);
+    const editedItem = this.sgb.dataView?.getItemByIdx(0);
 
     if (typeof this.remoteCallbackFn === 'function') {
       // before calling the remote callback, let's remove the unnecessary "id" and any undefined properties
@@ -136,7 +136,7 @@ export class Example11Modal {
   }
 
   private openBulmaModal(callback?: () => void) {
-    const modalElm = document.querySelector<HTMLDivElement>('.modal');
+    const modalElm = document.querySelector('.modal') as HTMLDivElement;
     modalElm.classList.add('is-active');
 
     this.bindCloseBulmaModal(callback);
@@ -145,8 +145,8 @@ export class Example11Modal {
   private bindCloseBulmaModal(callback?: () => void) {
     const modalCloseBtnElms = document.querySelectorAll<HTMLButtonElement>('.close, .delete, .modal-close');
 
-    window.addEventListener('click', (event: DOMEvent<HTMLInputElement>) => {
-      if (event.target.className === 'modal-background') {
+    window.addEventListener('click', (event: Event) => {
+      if ((event as DOMEvent<HTMLInputElement>).target.className === 'modal-background') {
         this.closeBulmaModal(callback);
       }
     });
@@ -157,7 +157,7 @@ export class Example11Modal {
   }
 
   private closeBulmaModal(callback?: () => void) {
-    const modalElm = document.querySelector<HTMLDivElement>('.modal');
+    const modalElm = document.querySelector('.modal') as HTMLDivElement;
     modalElm.classList.remove('is-active');
     if (typeof callback === 'function') {
       callback();

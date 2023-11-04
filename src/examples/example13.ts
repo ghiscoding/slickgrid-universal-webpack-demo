@@ -45,12 +45,14 @@ export class Example13 {
 
     this.sgb1 = new Slicker.GridBundle(gridContainerElm1, this.columnDefinitions1, { ...ExampleGridOptions, ...this.gridOptions1 }, this.dataset1);
     this.sgb2 = new Slicker.GridBundle(gridContainerElm2, this.columnDefinitions2, { ...ExampleGridOptions, ...this.gridOptions2 }, this.dataset2);
+    document.body.classList.add('material-theme');
   }
 
   dispose() {
     this.sgb1?.dispose();
     this.sgb2?.dispose();
     this._bindingEventService.unbindAll();
+    document.body.classList.remove('material-theme');
   }
 
   initializeGrid() {

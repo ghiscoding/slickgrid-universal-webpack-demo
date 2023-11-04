@@ -36,7 +36,7 @@ export class Example15 {
 
   attached() {
     this.initializeGrid();
-    const gridContainerElm = document.querySelector<HTMLDivElement>(`.grid15`);
+    const gridContainerElm = document.querySelector(`.grid15`) as HTMLDivElement;
 
     this._bindingEventService.bind(gridContainerElm, 'ongridstatechanged', this.gridStateChanged.bind(this));
     // this._bindingEventService.bind(gridContainerElm, 'onbeforeexporttoexcel', () => console.log('onBeforeExportToExcel'));
@@ -65,6 +65,9 @@ export class Example15 {
         id: 'name', name: 'Name', field: 'name', sortable: true,
         type: FieldType.string,
         filterable: true,
+        editor: {
+          model: Editors.text,
+        },
         filter: {
           model: Filters.compoundInput
         },
@@ -95,7 +98,7 @@ export class Example15 {
           // when using async, the `formatter` will contain the loading spinner
           // you will need to provide an `asyncPost` function returning a Promise and also `asyncPostFormatter` formatter to display the result once the Promise resolves
           formatter: () => `<div><span class="mdi mdi-load mdi-spin-1s"></span> loading...</div>`,
-          asyncProcess: (row, cell, value, column, dataContext) => new Observable((observer) => {
+          asyncProcess: (_row, _cell, _value, _column, dataContext) => new Observable((observer) => {
             observer.next({
               // return random door number & zip code to simulare company address
               doorNumber: dataContext.id + 100,
@@ -190,8 +193,8 @@ export class Example15 {
         // editorCollection.push(newGender);
 
         // 2. or replace the entire "collection"
-        genderColumn.editor.collection = [...this.genderCollection, newGender];
-        editorCollection = genderColumn.editor.collection;
+        genderColumn.editor!.collection = [...this.genderCollection, newGender];
+        editorCollection = genderColumn.editor!.collection;
 
         // However, for the Filter only, we have to trigger an RxJS/Subject change with the new collection
         // we do this because Filter(s) are shown at all time, while on Editor it's unnecessary since they are only shown when opening them
@@ -227,7 +230,7 @@ export class Example15 {
     }
 
     // once pagination totalItems is filled, we can update the dataset
-    this.sgb.paginationOptions.totalItems = data[countPropName];
+    this.sgb.paginationOptions!.totalItems = data[countPropName];
     this.sgb.dataset = data['items'];
     this.odataQuery = data['query'];
   }
@@ -246,7 +249,7 @@ export class Example15 {
     // the mock is returning an Observable
     return new Observable((observer) => {
       const queryParams = query.toLowerCase().split('&');
-      let top: number;
+      let top = 0;
       let skip = 0;
       let orderBy = '';
       let countTotalItems = 100;
@@ -318,10 +321,10 @@ export class Example15 {
           ? 'DESC'
           : '';
 
-      let data = require('./data/customers_100.json') as { name: string; gender: string; company: string; id: string, category: { id: string; name: string} }[];
+      let data = require('./data/customers_100.json') as { name: string; gender: string; company: string; id: string, category: { id: string; name: string } }[];
       switch (sort) {
         case 'ASC':
-          data = data.sort((a, b) => a.name.localeCompare(b.name)); // ..order require('./data/customers_100_ASC.json');
+          data = data.sort((a, b) => a.name.localeCompare(b.name));
           break;
         case 'DESC':
           data = data.sort((a, b) => b.name.localeCompare(a.name));
@@ -413,7 +416,7 @@ export class Example15 {
     this.sgb.paginationService.goToLastPage();
   }
 
-  tooltipCompanyAddressFormatter(row, cell, value, column, dataContext) {
+  tooltipCompanyAddressFormatter(_row, _cell, _value, _column, dataContext) {
     const tooltipTitle = `${dataContext.company} - Address Tooltip`;
 
     // display random address and zip code to simulate company address
@@ -428,18 +431,18 @@ export class Example15 {
 
   changeCountEnableFlag() {
     this.isCountEnabled = !this.isCountEnabled;
-    const odataService = this.gridOptions.backendServiceApi.service;
+    const odataService = this.gridOptions.backendServiceApi!.service;
     odataService.updateOptions({ enableCount: this.isCountEnabled } as OdataOption);
-    odataService.clearFilters();
+    odataService.clearFilters?.();
     this.sgb?.filterService.clearFilters();
     return true;
   }
 
   setOdataVersion(version: number) {
     this.odataVersion = version;
-    const odataService = this.gridOptions.backendServiceApi.service;
+    const odataService = this.gridOptions.backendServiceApi!.service;
     odataService.updateOptions({ version: this.odataVersion } as OdataOption);
-    odataService.clearFilters();
+    odataService.clearFilters?.();
     this.sgb?.filterService.clearFilters();
     return true;
   }
