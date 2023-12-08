@@ -146,9 +146,8 @@ export class Example12 {
     this.columnDefinitions = [
       {
         id: 'title', name: '<span title="Task must always be followed by a number" class="color-info mdi mdi-alert-circle"></span> Title', field: 'title', sortable: true, type: FieldType.string, minWidth: 75,
-        filterable: true, columnGroup: 'Common Factor',
-        filter: { model: Filters.compoundInputText },
-        formatter: Formatters.multiple, params: { formatters: [Formatters.uppercase, Formatters.bold] },
+        cssClass: 'text-uppercase text-bold', columnGroup: 'Common Factor',
+        filterable: true, filter: { model: Filters.compoundInputText },
         editor: {
           model: Editors.longText, massUpdate: false, required: true, alwaysSaveOnEnterKey: true,
           maxLength: 12,
