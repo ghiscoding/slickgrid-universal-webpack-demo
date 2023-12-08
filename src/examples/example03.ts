@@ -292,7 +292,7 @@ export class Example3 {
       excelExportOptions: {
         exportWithFormatter: true
       },
-      registerExternalResources: [new TextExportService(), this.excelExportService],
+      externalResources: [new TextExportService(), this.excelExportService],
       enableFiltering: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)

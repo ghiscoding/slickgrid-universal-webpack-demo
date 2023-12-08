@@ -429,7 +429,7 @@ export class Example14 {
       excelExportOptions: {
         exportWithFormatter: false
       },
-      registerExternalResources: [new ExcelExportService()],
+      externalResources: [new ExcelExportService()],
       enableFiltering: true,
       enableRowSelection: true,
       enableCheckboxSelector: true,
