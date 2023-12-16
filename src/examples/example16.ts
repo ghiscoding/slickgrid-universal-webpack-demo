@@ -1,5 +1,5 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  BindingEventService,
   Column,
   EditCommand,
   Editors,

@@ -1,6 +1,6 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   Aggregators,
-  BindingEventService,
   Column,
   FieldType,
   Filters,

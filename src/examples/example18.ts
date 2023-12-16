@@ -21,9 +21,16 @@ const NB_ITEMS = 200;
 const currencyFormatter: Formatter = (_cell: number, _row: number, value: string) =>
   `<img src="https://flags.fmcdn.net/data/flags/mini/${value.substring(0, 2).toLowerCase()}.png" width="20"/> ${value}`;
 
-const priceFormatter: Formatter = (_cell: number, _row: number, value: number, _col: Column, dataContext: any) => {
+const priceFormatter: Formatter = (_cell, _row, value, _col, dataContext) => {
   const direction = dataContext.priceChange >= 0 ? 'up' : 'down';
-  return `<span class="mdi mdi-arrow-${direction} color-${direction === 'up' ? 'success' : 'danger'}"></span> ${value}`;
+  const fragment = new DocumentFragment();
+  const spanElm = document.createElement('span');
+  spanElm.className = `mdi mdi-arrow-${direction} color-${direction === 'up' ? 'success' : 'danger'}`;
+  fragment.appendChild(spanElm);
+  if (value instanceof HTMLElement) {
+    fragment.appendChild(value);
+  }
+  return fragment;
 };
 
 const transactionTypeFormatter: Formatter = (_row: number, _cell: number, value: string) =>

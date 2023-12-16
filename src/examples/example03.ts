@@ -1,6 +1,6 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   Aggregators,
-  BindingEventService,
   Column,
   EditCommand,
   Editors,
@@ -13,7 +13,7 @@ import {
   GroupingGetterFunction,
   GroupTotalFormatters,
   SlickDraggableGrouping,
-  SlickNamespace,
+  SlickGlobalEditorLock,
   SortComparers,
   SortDirectionNumber,
 } from '@slickgrid-universal/common';
@@ -23,9 +23,6 @@ import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bu
 
 import { ExampleGridOptions } from './example-grid-options';
 import './example03.scss';
-
-// using external SlickGrid JS libraries
-declare const Slick: SlickNamespace;
 
 interface ReportItem {
   title: string;
@@ -504,7 +501,7 @@ export class Example3 {
 
   undo() {
     const command = this.editCommandQueue.pop();
-    if (command && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+    if (command && SlickGlobalEditorLock.cancelCurrentEdit()) {
       command.undo();
       this.sgb?.slickGrid?.gotoCell(command.row, command.cell, false);
     }

@@ -1,6 +1,6 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   AutocompleterOption,
-  BindingEventService,
   Column,
   ColumnEditorDualInput,
   EditCommand,

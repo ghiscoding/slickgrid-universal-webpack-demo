@@ -1,25 +1,25 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  AutocompleterOption,
-  BindingEventService,
-  Column,
-  EditCommand,
+  type AutocompleterOption,
+  type Column,
+  type EditCommand,
   Editors,
   EventNamingStyle,
   FieldType,
   Filters,
-  FlatpickrOption,
-  Formatter,
+  type FlatpickrOption,
+  type Formatter,
   Formatters,
-  GridOption,
-  LongTextEditorOption,
-  SlickNamespace,
-  SliderRangeOption,
+  type GridOption,
+  type GridStateChange,
+  type LongTextEditorOption,
+  SlickGlobalEditorLock,
+  type SliderRangeOption,
   SortComparers,
 
   // utilities
   formatNumber,
   Utilities,
-  GridStateChange,
 } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
@@ -28,9 +28,6 @@ import { ExampleGridOptions } from './example-grid-options';
 import './example14.scss';
 
 const NB_ITEMS = 400;
-
-// using external SlickGrid JS libraries
-declare const Slick: SlickNamespace;
 
 // you can create custom validator to pass to an inline editor
 const myCustomTitleValidator = (value) => {
@@ -75,9 +72,16 @@ function checkItemIsEditable(dataContext, columnDef, grid) {
 }
 
 const customEditableInputFormatter: Formatter = (_row, _cell, value, columnDef, dataContext, grid) => {
-  const isEditableLine = checkItemIsEditable(dataContext, columnDef, grid);
+  const isEditableItem = checkItemIsEditable(dataContext, columnDef, grid);
   value = (value === null || value === undefined) ? '' : value;
-  return isEditableLine ? `<div class="editing-field">${value}</div>` : value;
+  const divElm = document.createElement('div');
+  divElm.className = 'editing-field';
+  if (value instanceof HTMLElement) {
+    divElm.appendChild(value);
+  } else {
+    divElm.textContent = value;
+  }
+  return isEditableItem ? divElm : value;
 };
 
 export class Example14 {
@@ -137,13 +141,14 @@ export class Example14 {
     this.columnDefinitions = [
       {
         id: 'title', name: 'Title', field: 'title', sortable: true, type: FieldType.string, minWidth: 65,
+        cssClass: 'text-bold text-uppercase',
         // you can adjust the resize calculation via multiple options
         resizeExtraWidthPadding: 4,
         resizeCharWidthInPx: 7.6,
         resizeCalcWidthRatio: 1, // default ratio is ~0.9 for string but since our text is all uppercase then a higher ratio is needed
         resizeMaxWidthThreshold: 200,
-        cssClass: 'text-uppercase text-bold', columnGroup: 'Common Factor',
-        filterable: true, filter: { model: Filters.compoundInputText },
+        filterable: true, columnGroup: 'Common Factor',
+        filter: { model: Filters.compoundInputText },
         editor: {
           model: Editors.longText, required: true, alwaysSaveOnEnterKey: true,
           maxLength: 12,
@@ -218,9 +223,8 @@ export class Example14 {
       },
       {
         id: 'completed', name: 'Completed', field: 'completed', width: 80, minWidth: 75, maxWidth: 100,
-        sortable: true, filterable: true, columnGroup: 'Period',
-        formatter: Formatters.multiple,
-        params: { formatters: [Formatters.checkmarkMaterial, Formatters.center] },
+        sortable: true, filterable: true, columnGroup: 'Period', cssClass: 'text-center',
+        formatter: Formatters.checkmarkMaterial,
         exportWithFormatter: false,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
@@ -321,7 +325,7 @@ export class Example14 {
       {
         id: 'action', name: 'Action', field: 'action', width: 70, minWidth: 70, maxWidth: 70,
         excludeFromExport: true,
-        formatter: () => `<div class="button-style margin-auto" style="width: 35px; margin-top: -1px;"><span class="mdi mdi-chevron-down mdi-22px color-primary"></span></div>`,
+        formatter: () => `<div class="button-style margin-auto action-btn"><span class="mdi mdi-chevron-down mdi-22px color-primary"></span></div>`,
         cellMenu: {
           hideCloseButton: false,
           commandTitle: 'Commands',
@@ -414,6 +418,11 @@ export class Example14 {
         pageSize: 10,
         pageSizes: [10, 200, 500, 5000]
       },
+      // you can change compound filter text/desc shown in operator dropdown
+      // compoundOperatorAltTexts: {
+      //   numeric: { '=': { operatorAlt: 'eq', descAlt: 'alternate numeric equal description' } },
+      //   text: { '=': { operatorAlt: 'eq', descAlt: 'alternate text equal description' } }
+      // },
 
       // resizing by cell content is opt-in
       // we first need to disable the 2 default flags to autoFit/autosize
@@ -709,7 +718,7 @@ export class Example14 {
   undoLastEdit(showLastEditor = false) {
     const lastEdit = this.editQueue.pop();
     const lastEditCommand = lastEdit?.editCommand;
-    if (lastEdit && lastEditCommand && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+    if (lastEdit && lastEditCommand && SlickGlobalEditorLock.cancelCurrentEdit()) {
       lastEditCommand.undo();
 
       // remove unsaved css class from that cell
@@ -729,7 +738,7 @@ export class Example14 {
   undoAllEdits() {
     for (const lastEdit of this.editQueue) {
       const lastEditCommand = lastEdit?.editCommand;
-      if (lastEditCommand && Slick.GlobalEditorLock.cancelCurrentEdit()) {
+      if (lastEditCommand && SlickGlobalEditorLock.cancelCurrentEdit()) {
         lastEditCommand.undo();
 
         // remove unsaved css class from that cell
