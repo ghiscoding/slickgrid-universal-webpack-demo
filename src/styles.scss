@@ -2,13 +2,17 @@ $slick-primary-color:#009530;
 $slick-link-color: #2cad56;
 
 /* make sure to add the @import the SlickGrid Bootstrap Theme AFTER the variables changes */
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material.scss';
+// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material.scss';
 
 /** or SalesForce Theme */
-// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss';
+@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss';
 
 @import './bulma.scss';
 
+.demo-container.container {
+  padding-top: 20px;
+  margin-top: 50px;
+}
 .fake-hyperlink {
     cursor: pointer;
     color: $slick-link-color;
@@ -30,4 +34,36 @@ $slick-link-color: #2cad56;
 }
 .faded:hover {
   opacity: 1;
+}
+.subtitle.code-link {
+  float: right;
+  margin-top: -15px;
+}
+.notification.is-narrow {
+  padding: 0.75rem 1.0rem;
+}
+input.is-narrow {
+  width: 55px;
+}
+.ml-8 {
+  margin-left: 50px;
+}
+.float-right {
+  float: right;
+}
+.action-btn {
+  width: 35px;
+  margin-top: -1px;
+}
+.text-green {
+  color: green;
+}
+.text-violet {
+  color: #659bff;
+}
+.text-bluenavy {
+  color: #003597;
+}
+.text-red {
+  color: red;
 }
