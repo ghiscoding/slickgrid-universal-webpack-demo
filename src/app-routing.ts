@@ -23,6 +23,8 @@ export class AppRouting {
       { route: 'example17', name: 'example17', title: 'Example17', moduleId: './examples/example17' },
       { route: 'example18', name: 'example18', title: 'Example18', moduleId: './examples/example18' },
       { route: 'example19', name: 'example19', title: 'Example19', moduleId: './examples/example19' },
+      { route: 'example20', name: 'example20', title: 'Example20', moduleId: './examples/example20' },
+      { route: 'example21', name: 'example21', title: 'Example21', moduleId: './examples/example21' },
       { route: 'icons', name: 'icons', title: 'icons', moduleId: './examples/icons' },
       { route: '', redirect: 'example01' },
       { route: '**', redirect: 'example01' }
