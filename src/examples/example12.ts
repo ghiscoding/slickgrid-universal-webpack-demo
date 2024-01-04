@@ -3,6 +3,7 @@ import {
   AutocompleterOption,
   type Column,
   CompositeEditorModalType,
+  type EditCommand,
   Editors,
   EventNamingStyle,
   FieldType,
@@ -47,7 +48,7 @@ const myCustomTitleValidator = (value, args) => {
  * @returns {boolean} isEditable
  */
 function checkItemIsEditable(dataContext, columnDef, grid) {
-  const gridOptions = grid && grid.getOptions && grid.getOptions();
+  const gridOptions = grid.getOptions();
   const hasEditor = columnDef.editor;
   const isGridEditable = gridOptions.editable;
   let isEditable = (isGridEditable && hasEditor);
@@ -678,13 +679,13 @@ export class Example12 {
     }
   }
 
-  renderUnsavedCellStyling(item, column, editCommand) {
+  renderUnsavedCellStyling(item: any, column: Column, editCommand: EditCommand) {
     if (editCommand && item && column) {
-      const row = this.sgb.dataView?.getRowByItem(item) ?? 0;
-      if (row >= 0) {
+      const row = this.sgb.dataView?.getRowByItem(item);
+      if (row !== undefined && row >= 0) {
         const hash = { [row]: { [column.id]: 'unsaved-editable-field' } };
         const cssStyleKey = `unsaved_highlight_${[column.id]}${row}`;
-        this.sgb.slickGrid?.setCellCssStyles(`unsaved_highlight_${[column.id]}${row}`, hash);
+        this.sgb.slickGrid?.setCellCssStyles(cssStyleKey, hash);
         this.cellCssStyleQueue.push(cssStyleKey);
       }
     }
