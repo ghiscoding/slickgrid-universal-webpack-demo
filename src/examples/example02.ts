@@ -1,18 +1,18 @@
-import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   Aggregators,
-  Column,
+  type Column,
   FieldType,
   Filters,
   FileType,
   Formatters,
-  GridOption,
-  Grouping,
+  type GridOption,
+  type Grouping,
   GroupTotalFormatters,
-  SliderOption,
+  type SliderOption,
   SortComparers,
   SortDirectionNumber,
 } from '@slickgrid-universal/common';
+import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TextExportService } from '@slickgrid-universal/text-export';
 import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
@@ -23,7 +23,7 @@ import '../material-styles.scss';
 
 const NB_ITEMS = 500;
 
-export class Example2 {
+export class Example02 {
   private _bindingEventService: BindingEventService;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -176,7 +176,8 @@ export class Example2 {
           // collectionAsync: new Promise<any>(resolve => setTimeout(() => {
           //   resolve([{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }]);
           // }, 250)),
-        }
+        },
+        excelExportOptions: { width: 11 }
       }
     ];
 
@@ -198,7 +199,25 @@ export class Example2 {
         columnHeaderStyle: {
           font: { color: 'FFFFFFFF' },
           fill: { type: 'pattern', patternType: 'solid', fgColor: 'FF4a6c91' }
-        }
+        },
+
+        // optionally pass a custom header to the Excel Sheet
+        // a lot of the info can be found on Web Archive of Excel-Builder
+        // https://ghiscoding.gitbook.io/excel-builder-vanilla/cookbook/fonts-and-colors
+        customExcelHeader: (workbook, sheet) => {
+          const formatterId = workbook.getStyleSheet().createFormat({
+            // every color is prefixed with FF, then regular HTML color
+            font: { size: 18, fontName: 'Calibri', bold: true, color: 'FFFFFFFF' },
+            alignment: { wrapText: true, horizontal: 'center' },
+            fill: { type: 'pattern', patternType: 'solid', fgColor: 'FF203764' },
+          });
+          sheet.setRowInstructions(0, { height: 50 }); // change height of row 0
+
+          // excel cells start with A1 which is upper left corner
+          const customTitle = 'Grouping and Aggregator - My header is too long enough, so it will wrap';
+          sheet.mergeCells('A1', 'H1');
+          sheet.data.push([{ value: customTitle, metadata: { style: formatterId.id } }]);
+        },
       },
       textExportOptions: { filename: 'my-export', sanitizeDataExport: true },
       externalResources: [this.excelExportService, new TextExportService()],
@@ -261,7 +280,7 @@ export class Example2 {
   groupByDuration() {
     this.sgb?.dataView?.setGrouping({
       getter: 'duration',
-      formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
+      formatter: (g) => `Duration: ${g.value} <span class="text-green">(${g.count} items)</span>`,
       comparer: (a, b) => SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc),
       aggregators: [
         new Aggregators.Avg('percentComplete'),
@@ -280,7 +299,7 @@ export class Example2 {
     this.sgb?.slickGrid?.setSortColumns([]);
     this.sgb?.dataView?.setGrouping({
       getter: 'duration',
-      formatter: (g) => `Duration: ${g.value} <span style="color:green">(${g.count} items)</span>`,
+      formatter: (g) => `Duration: ${g.value} <span class="text-green">(${g.count} items)</span>`,
       comparer: (a, b) => a.count - b.count,
       aggregators: [
         new Aggregators.Avg('percentComplete'),
@@ -297,7 +316,7 @@ export class Example2 {
     this.sgb?.dataView?.setGrouping([
       {
         getter: 'duration',
-        formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
+        formatter: (g) => `Duration: ${g.value}  <span class="text-green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Sum('duration'),
           new Aggregators.Sum('cost')
@@ -307,7 +326,7 @@ export class Example2 {
       },
       {
         getter: 'effortDriven',
-        formatter: (g) => `Effort-Driven: ${(g.value ? 'True' : 'False')} <span style="color:green">(${g.count} items)</span>`,
+        formatter: (g) => `Effort-Driven: ${(g.value ? 'True' : 'False')} <span class="text-green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Avg('percentComplete'),
           new Aggregators.Sum('cost')
@@ -328,7 +347,7 @@ export class Example2 {
     this.sgb?.dataView?.setGrouping([
       {
         getter: 'duration',
-        formatter: (g) => `Duration: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
+        formatter: (g) => `Duration: ${g.value}  <span class="text-green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Sum('duration'),
           new Aggregators.Sum('cost')
@@ -338,7 +357,7 @@ export class Example2 {
       },
       {
         getter: 'effortDriven',
-        formatter: (g) => `Effort-Driven: ${(g.value ? 'True' : 'False')}  <span style="color:green">(${g.count} items)</span>`,
+        formatter: (g) => `Effort-Driven: ${(g.value ? 'True' : 'False')}  <span class="text-green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Sum('duration'),
           new Aggregators.Sum('cost')
@@ -347,7 +366,7 @@ export class Example2 {
       },
       {
         getter: 'percentComplete',
-        formatter: (g) => `% Complete: ${g.value}  <span style="color:green">(${g.count} items)</span>`,
+        formatter: (g) => `% Complete: ${g.value}  <span class="text-green">(${g.count} items)</span>`,
         aggregators: [
           new Aggregators.Avg('percentComplete')
         ],

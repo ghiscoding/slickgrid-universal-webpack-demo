@@ -28,16 +28,41 @@ export default class Example19 {
     this.sgb = new Slicker.GridBundle(document.querySelector(`.grid19`) as HTMLDivElement, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
     document.body.classList.add('salesforce-theme');
 
-    // bind any of the grid events
+    // bind any of the grid events, e.g. onSelectedRangesChanged to show selection range on screen
     const cellSelectionModel = this.sgb.slickGrid!.getSelectionModel();
     this._eventHandler.subscribe(cellSelectionModel!.onSelectedRangesChanged, (_e, args) => {
       const targetRange = document.querySelector('#selectionRange') as HTMLSpanElement;
       targetRange.textContent = '';
-
       for (const slickRange of args) {
         targetRange.textContent += JSON.stringify(slickRange);
       }
     });
+
+    // or subscribe to any events via internal PubSub (from `this.sgb.instances?.eventPubSubService` or `this.sgb.slickGrid?.getPubSubService()`)
+    // Note: SlickEvent use the structure:: { eventData: SlickEventData; args: any; }
+    //       while other regular PubSub events use the structure:: args: any;
+    // this.sgb.instances?.eventPubSubService?.subscribe('onSelectedRangesChanged', (e) => console.log(e));
+    // this.sgb.slickGrid?.getPubSubService()?.subscribe('onSelectedRangesChanged', (e) => {
+    //   const targetRange = document.querySelector('#selectionRange') as HTMLSpanElement;
+    //   targetRange.textContent = '';
+    //   for (const slickRange of e.args) {
+    //     targetRange.textContent += JSON.stringify(slickRange);
+    //   }
+    // });
+
+    const hash = {
+      0: {},
+      1: {
+        2: 'blocked-cell',
+        3: 'blocked-cell',
+        4: 'blocked-cell',
+      }
+    };
+    for (let i = 0; i < NB_ITEMS; i++) {
+      hash[0][i] = 'blocked-cell';
+    }
+
+    this.sgb.slickGrid?.setCellCssStyles(`blocked-cells`, hash);
   }
 
   dispose() {
@@ -66,6 +91,14 @@ export default class Example19 {
           : String.fromCharCode('A'.charCodeAt(0) + (Math.floor(i / 26)) - 1) + String.fromCharCode('A'.charCodeAt(0) + (i % 26)),
         field: String(i),
         minWidth: 60,
+        exportWithFormatter: true,
+        formatter: (row, cell, value) => {
+          if (value !== null && value !== undefined) {
+            return value;
+          }
+
+          return `${row + 1}:${cell + 1}`;
+        },
         width: 60,
         editor: { model: Editors.text }
       });
@@ -88,11 +121,15 @@ export default class Example19 {
 
       // when using the ExcelCopyBuffer, you can see what the selection range is
       enableExcelCopyBuffer: true,
-      // excelCopyBufferOptions: {
-      //   onCopyCells: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCells', args.ranges),
-      //   onPasteCells: (e, args: { ranges: SelectedRange[] }) => console.log('onPasteCells', args.ranges),
-      //   onCopyCancelled: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCancelled', args.ranges),
-      // }
+      excelCopyBufferOptions: {
+        //   onCopyCells: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCells', args.ranges),
+        //   onPasteCells: (e, args: { ranges: SelectedRange[] }) => console.log('onPasteCells', args.ranges),
+        //   onCopyCancelled: (e, args: { ranges: SelectedRange[] }) => console.log('onCopyCancelled', args.ranges),
+        onBeforePasteCell: (_e, args) => {
+          // deny the whole first row and the cells C-E of the second row
+          return !(args.row === 0 || (args.row === 1 && args.cell > 2 && args.cell < 6));
+        }
+      }
     };
   }
 

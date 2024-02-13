@@ -1,15 +1,16 @@
 import {
+  addWhiteSpaces,
   Aggregators,
-  Column,
+  type Column,
   decimalFormatted,
   FieldType,
   Filters,
   findItemInTreeStructure,
-  Formatter,
+  type Formatter,
   Formatters,
-  GridOption,
+  type GridOption,
   isNumber,
-  SlickDataView,
+  type SlickDataView,
   // GroupTotalFormatters,
   // italicFormatter,
 } from '@slickgrid-universal/common';
@@ -20,7 +21,7 @@ import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bu
 import './example06.scss';
 import { ExampleGridOptions } from './example-grid-options';
 
-export class Example6 {
+export class Example06 {
   columnDefinitions: Column[];
   gridOptions: GridOption;
   datasetFlat: any[];
@@ -39,7 +40,7 @@ export class Example6 {
     this.datasetFlat = [];
     this.datasetHierarchical = this.mockDataset();
     const gridContainerElm = document.querySelector('.grid6') as HTMLDivElement;
-    this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, null as any, this.datasetHierarchical);
+    this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, undefined, this.datasetHierarchical);
     document.body.classList.add('material-theme');
   }
 
@@ -228,30 +229,32 @@ export class Example6 {
   }
 
   treeFormatter: Formatter = (_row, _cell, value, _columnDef, dataContext, grid) => {
-    const gridOptions = grid.getOptions() as GridOption;
+    const gridOptions = grid.getOptions();
     const treeLevelPropName = gridOptions?.treeDataOptions?.levelPropName || '__treeLevel';
     if (value === null || value === undefined || dataContext === undefined) {
       return '';
     }
-    const dataView = grid.getData() as SlickDataView;
+    const dataView = grid.getData<SlickDataView>();
     const data = dataView.getItems();
     const identifierPropName = dataView.getIdPropertyName() || 'id';
     const idx = dataView.getIdxById(dataContext[identifierPropName]) as number;
     const prefix = this.getFileIcon(value);
     const treeLevel = dataContext[treeLevelPropName];
+    const exportIndentationLeadingChar = '.';
 
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const spacer = `<span style="display:inline-block; width:${(15 * treeLevel)}px;"></span>`;
+    const indentSpacer = addWhiteSpaces(5 * treeLevel);
 
     if (data[idx + 1]?.[treeLevelPropName] > data[idx][treeLevelPropName] || data[idx]['__hasChildren']) {
       const folderPrefix = `<i class="mdi mdi-22px ${dataContext.__collapsed ? 'mdi-folder' : 'mdi-folder-open'}"></i>`;
       if (dataContext.__collapsed) {
-        return `${spacer} <span class="slick-group-toggle collapsed" level="${treeLevel}"></span>${folderPrefix} ${prefix}&nbsp;${value}`;
+        return `<span class="hidden">${exportIndentationLeadingChar}</span>${spacer}${indentSpacer} <span class="slick-group-toggle collapsed" level="${treeLevel}"></span>${folderPrefix} ${prefix} ${value}`;
       } else {
-        return `${spacer} <span class="slick-group-toggle expanded" level="${treeLevel}"></span>${folderPrefix} ${prefix}&nbsp;${value}`;
+        return `<span class="hidden">${exportIndentationLeadingChar}</span>${spacer}${indentSpacer} <span class="slick-group-toggle expanded" level="${treeLevel}"></span>${folderPrefix} ${prefix} ${value}`;
       }
     } else {
-      return `${spacer} <span class="slick-group-toggle" level="${treeLevel}"></span>${prefix}&nbsp;${value}`;
+      return `<span class="hidden">${exportIndentationLeadingChar}</span>${spacer}${indentSpacer} <span class="slick-group-toggle" level="${treeLevel}"></span>${prefix} ${value}`;
     }
   };
 
