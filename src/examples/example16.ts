@@ -1,16 +1,17 @@
-import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  Column,
-  EditCommand,
+  createDomElement,
+  type Column,
+  type EditCommand,
   Editors,
   FieldType,
   Filters,
   Formatters,
-  GridOption,
+  type GridOption,
   OperatorType,
-  SliderOption,
-  SliderRangeOption,
+  type SliderOption,
+  type SliderRangeOption,
 } from '@slickgrid-universal/common';
+import { BindingEventService } from '@slickgrid-universal/binding';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TextExportService } from '@slickgrid-universal/text-export';
@@ -21,6 +22,7 @@ import './example16.scss';
 
 export class Example16 {
   private _bindingEventService: BindingEventService;
+  private _darkMode = false;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
@@ -46,6 +48,7 @@ export class Example16 {
   dispose() {
     this.sgb?.dispose();
     this._bindingEventService.unbindAll();
+    document.querySelector('.demo-container')?.classList.remove('dark-mode');
   }
 
   initializeGrid() {
@@ -93,7 +96,8 @@ export class Example16 {
         type: FieldType.number,
       },
       {
-        id: 'desc', name: `<span title='custom title tooltip text'>Description</span>`, field: 'description', width: 100, filterable: true,
+        // `name` can be a DOM element with a `title` to use as tooltip text
+        id: 'desc', name: createDomElement('span', { title: 'custom title tooltip text', textContent: 'Description' }), field: 'description', width: 100, filterable: true,
         editor: {
           model: Editors.longText,
           required: true,
@@ -235,7 +239,7 @@ export class Example16 {
           // OR 2- use a Promise
           collectionAsync: new Promise<any>((resolve) => {
             setTimeout(() => {
-              resolve(Array.from(Array(this.dataset.length).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })));
+              resolve(Array.from(Array((this.dataset || []).length).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })));
             }, 500);
           }),
           customStructure: {
@@ -252,7 +256,7 @@ export class Example16 {
           // collectionAsync: fetch(URL_SAMPLE_COLLECTION_DATA),
           collectionAsync: new Promise((resolve) => {
             setTimeout(() => {
-              resolve(Array.from(Array(this.dataset.length).keys()).map(k => ({ value: k, label: `Task ${k}` })));
+              resolve(Array.from(Array((this.dataset || []).length).keys()).map(k => ({ value: k, label: `Task ${k}` })));
             });
           }),
           customStructure: {
@@ -269,7 +273,7 @@ export class Example16 {
       },
       {
         id: 'action', name: 'Action', field: 'action', width: 70, minWidth: 70, maxWidth: 70,
-        formatter: () => `<div class="button-style margin-auto" style="width: 35px; margin-top: -1px;"><span class="mdi mdi-chevron-down mdi-22px color-primary"></span></div>`,
+        formatter: () => `<div class="button-style margin-auto action-btn"><span class="mdi mdi-chevron-down mdi-22px color-primary"></span></div>`,
         excludeFromExport: true,
         // customTooltip: {
         //   formatter: () => `Click to open Cell Menu`, // return empty so it won't show any pre-tooltip
@@ -324,6 +328,7 @@ export class Example16 {
       autoResize: {
         container: '.demo-container',
       },
+      darkMode: this._darkMode,
       enableAutoSizeColumns: true,
       enableAutoResize: true,
       enableCellNavigation: true,
@@ -352,6 +357,7 @@ export class Example16 {
         filters: [{ columnId: 'prerequisites', searchTerms: [1, 3, 5, 7, 9, 12, 15, 18, 21, 25, 28, 29, 30, 32, 34] }],
       },
       rowHeight: 33,
+      headerRowHeight: 35,
       enableFiltering: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
@@ -495,5 +501,15 @@ export class Example16 {
       output += `<span class="mdi mdi-check-circle-outline ${iconColor}"></span>`;
     }
     return output;
+  }
+
+  toggleDarkMode() {
+    this._darkMode = !this._darkMode;
+    if (this._darkMode) {
+      document.querySelector('.demo-container')?.classList.add('dark-mode');
+    } else {
+      document.querySelector('.demo-container')?.classList.remove('dark-mode');
+    }
+    this.sgb.slickGrid?.setOptions({ darkMode: this._darkMode });
   }
 }

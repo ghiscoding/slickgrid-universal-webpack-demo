@@ -4,6 +4,7 @@ const { EsbuildPlugin } = require('esbuild-loader');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { IgnorePlugin } = require('webpack');
 const path = require('path');
 
 // primary config:
@@ -43,10 +44,21 @@ module.exports = ({ production } = {}) => ({
     modules: [srcDir, 'node_modules'],
     mainFields: ['module', 'main'],
     fallback: {
+      assert: false,
+      buffer: false,
+      crypto: false,
+      fs: false,
       http: false,
       https: false,
+      net: false,
+      os: false,
+      path: false,
       stream: false,
+      tls: false,
+      tty: false,
+      url: false,
       util: false,
+      vm: false,
       zlib: false,
     }
   },
@@ -98,6 +110,7 @@ module.exports = ({ production } = {}) => ({
     }),
     // Note that the usage of following plugin cleans the webpack output directory before build.
     new CleanWebpackPlugin(),
-    new ForkTsCheckerWebpackPlugin()
+    new ForkTsCheckerWebpackPlugin(),
+    new IgnorePlugin({ resourceRegExp: /jsdom$/ })
   ]
 });

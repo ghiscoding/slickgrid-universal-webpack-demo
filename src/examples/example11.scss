@@ -1,16 +1,25 @@
 $control-height: 2.4em;
 $slick-autocomplete-max-height: 250px;
 
-@import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss';
+// @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss';
 @import 'bulma/bulma';
 
-.unsaved-editable-field {
-  background-color: #fbfdd1 !important;
-}
-.dropdown-item {
-  cursor: pointer;
-}
-.dropdown-item-disabled {
-  color: #afafaf;
-  cursor: default;
+.grid11 {
+  .unsaved-editable-field {
+    background-color: #fbfdd1 !important;
+  }
+  .dropdown-item {
+    cursor: pointer;
+  }
+  .dropdown-item-disabled {
+    color: #afafaf;
+    cursor: default;
+  }
+  .ml-1-negative {
+    margin-left: -5px;
+  }
+  .action-btns {
+    display: inline-block;
+    line-height: 18px;
+  }
 }

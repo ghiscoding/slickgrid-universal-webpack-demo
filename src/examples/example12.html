@@ -1,18 +1,20 @@
 <h3 class="title is-3">
   Example 12 - Composite Editor Modal
-  <span class="subtitle is-size-5 has-text-grey-dark">(with Salesforce Theme)</span>
-  <div class="subtitle" style="float: right; margin-top: -20px">
+  <span class="subtitle is-size-5">(with Salesforce Theme)</span>
+  <span class="d-inline-flex">
+    <button class="button is-small" onclick.delegate="toggleDarkMode()" data-test="toggle-dark-mode">
+      <span class="icon mdi mdi-theme-light-dark"></span>
+      <span> Toggle Light/Dark</span>
+    </button>
+  </span>
+  <div class="subtitle code-link">
     <span class="is-size-6">see</span>
     <a class="is-size-5"
        target="_blank"
-       href="https://github.com/ghiscoding/slickgrid-universal-webpack-demo/blob/main/src/examples/example12.ts">
+       href="https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/vite-demo-vanilla-bundle/src/examples/example12.ts">
       <span class="mdi mdi-link-variant mdi-v-align-sub"></span> code
     </a>
   </div>
-  <h6 class="title is-6 italic">
-    The Autocomplete Editor (City of Origin) might throw some console errors because it uses "http://gd.geobytes.com/" request (which is not using https).
-    You can allow "Insecure content" in your browser for this website only to test the Autocomplete
-  </h6>
 </h3>
 
 <section class="columns is-desktop">

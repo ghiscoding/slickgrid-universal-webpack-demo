@@ -1,24 +1,25 @@
-import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  Column,
+  type Column,
   Editors,
   FieldType,
   Filters,
   Formatters,
-  GridOption,
+  type GridOption,
   OperatorType,
 } from '@slickgrid-universal/common';
+import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 
-import { TranslateService } from '../translate.service';
 import { ExampleGridOptions } from './example-grid-options';
+import { TranslateService } from '../translate.service';
 import './example07.scss';
 import '../material-styles.scss';
 
 export class Example7 {
   private _bindingEventService: BindingEventService;
+  private _darkMode = false;
   columnDefinitions: Column[];
   gridOptions: GridOption;
   dataset: any[];
@@ -62,6 +63,7 @@ export class Example7 {
     this.sgb?.dispose();
     this._bindingEventService.unbindAll();
     document.body.classList.remove('material-theme');
+    document.querySelector('.demo-container')?.classList.remove('dark-mode');
   }
 
   initializeGrid() {
@@ -75,7 +77,7 @@ export class Example7 {
       {
         id: 'action', name: 'Action', field: 'action', minWidth: 60, maxWidth: 60,
         excludeFromExport: true, excludeFromHeaderMenu: true,
-        formatter: () => `<div class="button-style margin-auto" style="width: 35px; margin-top: -1px;"><span class="mdi mdi-chevron-down mdi-22px color-primary"></span></div>`,
+        formatter: () => `<div class="button-style margin-auto action-btn"><span class="mdi mdi-chevron-down mdi-22px color-primary"></span></div>`,
         cellMenu: {
           hideCloseButton: false,
           subItemChevronClass: 'mdi mdi-chevron-down mdi-rotate-270',
@@ -98,7 +100,7 @@ export class Example7 {
             { command: '', divider: true, positionOrder: 98 },
             {
               // we can also have multiple nested sub-menus
-              command: 'export', title: 'Exports', positionOrder: 99,
+              command: 'export', title: 'Exports', iconCssClass: 'mdi mdi-download', positionOrder: 99,
               commandItems: [
                 { command: 'exports-txt', title: 'Text (tab delimited)' },
                 {
@@ -190,8 +192,8 @@ export class Example7 {
           enableRenderHtml: true,
           collection: [
             { value: '', label: '' },
-            { value: true, label: 'True', labelPrefix: `<i class="mdi mdi-check mdi-v-align-middle"></i> ` },
-            { value: false, label: 'False', labelPrefix: `<i class="mdi mdi-close mdi-v-align-middle"></i> ` }
+            { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check mdi-v-align-middle mdi-16px"></i> ` },
+            { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close mdi-v-align-middle mdi-16px"></i> ` }
           ],
           model: Filters.singleSelect
         },
@@ -205,8 +207,8 @@ export class Example7 {
           enableRenderHtml: true,
           collectionAsync: new Promise<any>(resolve => setTimeout(() => {
             resolve([
-              { value: true, label: 'True', labelPrefix: `<i class="mdi mdi-check mdi-v-align-middle"></i> ` },
-              { value: false, label: 'False', labelPrefix: `<i class="mdi mdi-close mdi-v-align-middle"></i> ` }
+              { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check mdi-v-align-middle mdi-16px"></i> ` },
+              { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close mdi-v-align-middle mdi-16px"></i> ` }
             ]);
           }, 250)),
         },
@@ -238,7 +240,7 @@ export class Example7 {
           // OR 2- use a Promise
           collectionAsync: new Promise<any>((resolve) => {
             setTimeout(() => {
-              resolve(Array.from(Array(this.dataset.length).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })));
+              resolve(Array.from(Array((this.dataset || []).length).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })));
             }, 500);
           }),
 
@@ -263,12 +265,12 @@ export class Example7 {
           // collectionAsync: fetch(URL_SAMPLE_COLLECTION_DATA),
           collectionAsync: new Promise((resolve) => {
             setTimeout(() => {
-              resolve(Array.from(Array(this.dataset.length).keys()).map(k => ({ value: k, label: `Task ${k}` })));
+              resolve(Array.from(Array((this.dataset || []).length).keys()).map(k => ({ value: k, label: `Task ${k}` })));
             });
           }),
 
           // OR a regular collection load
-          // collection: Array.from(Array(NB_ITEMS).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })),
+          // collection: Array.from(Array((this.dataset || []).length).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })),
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
@@ -294,6 +296,7 @@ export class Example7 {
         container: '.demo-container',
         rightPadding: 10
       },
+      darkMode: this._darkMode,
       gridMenu: {
         commandTitleKey: 'CUSTOM_COMMANDS',
       },
@@ -487,7 +490,7 @@ export class Example7 {
     return collection.sort((item1, item2) => item1.value - item2.value);
   }
 
-  onBeforeMoveRow(e: Event, data: { rows: number[]; insertBefore: number; }) {
+  onBeforeMoveRow(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number; }) {
     for (const rowIdx of data.rows) {
       // no point in moving before or after itself
       if (rowIdx === data.insertBefore || (rowIdx === data.insertBefore - 1 && ((data.insertBefore - 1) !== this.sgb.dataView?.getItemCount()))) {
@@ -498,7 +501,7 @@ export class Example7 {
     return true;
   }
 
-  onMoveRows(_e: Event, args: { rows: number[]; insertBefore: number; }) {
+  onMoveRows(_e: MouseEvent | TouchEvent, args: { rows: number[]; insertBefore: number; }) {
     // rows and insertBefore references,
     // note that these references are assuming that the dataset isn't filtered at all
     // which is not always the case so we will recalcualte them and we won't use these reference afterward
@@ -646,6 +649,16 @@ export class Example7 {
   disableSorting() {
     this.isSortingEnabled = false;
     this.sgb.sortService.disableSortFunctionality(true);
+  }
+
+  toggleDarkMode() {
+    this._darkMode = !this._darkMode;
+    if (this._darkMode) {
+      document.querySelector('.demo-container')?.classList.add('dark-mode');
+    } else {
+      document.querySelector('.demo-container')?.classList.remove('dark-mode');
+    }
+    this.sgb.slickGrid?.setOptions({ darkMode: this._darkMode });
   }
 
   // or Toggle Filtering/Sorting functionalities
