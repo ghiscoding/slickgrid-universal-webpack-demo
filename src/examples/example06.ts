@@ -16,7 +16,7 @@ import {
 } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TextExportService } from '@slickgrid-universal/text-export';
-import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
+import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import './example06.scss';
 import { ExampleGridOptions } from './example-grid-options';
@@ -243,7 +243,7 @@ export class Example06 {
     const exportIndentationLeadingChar = '.';
 
     value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const spacer = `<span style="display:inline-block; width:${(15 * treeLevel)}px;"></span>`;
+    const spacer = `<span class="display-inline-block width-${(15 * treeLevel)}px"></span>`;
     const indentSpacer = addWhiteSpaces(5 * treeLevel);
 
     if (data[idx + 1]?.[treeLevelPropName] > data[idx][treeLevelPropName] || data[idx]['__hasChildren']) {

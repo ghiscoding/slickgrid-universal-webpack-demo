@@ -1,10 +1,10 @@
 <h3 class="title is-3">
   Example 04 - Pinned (frozen) Columns/Rows
-  <div class="subtitle" style="float: right; margin-top: -20px">
+  <div class="subtitle code-link">
     <span class="is-size-6">see</span>
     <a class="is-size-5"
        target="_blank"
-       href="https://github.com/ghiscoding/slickgrid-universal-webpack-demo/blob/main/src/examples/example04.ts">
+       href="https://github.com/ghiscoding/slickgrid-universal/blob/master/examples/webpack-demo-vanilla-bundle/src/examples/example04.ts">
       <span class="mdi mdi-link-variant mdi-v-align-sub"></span> code
     </a>
   </div>
@@ -22,26 +22,30 @@
       Set
     </button>
   </span>
-  <span style="margin-left: 10px">
+  <span class="ml-1">
     <label for="">Pinned Columns: </label>
     <input type="number" class="frozen-column-count" value.bind="frozenColumnCount">
     <button class="btn btn-default btn-xs" onclick.delegate="changeFrozenColumnCount()">
       Set
     </button>
   </span>
-  <span style="margin-left: 15px">
+  <span class="ml-3">
     <button class="button is-small" onclick.delegate="setFrozenColumns(-1)"
             data-test="remove-frozen-column-button">
       <span class="icon mdi mdi-close"></span>
       <span>Remove Frozen Columns</span>
     </button>
-    <button class="button is-small" onclick.delegate="setFrozenColumns(2)" data-test="set-3frozen-columns">
+    <button class="button is-small" data-test="set-3frozen-columns" onclick.delegate="setFrozenColumns(2)">
       <span class="icon mdi mdi-pin-outline"></span>
       <span>Set 3 Frozen Columns</span>
     </button>
-    <button class="button is-small" onclick.delegate="toggleFrozenBottomRows()">
+    <button class="button is-small" data-test="toggle-frozen-bottom" onclick.delegate="toggleFrozenBottomRows()">
       <span class="icon mdi mdi-flip-vertical"></span>
       <span>Toggle Pinned Rows (top/bottom)</span>
+    </button>
+    <button class="button is-small ml-3" data-test="toggle-select-all-row" onclick.delegate="toggleWhichRowToShowSelectAll()">
+      <span class="icon mdi mdi-swap-horizontal mdi-rotate-90"></span>
+      <span>Toggle which row to show "Select All" checkbox</span>
     </button>
   </span>
 </div>

@@ -1,8 +1,8 @@
 // import { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance';
 import {
-  AutocompleterOption,
+  type AutocompleterOption,
   type Column,
-  CompositeEditorModalType,
+  type CompositeEditorModalType,
   type EditCommand,
   Editors,
   EventNamingStyle,
@@ -13,6 +13,7 @@ import {
   Formatters,
   type GridOption,
   type LongTextEditorOption,
+  type MultipleSelectOption,
   type OnCompositeEditorChangeEventArgs,
   SlickGlobalEditorLock,
   type SliderOption,
@@ -24,7 +25,7 @@ import {
 import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { type SlickerGridInstance } from '@slickgrid-universal/vanilla-bundle';
-import { type VanillaForceGridBundle, Slicker } from '@slickgrid-universal/vanilla-force-bundle';
+import { Slicker, type VanillaForceGridBundle } from '@slickgrid-universal/vanilla-force-bundle';
 import { SlickCompositeEditor, SlickCompositeEditorComponent } from '@slickgrid-universal/composite-editor-component';
 import { ExampleGridOptions } from './example-grid-options';
 import './example12.scss';
@@ -229,7 +230,8 @@ export class Example12 {
         exportCustomFormatter: (_row, _cell, value) => this.complexityLevelList[value]?.label,
         filter: {
           model: Filters.multipleSelect,
-          collection: this.complexityLevelList
+          collection: this.complexityLevelList,
+          filterOptions: { showClear: true } as MultipleSelectOption,
         },
         editor: {
           model: Editors.singleSelect,
@@ -252,7 +254,8 @@ export class Example12 {
         exportWithFormatter: false,
         filter: {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
-          model: Filters.singleSelect
+          model: Filters.singleSelect,
+          filterOptions: { showClear: true } as MultipleSelectOption,
         },
         editor: { model: Editors.checkbox, massUpdate: true, },
         // editor: { model: Editors.singleSelect, collection: [{ value: true, label: 'Yes' }, { value: false, label: 'No' }], },
@@ -474,6 +477,15 @@ export class Example12 {
       },
       // when using the cellMenu, you can change some of the default options and all use some of the callback methods
       enableCellMenu: true,
+      gridMenu: {
+        hideToggleDarkModeCommand: false, // disabled command by default
+        onCommand: (_, args) => {
+          if (args.command === 'toggle-dark-mode') {
+            this._darkMode = !this._darkMode; // keep local toggle var in sync
+            this.toggleBodyBackground();
+          }
+        }
+      }
     };
   }
 
@@ -748,13 +760,17 @@ export class Example12 {
 
   toggleDarkMode() {
     this._darkMode = !this._darkMode;
+    this.toggleBodyBackground();
+    this.sgb.gridOptions = { ...this.sgb.gridOptions, darkMode: this._darkMode };
+    this.sgb.slickGrid?.setOptions({ darkMode: this._darkMode });
+  }
+
+  toggleBodyBackground() {
     if (this._darkMode) {
       document.querySelector('.demo-container')?.classList.add('dark-mode');
     } else {
       document.querySelector('.demo-container')?.classList.remove('dark-mode');
     }
-    this.sgb.gridOptions = { ...this.sgb.gridOptions, darkMode: this._darkMode };
-    this.sgb.slickGrid?.setOptions({ darkMode: this._darkMode });
   }
 
   mockProducts() {

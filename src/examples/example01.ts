@@ -1,7 +1,7 @@
 import { type Column, ExtensionName, FieldType, Formatters, type GridOption } from '@slickgrid-universal/common';
-import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
+import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { ExampleGridOptions } from './example-grid-options';
-// import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss?inline';
+// import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss';
 // import cssCode from '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss?url';
 
 // use any of the Styling Theme
@@ -10,7 +10,7 @@ import './example01.scss';
 
 const NB_ITEMS = 995;
 
-export class Example1 {
+export class Example01 {
   private _darkModeGrid1 = false;
   gridOptions1!: GridOption;
   gridOptions2!: GridOption;
@@ -66,6 +66,14 @@ export class Example1 {
       gridHeight: 225,
       gridWidth: 800,
       rowHeight: 33,
+      gridMenu: {
+        hideToggleDarkModeCommand: false, // disabled command by default
+        onCommand: (_, args) => {
+          if (args.command === 'toggle-dark-mode') {
+            this._darkModeGrid1 = !this._darkModeGrid1; // keep local toggle var in sync
+          }
+        }
+      }
     };
 
     // copy the same Grid Options and Column Definitions to 2nd grid

@@ -5,18 +5,15 @@ import {
   type GridOption,
   Editors,
 } from '@slickgrid-universal/common';
-import {
-  Slicker,
-  SlickVanillaGridBundle,
-} from '@slickgrid-universal/vanilla-bundle';
+import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { ExampleGridOptions } from './example-grid-options';
 
 import './example22.scss';
-import { TranslateService } from '../translate.service';
+import type { TranslateService } from '../translate.service';
 
 const NB_ITEMS = 20;
 
-export default class Example22 {
+export class Example22 {
   gridOptions!: GridOption;
   columnDefinitions!: Column[];
   dataset!: any[];

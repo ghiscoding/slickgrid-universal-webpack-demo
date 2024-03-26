@@ -1,20 +1,21 @@
-import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  AutocompleterOption,
-  Column,
-  ColumnEditorDualInput,
-  EditCommand,
+  type AutocompleterOption,
+  type Column,
+  type ColumnEditorDualInput,
+  type EditCommand,
   Editors,
   FieldType,
   Filters,
-  Formatter,
+  type Formatter,
   Formatters,
-  GridOption,
+  type GridOption,
   OperatorType,
-  SlickDataView,
+  type SlickDataView,
+  type SlickCheckboxSelectColumn,
 } from '@slickgrid-universal/common';
+import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
-import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
+import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import fetchJsonp from 'fetch-jsonp';
 // import { fetch } from 'whatwg-fetch';
 
@@ -46,11 +47,11 @@ interface ReportItem {
   effortDriven: boolean;
 }
 
-const customEditableInputFormatter: Formatter<ReportItem> = (_row: number, _cell: number, _value: any, _columnDef: Column, item: ReportItem) => {
+const customEditableInputFormatter: Formatter<ReportItem> = (_row, _cell, _value, _columnDef, item) => {
   return item.title;
 };
 
-export class Example4 {
+export class Example04 {
   private _bindingEventService: BindingEventService;
   columnDefinitions: Column<ReportItem & { action?: string; }>[];
   gridOptions: GridOption;
@@ -61,6 +62,8 @@ export class Example4 {
   frozenRowCount = 3;
   isFrozenBottom = false;
   sgb: SlickVanillaGridBundle;
+  checkboxSelectorInstance: SlickCheckboxSelectColumn;
+  isSelectAllShownAsColumnTitle = false;
 
   constructor() {
     this._bindingEventService = new BindingEventService();
@@ -372,6 +375,12 @@ export class Example4 {
         selectActiveRow: false
       },
       enableCheckboxSelector: true,
+      checkboxSelector: {
+        hideInColumnTitleRow: !this.isSelectAllShownAsColumnTitle,
+        hideInFilterHeaderRow: this.isSelectAllShownAsColumnTitle,
+        name: 'Sel', // column name will only show when `hideInColumnTitleRow` is true
+        onExtensionRegistered: (instance) => this.checkboxSelectorInstance = instance,
+      },
       enableRowSelection: true,
       frozenColumn: this.frozenColumnCount,
       frozenRow: this.frozenRowCount,
@@ -432,7 +441,7 @@ export class Example4 {
           { command: '', divider: true, positionOrder: 98 },
           {
             // we can also have multiple nested sub-menus
-            command: 'export', title: 'Exports', positionOrder: 99,
+            command: 'export', title: 'Exports', iconCssClass: 'mdi mdi-download', positionOrder: 99,
             commandItems: [
               { command: 'exports-txt', title: 'Text (tab delimited)' },
               {
@@ -445,7 +454,7 @@ export class Example4 {
             ]
           },
           {
-            command: 'feedback', title: 'Feedback', positionOrder: 100,
+            command: 'feedback', title: 'Feedback', iconCssClass: 'mdi mdi-information-outline', positionOrder: 100,
             commandItems: [
               { command: 'request-update', title: 'Request update from supplier', iconCssClass: 'mdi mdi-star', tooltip: 'this will automatically send an alert to the shipping team to contact the user for an update' },
               'divider',
@@ -544,6 +553,14 @@ export class Example4 {
       });
       this.isFrozenBottom = !this.isFrozenBottom; // toggle the variable
     }
+  }
+
+  toggleWhichRowToShowSelectAll() {
+    this.isSelectAllShownAsColumnTitle = !this.isSelectAllShownAsColumnTitle;
+    this.checkboxSelectorInstance.setOptions({
+      hideInColumnTitleRow: !this.isSelectAllShownAsColumnTitle,
+      hideInFilterHeaderRow: this.isSelectAllShownAsColumnTitle,
+    });
   }
 
   executeCommand(_e, args) {

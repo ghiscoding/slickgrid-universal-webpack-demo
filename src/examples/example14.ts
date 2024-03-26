@@ -1,4 +1,3 @@
-import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   type AutocompleterOption,
   type Column,
@@ -21,8 +20,9 @@ import {
   formatNumber,
   Utilities,
 } from '@slickgrid-universal/common';
+import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
-import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
+import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import { ExampleGridOptions } from './example-grid-options';
 import './example14.scss';
@@ -48,7 +48,7 @@ const myCustomTitleValidator = (value) => {
  * @returns {boolean} isEditable
  */
 function checkItemIsEditable(dataContext, columnDef, grid) {
-  const gridOptions = grid && grid.getOptions && grid.getOptions();
+  const gridOptions = grid.getOptions();
   const hasEditor = columnDef.editor;
   const isGridEditable = gridOptions.editable;
   let isEditable = (isGridEditable && hasEditor);

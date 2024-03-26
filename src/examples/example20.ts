@@ -1,7 +1,6 @@
 import { type Column, FieldType, Filters, Formatters, type GridOption, SlickEventHandler, } from '@slickgrid-universal/common';
-import { Slicker, SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
+import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { ExampleGridOptions } from './example-grid-options';
-import './example20.scss';
 
 const NB_ITEMS = 100;
 
@@ -10,7 +9,7 @@ interface ShadowContainer {
   gridContainer: HTMLDivElement;
 }
 
-export default class Example20 {
+export class Example20 {
   protected _eventHandler: SlickEventHandler;
 
   columnDefinitions: Column[] = [];
@@ -36,7 +35,7 @@ export default class Example20 {
     // let's wrap the grid resize in a delay & show the grid only after the resize
     setTimeout(() => {
       this.sgb = new Slicker.GridBundle(shadowObj.gridContainer as HTMLDivElement, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
-      this.sgb.resizerService.resizeGrid(75);
+      this.sgb.resizerService.resizeGrid();
       shadowObj.gridContainer.style.opacity = '1';
     }, 50);
   }
@@ -59,8 +58,8 @@ export default class Example20 {
     const host = document.querySelector('#host') as HTMLDivElement;
     const shadow = host.attachShadow({ mode: 'open' });
     const gridContainer = document.createElement('div');
-    gridContainer.style.width = '600px';
-    gridContainer.style.height = '500px';
+    // gridContainer.style.width = '600px';
+    // gridContainer.style.height = '500px';
     gridContainer.style.opacity = '0';
     gridContainer.classList.add('grid20');
     shadow.appendChild(gridContainer);
