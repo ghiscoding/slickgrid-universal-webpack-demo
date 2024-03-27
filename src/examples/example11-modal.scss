@@ -1,4 +1,7 @@
-$modal-content-width: 1200px;
+:root {
+  .modal.modal11 {
+    --bulma-modal-content-width: 1200px;
+  }
+}
 
 @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-salesforce.scss';
-@import 'bulma/bulma';
