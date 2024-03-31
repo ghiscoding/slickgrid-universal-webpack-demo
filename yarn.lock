@@ -397,10 +397,10 @@
   resolved "https://registry.yarnpkg.com/@slickgrid-universal/utils/-/utils-4.6.1.tgz#311f9fd7a57710c78fbc2825865f04508fb867ba"
   integrity sha512-wWv6SCu4ZP4PImzE3BQpjc291IhxGEu/azzHDa5DWMBnJbY2Vs0sHGK0ycAAZlZ3uti1+AQgQcUOMgB1P9e1zA==
 
-"@slickgrid-universal/vanilla-bundle@^4.6.1", "@slickgrid-universal/vanilla-bundle@~4.6.1":
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/@slickgrid-universal/vanilla-bundle/-/vanilla-bundle-4.6.1.tgz#391f9165f4b14586197fa76fe7a96a4ba5875597"
-  integrity sha512-ZoyTCMuWrP1M+91YFdICFX2TrwlEA0He4MXKKmOOk2JZ0fVZ8U3N6pbt1ZlWw1fGJNLXR7JkkwjO6g2YmRf/VQ==
+"@slickgrid-universal/vanilla-bundle@^4.6.3", "@slickgrid-universal/vanilla-bundle@~4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@slickgrid-universal/vanilla-bundle/-/vanilla-bundle-4.6.3.tgz#c7f0b79b260dfc093316b7bbb352da6e7dd9b4e5"
+  integrity sha512-cZVEF6CR48DC7JYHopmQ+6UgN6JamaoLdZdOzcccJh2QAiCd2sR6d6ESN0+9f8AjcAs2A6QJwMk2N6MLm1uBlQ==
   dependencies:
     "@slickgrid-universal/binding" "~4.6.1"
     "@slickgrid-universal/common" "~4.6.1"
@@ -414,10 +414,10 @@
     sortablejs "^1.15.2"
     whatwg-fetch "^3.6.20"
 
-"@slickgrid-universal/vanilla-force-bundle@^4.6.1":
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/@slickgrid-universal/vanilla-force-bundle/-/vanilla-force-bundle-4.6.1.tgz#ae985ae17d287749831811845b23c55276f4f8a3"
-  integrity sha512-MSy9gDZ8Qv5DikzyMMWfWNDn44yXD7hSkCi3CAv31apag3iETVM2PJ2TzG0b8V89G0Obl6BJUs6D4nZoAiAOZw==
+"@slickgrid-universal/vanilla-force-bundle@^4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@slickgrid-universal/vanilla-force-bundle/-/vanilla-force-bundle-4.6.3.tgz#588a0fe4164fe0e68c7b113ba713e4ef908ddc7d"
+  integrity sha512-YJfVccjiWTJhE3tjvyrxGMuOmrWoimHmSrb8y1F3c+cTdlm8oKz5o1haVVAA4KLLsFLUam6NAxjL2hSsCLm/iA==
   dependencies:
     "@slickgrid-universal/binding" "~4.6.1"
     "@slickgrid-universal/common" "~4.6.1"
@@ -430,7 +430,7 @@
     "@slickgrid-universal/pagination-component" "~4.6.1"
     "@slickgrid-universal/text-export" "~4.6.1"
     "@slickgrid-universal/utils" "~4.6.1"
-    "@slickgrid-universal/vanilla-bundle" "~4.6.1"
+    "@slickgrid-universal/vanilla-bundle" "~4.6.3"
     whatwg-fetch "^3.6.20"
 
 "@types/body-parser@*":
