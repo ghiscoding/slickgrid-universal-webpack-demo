@@ -152,7 +152,7 @@ export class Example12 {
   initializeGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', name: '<span title="Task must always be followed by a number" class="color-info mdi mdi-alert-circle"></span> Title', field: 'title', sortable: true, type: FieldType.string, minWidth: 75,
+        id: 'title', name: '<span title="Task must always be followed by a number" class="color-warning-dark mdi mdi-alert-outline"></span> Title <span title="Title is always rendered as UPPERCASE" class="mdi mdi-information-outline"></span>', field: 'title', sortable: true, type: FieldType.string, minWidth: 75,
         cssClass: 'text-bold text-uppercase',
         filterable: true, columnGroup: 'Common Factor',
         filter: { model: Filters.compoundInputText },
@@ -560,14 +560,12 @@ export class Example12 {
   }
 
   handleOnBeforeEditCell(event) {
-    const eventData = event.detail?.eventData;
     const args = event?.detail?.args;
     const { column, item, grid } = args;
 
     if (column && item) {
       if (!checkItemIsEditable(item, column, grid)) {
-        event.preventDefault();
-        eventData.stopImmediatePropagation();
+        event.preventDefault(); // OR eventData.preventDefault();
         return false;
       }
     }

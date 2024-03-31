@@ -24,6 +24,7 @@ import {
   formatNumber,
 } from '@slickgrid-universal/common';
 import { BindingEventService } from '@slickgrid-universal/binding';
+import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import moment from 'moment-mini';
@@ -300,7 +301,7 @@ export class Example11 {
       excelExportOptions: {
         exportWithFormatter: true
       },
-      externalResources: [new ExcelExportService()],
+      externalResources: [new ExcelExportService(), new SlickCustomTooltip()],
       enableFiltering: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
