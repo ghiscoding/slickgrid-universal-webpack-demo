@@ -24,17 +24,22 @@ const currencyFormatter: Formatter = (_cell, _row, value: string) =>
 const priceFormatter: Formatter = (_cell, _row, value, _col, dataContext) => {
   const direction = dataContext.priceChange >= 0 ? 'up' : 'down';
   const fragment = new DocumentFragment();
+  const divElm = document.createElement('div');
+  divElm.className = `d-inline-flex align-items-center text-color-${direction === 'up' ? 'success' : 'danger'}`;
   const spanElm = document.createElement('span');
-  spanElm.className = `mdi mdi-arrow-${direction} color-${direction === 'up' ? 'success' : 'danger'}`;
-  fragment.appendChild(spanElm);
+  spanElm.className = `mdi mdi-arrow-${direction}`;
+  divElm.appendChild(spanElm);
+  fragment.appendChild(divElm);
   if (value instanceof HTMLElement) {
-    fragment.appendChild(value);
+    divElm.appendChild(value);
+  } else {
+    divElm.appendChild(document.createTextNode(value));
   }
   return fragment;
 };
 
 const transactionTypeFormatter: Formatter = (_row, _cell, value: string) =>
-  `<span class="mdi mdi-16px mdi-v-align-sub mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'color-info' : 'color-warning'}"></span> ${value}`;
+  `<div class="d-inline-flex align-items-center gap-5px"><span class="mdi mdi-16px mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'text-color-info' : 'text-color-warning'}"></span> ${value}</div>`;
 
 const historicSparklineFormatter: Formatter = (_row, _cell, _value: string, _col, dataContext) => {
   const svgElem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -47,6 +52,7 @@ const historicSparklineFormatter: Formatter = (_row, _cell, _value: string, _col
 };
 
 export class Example18 {
+  private _darkMode = false;
   columnDefinitions: Column[] = [];
   dataset: any[] = [];
   gridOptions!: GridOption;
@@ -57,7 +63,7 @@ export class Example18 {
   maxChangePerCycle = 10;
   refreshRate = 75;
   timer: any;
-  toggleClassName = this.isFullScreen ? 'icon mdi mdi-arrow-collapse' : 'icon mdi mdi-arrow-expand';
+  toggleClassName = this.isFullScreen ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand';
   sgb: SlickVanillaGridBundle;
 
   attached() {
@@ -77,6 +83,8 @@ export class Example18 {
   dispose() {
     this.stopSimulation();
     this.sgb?.dispose();
+    document.querySelector('.demo-container')?.classList.remove('dark-mode');
+    document.body.setAttribute('data-theme', 'light');
     document.body.classList.remove('material-theme');
   }
 
@@ -93,7 +101,7 @@ export class Example18 {
         },
         grouping: {
           getter: 'currency',
-          formatter: (g) => `Currency: <span class="text-bluenavy text-bold">${g.value}</span>  <span class="text-violet">(${g.count} items)</span>`,
+          formatter: (g) => `Currency: <span class="text-color-primary text-bold">${g.value}</span>  <span class="text-color-success-light">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('amount')
           ],
@@ -106,7 +114,7 @@ export class Example18 {
         id: 'market', name: 'Market', field: 'market', filterable: true, sortable: true, minWidth: 75, width: 75,
         grouping: {
           getter: 'market',
-          formatter: (g) => `Market: <span class="text-bluenavy text-bold">${g.value}</span>  <span class="text-violet">(${g.count} items)</span>`,
+          formatter: (g) => `Market: <span class="text-color-primary text-bold">${g.value}</span>  <span class="text-color-success-light">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('amount')
           ],
@@ -124,7 +132,7 @@ export class Example18 {
         },
         grouping: {
           getter: 'trsnType',
-          formatter: (g) => `Type: <span class="text-bluenavy text-bold">${g.value}</span>  <span class="text-violet">(${g.count} items)</span>`,
+          formatter: (g) => `Type: <span class="text-color-primary text-bold">${g.value}</span>  <span class="text-color-success-light">(${g.count} items)</span>`,
           aggregators: [
             new Aggregators.Sum('amount')
           ],
@@ -137,7 +145,7 @@ export class Example18 {
         filter: { model: Filters.compoundInputNumber }, type: FieldType.number,
         formatter: Formatters.multiple,
         params: {
-          formatters: [Formatters.dollarColored, priceFormatter],
+          formatters: [Formatters.dollar, priceFormatter],
           maxDecimal: 2,
         }
       },
@@ -176,18 +184,19 @@ export class Example18 {
       },
       draggableGrouping: {
         dropPlaceHolderText: 'Drop a column header here to group by any of these available columns: Currency, Market or Type',
-        deleteIconCssClass: 'mdi mdi-close color-danger',
+        deleteIconCssClass: 'mdi mdi-close text-color-danger',
         sortAscIconCssClass: 'mdi mdi-arrow-up',
         sortDescIconCssClass: 'mdi mdi-arrow-down',
       },
       enableDraggableGrouping: true,
       createPreHeaderPanel: true,
+      darkMode: this._darkMode,
       showPreHeaderPanel: true,
       preHeaderPanelHeight: 40,
       enableCellNavigation: true,
       enableFiltering: true,
       cellHighlightCssClass: 'changed',
-      rowHeight: 40
+      rowHeight: 40,
     };
   }
 
@@ -308,6 +317,23 @@ export class Example18 {
       this.isFullScreen = true;
     }
     this.sgb.resizerService.resizeGrid();
+  }
+
+  toggleDarkMode() {
+    this._darkMode = !this._darkMode;
+    this.toggleBodyBackground();
+    this.sgb.gridOptions = { ...this.sgb.gridOptions, darkMode: this._darkMode };
+    this.sgb.slickGrid?.setOptions({ darkMode: this._darkMode });
+  }
+
+  toggleBodyBackground() {
+    if (this._darkMode) {
+      document.body.setAttribute('data-theme', 'dark');
+      document.querySelector('.demo-container')?.classList.add('dark-mode');
+    } else {
+      document.body.setAttribute('data-theme', 'light');
+      document.querySelector('.demo-container')?.classList.remove('dark-mode');
+    }
   }
 
   private randomNumber(min: number, max: number, floor = true) {

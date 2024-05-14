@@ -4,16 +4,16 @@ export function loadComponent<T = any>(containerElement: HTMLDivElement, compone
   if (containerElement) {
     const renderer = new Renderer(containerElement);
     const viewModel = renderer.loadViewModel(require(`${componentModuleId}.ts`));
-    if (viewModel && viewModel.dispose) {
+    if (viewModel?.dispose) {
       window.onunload = viewModel.dispose; // dispose when leaving SPA
     }
 
     renderer.loadView(require(`${componentModuleId}.html`));
-    if (viewModel && viewModel.attached && renderer.className) {
+    if (viewModel?.attached && renderer.className) {
       const viewModelObj = {};
       viewModelObj[renderer.className] = viewModel;
       viewModel.attached();
-      if (viewModel && viewModel.bind) {
+      if (viewModel?.bind) {
         viewModel.bind(bindings);
       }
     }
