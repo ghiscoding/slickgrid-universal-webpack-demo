@@ -9,7 +9,6 @@ import { BindingEventService } from '@slickgrid-universal/binding';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import { ExampleGridOptions } from './example-grid-options';
-import '../salesforce-styles.scss';
 import './example11-modal.scss';
 
 export class Example11Modal {

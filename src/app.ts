@@ -1,12 +1,6 @@
 import { AppRouting } from './app-routing';
 import { Renderer } from './renderer';
-import { RouterConfig } from './interfaces';
-
-interface ElementEventListener {
-  element: Element;
-  eventName: string;
-  listener: EventListenerOrEventListenerObject;
-}
+import type { ElementEventListener, RouterConfig } from './interfaces';
 
 export class App {
   private _boundedEventWithListeners: ElementEventListener[] = [];
@@ -26,12 +20,12 @@ export class App {
   constructor() {
     this.appRouting = new AppRouting(this.routerConfig);
     this.stateBangChar = this.routerConfig.pushState ? '/' : '#/';
-    this.defaultRouteName = this.routerConfig.routes.find((map) => map.redirect)?.redirect || '';
+    this.defaultRouteName = this.routerConfig.routes.find((map) => map.route === '' || map.route === '**')?.redirect || '';
     this.navbarHamburgerToggle();
   }
 
   attached() {
-    this.renderer = new Renderer(document.querySelector('view-route'));
+    this.renderer = new Renderer(document.querySelector('view-route') as HTMLElement);
     const location = window.location;
 
     // GitHub logo with Stars shouldn't be created while testing in Cypress (which always wait few seconds even minutes to load the logo)
@@ -64,7 +58,7 @@ export class App {
   }
 
   addElementEventListener(element: Element, eventName: string, listener: EventListenerOrEventListenerObject) {
-    element.addEventListener(eventName, listener);
+    element.addEventListener(eventName, listener, { passive: true });
     this._boundedEventWithListeners.push({ element, eventName, listener });
   }
 
@@ -131,10 +125,10 @@ export class App {
 
   /** bind bulma all dropdowns toggle event handlers */
   dropdownToggle() {
-    const $dropdowns = document.querySelectorAll('.dropdown:not(.is-hoverable)');
+    const dropdownElms = document.querySelectorAll('.dropdown:not(.is-hoverable)');
 
-    if ($dropdowns.length > 0) {
-      $dropdowns.forEach($el => {
+    if (dropdownElms.length > 0) {
+      dropdownElms.forEach($el => {
         this.addElementEventListener($el, 'click', (event) => {
           event.stopPropagation();
           $el.classList.toggle('is-active');
@@ -146,33 +140,33 @@ export class App {
   }
 
   closeDropdowns() {
-    const $dropdowns = document.querySelectorAll('.dropdown:not(.is-hoverable)');
-    $dropdowns.forEach($el => $el.classList.remove('is-active'));
+    const dropdownElms = document.querySelectorAll('.dropdown:not(.is-hoverable)');
+    dropdownElms.forEach($el => $el.classList.remove('is-active'));
   }
 
   /** Add event listener for the navbar hamburger menu toggle when menu shows up on mobile */
   navbarHamburgerToggle() {
-    document.addEventListener('DOMContentLoaded', this.handleNavbarHamburgerToggle);
+    document.addEventListener('DOMContentLoaded', this.handleNavbarHamburgerToggle, { passive: true });
   }
 
   handleNavbarHamburgerToggle() {
     // Get all "navbar-burger" elements
-    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger') || [], 0);
+    const navbarBurgerElms = document.querySelectorAll<HTMLAnchorElement>('.navbar-burger');
 
     // Check if there are any navbar burgers
-    if ($navbarBurgers.length > 0) {
+    if (navbarBurgerElms.length > 0) {
       // Add a click event on each of them
-      $navbarBurgers.forEach(el => {
+      navbarBurgerElms.forEach(el => {
         el.addEventListener('click', () => {
 
           // Get the target from the "data-target" attribute
-          const target = el.dataset.target;
-          const $target = document.getElementById(target);
+          const target = el.dataset.target as any;
+          const $target = document.getElementById(target) as HTMLDivElement;
 
           // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
           el.classList.toggle('is-active');
           $target.classList.toggle('is-active');
-        });
+        }, { passive: true });
       });
     }
   }
