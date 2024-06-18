@@ -1,5 +1,5 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  type Aggregator,
   Aggregators,
   type Column,
   Editors,
@@ -18,10 +18,10 @@ import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanil
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 
 import { ExampleGridOptions } from './example-grid-options';
+import { CustomSumAggregator } from './example23-custom-aggregator';
 import './example23.scss';
-import { BindingEventService } from '@slickgrid-universal/binding';
 
-interface GroceryItem {
+export interface GroceryItem {
   id: number;
   name: string;
   qty: number;
@@ -55,46 +55,7 @@ const customEditableInputFormatter: Formatter = (_row, _cell, value, columnDef, 
   return isEditableItem ? divElm : value;
 };
 
-/** Create a Custom Aggregator in order to calculate all Totals by accessing other fields of the item dataContext */
-export class CustomSumAggregator implements Aggregator {
-  private _sum = 0;
-  private _type = 'sum' as const;
-
-  constructor(public readonly field: number | string, public taxRate: number) { }
-
-  get type(): string {
-    return this._type;
-  }
-
-  init() {
-    this._sum = 0;
-  }
-
-  accumulate(item: GroceryItem) {
-    if (this.field === 'taxes' && item['taxable']) {
-      this._sum += item['price'] * item['qty'] * (this.taxRate / 100);
-    }
-    if (this.field === 'subTotal') {
-      this._sum += item['price'] * item['qty'];
-    }
-    if (this.field === 'total') {
-      let taxes = 0;
-      if (item['taxable']) {
-        taxes = item['price'] * item['qty'] * (this.taxRate / 100);
-      }
-      this._sum += item['price'] * item['qty'] + taxes;
-    }
-  }
-
-  storeResult(groupTotals: any) {
-    if (!groupTotals || groupTotals[this._type] === undefined) {
-      groupTotals[this._type] = {};
-    }
-    groupTotals[this._type][this.field] = this._sum;
-  }
-}
-
-export class Example19 {
+export class Example23 {
   private _bindingEventService: BindingEventService;
   columnDefinitions: Column<GroceryItem>[] = [];
   dataset: GroceryItem[] = [];
@@ -117,9 +78,9 @@ export class Example19 {
     // mock some data (different in each dataset)
     this.dataset = this.getData();
     this.gridContainerElm = document.querySelector<HTMLDivElement>('.grid23') as HTMLDivElement;
-    this._bindingEventService.bind(this.gridContainerElm, 'oncellchange', this.invalidateAll.bind(this));
 
-    this.sgb = new Slicker.GridBundle(document.querySelector('.grid23') as HTMLDivElement, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
+    this.sgb = new Slicker.GridBundle(this.gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
+    this._bindingEventService.bind(this.gridContainerElm, 'oncellchange', this.invalidateAll.bind(this));
     document.body.classList.add('salesforce-theme');
   }
 
