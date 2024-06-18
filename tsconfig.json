@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es2015",
+    "target": "es2021",
     "module": "esnext",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
@@ -13,7 +13,7 @@
     "baseUrl": "src",
     "skipLibCheck": true,
     "lib": [
-      "es2018",
+      "es2021",
       "dom"
     ],
     "types": [

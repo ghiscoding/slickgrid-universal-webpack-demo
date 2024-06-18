@@ -294,12 +294,16 @@ export class Example15 {
               columnFilters[fieldName] = { type: 'equal', term: filterMatch[2].trim() };
             }
           }
-          if (filterBy.includes('startswith')) {
+          if (filterBy.includes('startswith') && filterBy.includes('endswith')) {
+            const filterStartMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/);
+            const filterEndMatch = filterBy.match(/endswith\(([a-zA-Z ]*),\s?'(.*?)'/);
+            const fieldName = filterStartMatch[1].trim();
+            columnFilters[fieldName] = { type: 'starts+ends', term: [filterStartMatch[2].trim(), filterEndMatch[2].trim()] };
+          } else if (filterBy.includes('startswith')) {
             const filterMatch = filterBy.match(/startswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch[1].trim();
             columnFilters[fieldName] = { type: 'starts', term: filterMatch[2].trim() };
-          }
-          if (filterBy.includes('endswith')) {
+          } else if (filterBy.includes('endswith')) {
             const filterMatch = filterBy.match(/endswith\(([a-zA-Z ]*),\s?'(.*?)'/);
             const fieldName = filterMatch[1].trim();
             columnFilters[fieldName] = { type: 'ends', term: filterMatch[2].trim() };
@@ -334,7 +338,7 @@ export class Example15 {
       }
 
       // Read the result field from the JSON response.
-      const firstRow = skip;
+      let firstRow = skip;
       let filteredData = data;
       if (columnFilters) {
         for (const columnId in columnFilters) {
@@ -343,23 +347,38 @@ export class Example15 {
               const filterType = columnFilters[columnId].type;
               const searchTerm = columnFilters[columnId].term;
               let colId = columnId;
-              if (columnId && columnId.indexOf(' ') !== -1) {
+              if (columnId?.indexOf(' ') !== -1) {
                 const splitIds = columnId.split(' ');
                 colId = splitIds[splitIds.length - 1];
               }
               const filterTerm = column[colId];
+
               if (filterTerm) {
+                const [term1, term2] = Array.isArray(searchTerm) ? searchTerm : [searchTerm];
                 switch (filterType) {
-                  case 'equal': return filterTerm.toLowerCase() === searchTerm;
-                  case 'ends': return filterTerm.toLowerCase().endsWith(searchTerm);
-                  case 'starts': return filterTerm.toLowerCase().startsWith(searchTerm);
-                  case 'substring': return filterTerm.toLowerCase().includes(searchTerm);
+                  case 'eq':
+                  case 'equal': return filterTerm.toLowerCase() === term1;
+                  case 'ne': return filterTerm.toLowerCase() !== term1;
+                  case 'le': return filterTerm.toLowerCase() <= term1;
+                  case 'lt': return filterTerm.toLowerCase() < term1;
+                  case 'gt': return filterTerm.toLowerCase() > term1;
+                  case 'ge': return filterTerm.toLowerCase() >= term1;
+                  case 'ends': return filterTerm.toLowerCase().endsWith(term1);
+                  case 'starts': return filterTerm.toLowerCase().startsWith(term1);
+                  case 'starts+ends': return filterTerm.toLowerCase().startsWith(term1) && filterTerm.toLowerCase().endsWith(term2);
+                  case 'substring': return filterTerm.toLowerCase().includes(term1);
                 }
               }
             });
           }
         }
         countTotalItems = filteredData.length;
+      }
+
+      // make sure page skip is not out of boundaries, if so reset to first page & remove skip from query
+      if (firstRow > filteredData.length) {
+        query = query.replace(`$skip=${firstRow}`, '');
+        firstRow = 0;
       }
       const updatedData = filteredData.slice(firstRow, firstRow + top);
 
@@ -432,6 +451,7 @@ export class Example15 {
   // ---
 
   changeCountEnableFlag() {
+    this.displaySpinner(true);
     this.isCountEnabled = !this.isCountEnabled;
     const odataService = this.gridOptions.backendServiceApi!.service;
     odataService.updateOptions({ enableCount: this.isCountEnabled } as OdataOption);
@@ -441,6 +461,7 @@ export class Example15 {
   }
 
   setOdataVersion(version: number) {
+    this.displaySpinner(true);
     this.odataVersion = version;
     const odataService = this.gridOptions.backendServiceApi!.service;
     odataService.updateOptions({ version: this.odataVersion } as OdataOption);

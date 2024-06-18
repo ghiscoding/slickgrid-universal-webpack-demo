@@ -13,7 +13,7 @@ import {
 import { BindingEventService } from '@slickgrid-universal/binding';
 import { GraphqlService, type GraphqlPaginatedResult, type GraphqlServiceApi, type GraphqlServiceOption, } from '@slickgrid-universal/graphql';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-import { addDay, format } from '@formkit/tempo';
+import { addDay, format as tempoFormat } from '@formkit/tempo';
 import { type MultipleSelectOption } from 'multiple-select-vanilla';
 
 import { ExampleGridOptions } from './example-grid-options';
@@ -60,6 +60,7 @@ export class Example10 {
     // this._bindingEventService.bind(gridContainerElm, 'onbeforeexporttoexcel', () => console.log('onBeforeExportToExcel'));
     // this._bindingEventService.bind(gridContainerElm, 'onafterexporttoexcel', () => console.log('onAfterExportToExcel'));
     this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
+    this._bindingEventService.bind(gridContainerElm, 'ongridstatechanged', this.handleOnGridStateChanged.bind(this));
     document.body.classList.add('material-theme');
   }
 
@@ -82,7 +83,15 @@ export class Example10 {
         sortable: true,
         filterable: true,
         filter: {
-          model: Filters.compoundInput
+          model: Filters.compoundInput,
+          compoundOperatorList: [
+            { operator: '', desc: 'Contains' },
+            { operator: '<>', desc: 'Not Contains' },
+            { operator: '=', desc: 'Equals' },
+            { operator: '!=', desc: 'Not equal to' },
+            { operator: 'a*', desc: 'Starts With' },
+            { operator: 'Custom', desc: 'SQL Like' },
+          ],
         }
       },
       {
@@ -126,12 +135,19 @@ export class Example10 {
         filterable: true,
         filter: {
           model: Filters.dateRange,
+          filterShortcuts: [
+            {
+              titleKey: 'NEXT_20_DAYS',
+              iconCssClass: 'mdi mdi-calendar',
+              searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD'), tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD')],
+            },
+          ]
         }
       },
     ];
 
-    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     this.gridOptions = {
       enableAutoTooltip: true,
@@ -143,6 +159,10 @@ export class Example10 {
       enableAutoResize: false,
       gridHeight: 275,
       gridWidth: 900,
+      compoundOperatorAltTexts: {
+        // where '=' is any of the `OperatorString` type shown above
+        text: { 'Custom': { operatorAlt: '%%', descAlt: 'SQL Like' } },
+      },
       enableFiltering: true,
       enableCellNavigation: true,
       createPreHeaderPanel: true,
@@ -169,7 +189,8 @@ export class Example10 {
         filters: [
           // you can use OperatorType or type them as string, e.g.: operator: 'EQ'
           { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
-          { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
+          // { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
+          { columnId: 'name', searchTerms: ['Joh*oe'], operator: OperatorType.startsWithEndsWith },
           { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' },
 
           // use a date range with 2 searchTerms values
@@ -191,6 +212,15 @@ export class Example10 {
             field: 'userId',
             value: 123
           }],
+          filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+            if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
+              // technically speaking GraphQL isn't a database query language like SQL, it's an application query language.
+              // What that means is that GraphQL won't let you write arbitrary queries out of the box.
+              // It will only support the types of queries defined in your GraphQL schema.
+              // see this SO: https://stackoverflow.com/a/37981802/1212166
+              return { field: fieldName, operator: 'Like', value: searchValue };
+            }
+          },
           useCursor: this.isWithCursor, // sets pagination strategy, if true requires a call to setPageInfo() when graphql call returns
           // when dealing with complex objects, we want to keep our field name with double quotes
           // example with gender: query { users (orderBy:[{field:"gender",direction:ASC}]) {}
@@ -226,7 +256,6 @@ export class Example10 {
    * @param query
    * @return Promise<GraphqlPaginatedResult>
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getCustomerApiCall(_query: string): Promise<GraphqlPaginatedResult> {
     let pageInfo: CursorPageInfo;
     if (this.sgb) {
@@ -293,9 +322,11 @@ export class Example10 {
     this.sgb?.paginationService?.goToLastPage();
   }
 
-  /** Dispatched event of a Grid State Changed event */
-  gridStateChanged(gridStateChanges: GridStateChange) {
-    console.log('GraphQL sample, Grid State changed:: ', gridStateChanges);
+  handleOnGridStateChanged(event) {
+    if (event?.detail) {
+      const gridStateChanges: GridStateChange = event.detail;
+      console.log('Grid State changed:: ', gridStateChanges.change);
+    }
   }
 
   saveCurrentGridState() {
@@ -303,8 +334,8 @@ export class Example10 {
   }
 
   setFiltersDynamically() {
-    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.sgb.filterService.updateFilters([
@@ -325,13 +356,14 @@ export class Example10 {
   }
 
   resetToOriginalPresets() {
-    const presetLowestDay = format(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = format(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
+    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
 
     this.sgb?.filterService.updateFilters([
       // you can use OperatorType or type them as string, e.g.: operator: 'EQ'
       { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
-      { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
+      // { columnId: 'name', searchTerms: ['John Doe'], operator: OperatorType.contains },
+      { columnId: 'name', searchTerms: ['Joh*oe'], operator: OperatorType.startsWithEndsWith },
       { columnId: 'company', searchTerms: ['xyz'], operator: 'IN' },
 
       // use a date range with 2 searchTerms values
@@ -378,6 +410,7 @@ export class Example10 {
   }
 
   private resetOptions(options: Partial<GraphqlServiceOption>) {
+    this.displaySpinner(true);
     const graphqlService = this.gridOptions.backendServiceApi!.service as GraphqlService;
     this.sgb?.paginationService!.setCursorBased(options.useCursor!);
     graphqlService.updateOptions(options);

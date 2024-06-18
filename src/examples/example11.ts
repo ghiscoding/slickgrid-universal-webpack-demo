@@ -27,6 +27,7 @@ import { BindingEventService } from '@slickgrid-universal/binding';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
+import { format as tempoFormat, addDay } from '@formkit/tempo';
 import { type MultipleSelectOption } from 'multiple-select-vanilla';
 
 import { ExampleGridOptions } from './example-grid-options';
@@ -169,7 +170,8 @@ export class Example11 {
         id: 'start', name: 'Start', field: 'start', sortable: true, minWidth: 80,
         formatter: Formatters.dateIso,
         type: FieldType.date, outputType: FieldType.dateIso,
-        filterable: true, filter: { model: Filters.compoundDate },
+        filterable: true,
+        filter: { model: Filters.compoundDate },
         editor: { model: Editors.date, massUpdate: true },
       },
       {
@@ -177,7 +179,14 @@ export class Example11 {
         editor: { model: Editors.date, massUpdate: true, editorOptions: { range: { min: 'today' } } as VanillaCalendarOption },
         formatter: Formatters.dateIso,
         type: FieldType.date, outputType: FieldType.dateIso,
-        filterable: true, filter: { model: Filters.compoundDate },
+        filterable: true,
+        filter: {
+          model: Filters.compoundDate,
+          filterShortcuts: [
+            { title: 'Until Now', searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD')], operator: '<=', iconCssClass: 'mdi mdi-calendar', },
+            { title: 'In the Future', searchTerms: [tempoFormat(addDay(new Date(), 1), 'YYYY-MM-DD')], operator: '>=', iconCssClass: 'mdi mdi-calendar-clock', },
+          ]
+        },
       },
       {
         id: 'completed', name: 'Completed', field: 'completed', width: 80, minWidth: 80, maxWidth: 100,
@@ -262,7 +271,11 @@ export class Example11 {
           model: Filters.inputText,
           type: 'string',
           queryField: 'countryOfOrigin.name',
-        }
+          filterShortcuts: [
+            { title: 'Blank Values', searchTerms: ['< A'], iconCssClass: 'mdi mdi-filter-minus-outline', },
+            { title: 'Non-Blank Values', searchTerms: ['> A'], iconCssClass: 'mdi mdi-filter-plus-outline', },
+          ]
+        },
       },
       {
         id: 'action', name: 'Action', field: 'action', minWidth: 70, width: 75, maxWidth: 75,
@@ -340,6 +353,7 @@ export class Example11 {
       },
       headerMenu: {
         hideFreezeColumnsCommand: false,
+        subItemChevronClass: 'mdi mdi-chevron-down mdi-rotate-270',
       },
       gridMenu: {
         hideClearFrozenColumnsCommand: false,
@@ -403,7 +417,9 @@ export class Example11 {
         cost: (i % 33 === 0) ? null : Math.round(Math.random() * 10000) / 100,
         completed: (randomFinish < new Date()),
         product: { id: this.mockProducts()[randomItemId]?.id, itemName: this.mockProducts()[randomItemId]?.itemName, },
-        countryOfOrigin: (i % 2) ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' },
+        countryOfOrigin: i % 33
+          ? (i % 2) ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' }
+          : null
       };
 
       if (!(i % 8)) {
