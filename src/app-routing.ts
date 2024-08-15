@@ -28,6 +28,11 @@ export class AppRouting {
       { route: 'example22', name: 'example22', title: 'Example22', moduleId: './examples/example22' },
       { route: 'example23', name: 'example23', title: 'Example23', moduleId: './examples/example23' },
       { route: 'example24', name: 'example24', title: 'Example24', moduleId: './examples/example24' },
+      { route: 'example25', name: 'example25', title: 'Example25', moduleId: './examples/example25', },
+      { route: 'example26', name: 'example26', title: 'Example26', moduleId: './examples/example26', },
+      { route: 'example27', name: 'example27', title: 'Example27', moduleId: './examples/example27', },
+      { route: 'example28', name: 'example28', title: 'Example28', moduleId: './examples/example28', },
+      { route: 'example29', name: 'example29', title: 'Example29', moduleId: './examples/example29', },
       { route: '', redirect: 'example01' },
       { route: '**', redirect: 'example01' }
     ];

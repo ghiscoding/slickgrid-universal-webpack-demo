@@ -223,10 +223,10 @@ export class Example03 {
         }
       },
       {
-        id: 'action', name: 'Action', field: 'action', width: 100, maxWidth: 100,
+        id: 'action', name: 'Action', field: 'action', width: 90, maxWidth: 90,
         excludeFromExport: true,
         formatter: () => {
-          return `<div class="fake-hyperlink text-color-primary">Action <span class="font-12px">&#9660;</span></div>`;
+          return `<div class="fake-hyperlink text-color-primary flex justify-center">Action <i class="mdi mdi-chevron-down"></i></div>`;
         },
         cellMenu: {
           hideCloseButton: false,
@@ -373,8 +373,9 @@ export class Example03 {
   loadData(count: number) {
     // mock data
     const tmpArray: any[] = [];
+    const currentYear = new Date().getFullYear();
+
     for (let i = 0; i < count; i++) {
-      const randomYear = 2000 + Math.floor(Math.random() * 10);
       const randomFinishYear = (new Date().getFullYear() - 3) + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
       const randomMonth = Math.floor(Math.random() * 11);
       const randomDay = Math.floor((Math.random() * 29));
@@ -386,7 +387,7 @@ export class Example03 {
         title: 'Task ' + i,
         duration: Math.round(Math.random() * 100) + '',
         percentComplete: Math.round(Math.random() * 100),
-        start: new Date(randomYear, randomMonth, randomDay),
+        start: new Date(currentYear - 2, randomMonth, randomDay),
         finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
         cost: (i % 33 === 0) ? -randomCost : randomCost,
         effortDriven: (i % 5 === 0)

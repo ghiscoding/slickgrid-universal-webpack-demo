@@ -146,8 +146,9 @@ export class Example10 {
       },
     ];
 
-    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const currentYear = new Date().getFullYear();
+    const presetLowestDay = `${currentYear}-01-01`;
+    const presetHighestDay = `${currentYear}-02-15`;
 
     this.gridOptions = {
       enableAutoTooltip: true,
@@ -212,13 +213,13 @@ export class Example10 {
             field: 'userId',
             value: 123
           }],
-          filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValue }) => {
+          filterQueryOverride: ({ fieldName, columnDef, columnFilterOperator, searchValues }) => {
             if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
               // technically speaking GraphQL isn't a database query language like SQL, it's an application query language.
               // What that means is that GraphQL won't let you write arbitrary queries out of the box.
               // It will only support the types of queries defined in your GraphQL schema.
               // see this SO: https://stackoverflow.com/a/37981802/1212166
-              return { field: fieldName, operator: 'Like', value: searchValue };
+              return { field: fieldName, operator: 'Like', value: searchValues[0] };
             }
           },
           useCursor: this.isWithCursor, // sets pagination strategy, if true requires a call to setPageInfo() when graphql call returns
@@ -334,8 +335,9 @@ export class Example10 {
   }
 
   setFiltersDynamically() {
-    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const currentYear = new Date().getFullYear();
+    const presetLowestDay = `${currentYear}-01-01`;
+    const presetHighestDay = `${currentYear}-02-15`;
 
     // we can Set Filters Dynamically (or different filters) afterward through the FilterService
     this.sgb.filterService.updateFilters([
@@ -356,8 +358,9 @@ export class Example10 {
   }
 
   resetToOriginalPresets() {
-    const presetLowestDay = tempoFormat(addDay(new Date(), -2), 'YYYY-MM-DD');
-    const presetHighestDay = tempoFormat(addDay(new Date(), 20), 'YYYY-MM-DD');
+    const currentYear = new Date().getFullYear();
+    const presetLowestDay = `${currentYear}-01-01`;
+    const presetHighestDay = `${currentYear}-02-15`;
 
     this.sgb?.filterService.updateFilters([
       // you can use OperatorType or type them as string, e.g.: operator: 'EQ'

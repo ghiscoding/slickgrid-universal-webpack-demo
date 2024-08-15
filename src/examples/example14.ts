@@ -23,6 +23,7 @@ import {
 } from '@slickgrid-universal/common';
 import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import { ExampleGridOptions } from './example-grid-options';
@@ -226,6 +227,7 @@ export class Example14 {
         id: 'percentComplete', name: '% Complete', field: 'percentComplete', minWidth: 150,
         type: FieldType.number,
         sortable: true, filterable: true, columnGroup: 'Analysis',
+        customTooltip: { position: 'center' },
         filter: {
           model: Filters.sliderRange,
           operator: '>=',
@@ -481,7 +483,7 @@ export class Example14 {
       excelExportOptions: {
         exportWithFormatter: false
       },
-      externalResources: [new ExcelExportService()],
+      externalResources: [new SlickCustomTooltip(), new ExcelExportService()],
       enableFiltering: true,
       enableRowSelection: true,
       enableCheckboxSelector: true,

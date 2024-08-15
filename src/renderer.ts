@@ -96,6 +96,8 @@ export class Renderer {
 
       switch (attribute) {
         case 'class':
+        case 'classname':
+        case 'className':
           observer.bind(elements, 'className');
           break;
         case 'innerhtml':
