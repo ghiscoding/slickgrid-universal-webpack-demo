@@ -11,7 +11,7 @@ export class Example29 {
   columnDefinitions1!: Column[];
   dataset1!: any[];
   sgb1!: SlickVanillaGridBundle;
-  dragHelper;
+  dragHelper: HTMLElement;
   dragRows: number[];
   dragMode = '';
 
@@ -95,9 +95,9 @@ export class Example29 {
   }
 
   onBeforeMoveRows(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number; }) {
-    for (let i = 0; i < data.rows.length; i++) {
+    for (const dataRow of data.rows) {
       // no point in moving before or after itself
-      if (data.rows[i] == data.insertBefore || data.rows[i] == data.insertBefore - 1) {
+      if (dataRow === data.insertBefore || dataRow === data.insertBefore - 1) {
         e.stopPropagation();
         return false;
       }
@@ -114,14 +114,13 @@ export class Example29 {
 
     rows.sort((a, b) => a - b);
 
-    for (let i = 0; i < rows.length; i++) {
-      extractedRows.push(this.sgb1.dataset[rows[i]]);
+    for (const row of rows) {
+      extractedRows.push(this.sgb1.dataset[row]);
     }
 
     rows.reverse();
 
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
+    for (const row of rows) {
       if (row < insertBefore) {
         left.splice(row, 1);
       } else {
@@ -132,8 +131,9 @@ export class Example29 {
     this.dataset1 = left.concat(extractedRows.concat(right));
 
     const selectedRows: number[] = [];
-    for (let i = 0; i < rows.length; i++)
+    for (let i = 0; i < rows.length; i++) {
       selectedRows.push(left.length + i);
+    }
 
     this.sgb1.slickGrid?.resetActiveCell();
     this.sgb1.dataset = this.dataset1; // update dataset and re-render the grid
@@ -176,24 +176,14 @@ export class Example29 {
     this.dragRows = selectedRows;
     const dragCount = selectedRows.length;
 
-    const proxy = document.createElement('span');
-    proxy.style.position = 'absolute';
-    proxy.style.display = 'inline-block';
-    proxy.style.padding = '4px 10px';
-    proxy.style.background = '#e0e0e0';
-    proxy.style.border = '1px solid gray';
-    proxy.style.zIndex = '99999';
-    proxy.style.borderRadius = '8px';
-    proxy.style.boxShadow = '2px 2px 6px silver';
-    proxy.textContent = `Drag to Recycle Bin to delete ${dragCount} selected row(s)`;
-    document.body.appendChild(proxy);
+    const dragMsgElm = document.createElement('span');
+    dragMsgElm.className = 'drag-message';
+    dragMsgElm.textContent = `Drag to Recycle Bin to delete ${dragCount} selected row(s)`;
+    this.dragHelper = dragMsgElm;
+    document.body.appendChild(dragMsgElm);
+    document.querySelector<HTMLDivElement>('#dropzone')?.classList.add('drag-dropzone');
 
-    this.dragHelper = proxy;
-
-    const dropzoneElm = document.querySelector<HTMLDivElement>('#dropzone')!;
-    dropzoneElm.style.border = '2px dashed pink';
-
-    return proxy;
+    return dragMsgElm;
   }
 
   handleOnDrag(e: CustomEvent) {
@@ -210,12 +200,9 @@ export class Example29 {
     // add/remove pink background color when hovering recycle bin
     const dropzoneElm = document.querySelector<HTMLDivElement>('#dropzone')!;
     if (args.target instanceof HTMLElement && (args.target.id === 'dropzone' || args.target === dropzoneElm)) {
-      dropzoneElm.style.background = 'pink'; // OR: dd.target.style.background = 'pink';
-      dropzoneElm.style.cursor = 'crosshair';
-
+      dropzoneElm.classList.add('drag-hover'); // OR: dd.target.style.background = 'pink';
     } else {
-      dropzoneElm.style.cursor = 'default';
-      dropzoneElm.style.background = '';
+      dropzoneElm.classList.remove('drag-hover');
     }
   }
 
@@ -225,8 +212,7 @@ export class Example29 {
       return;
     }
     this.dragHelper.remove();
-    const dropzoneElm = document.querySelector<HTMLDivElement>('#dropzone')!;
-    dropzoneElm.style.border = '2px solid #e4e4e4';
+    document.querySelector<HTMLDivElement>('#dropzone')?.classList.remove('drag-dropzone', 'drag-hover');
 
     if (this.dragMode != 'recycle' || args.target.id !== 'dropzone') {
       return;
@@ -234,14 +220,12 @@ export class Example29 {
 
     // reaching here means that we'll remove the row that we started dragging from the dataset
     const rowsToDelete = this.dragRows.sort().reverse();
-    for (let i = 0; i < rowsToDelete.length; i++) {
-      this.dataset1.splice(rowsToDelete[i], 1);
+    for (const rowToDelete of rowsToDelete) {
+      this.sgb1.dataset.splice(rowToDelete, 1);
     }
     this.sgb1.dataset = this.dataset1;
     this.sgb1.slickGrid?.invalidate();
     this.sgb1.slickGrid?.setSelectedRows([]);
-
-    dropzoneElm.style.background = '';
   }
 
   requiredFieldValidator(value: any) {
