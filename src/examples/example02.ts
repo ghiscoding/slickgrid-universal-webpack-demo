@@ -22,7 +22,7 @@ import '../material-styles.scss';
 
 const NB_ITEMS = 500;
 
-export class Example02 {
+export default class Example02 {
   private _bindingEventService: BindingEventService;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -188,7 +188,7 @@ export class Example02 {
           collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
 
           // Select Filters can also support collection that are async, it could be a Promise (shown below) or Fetch result
-          // collectionAsync: new Promise<any>(resolve => setTimeout(() => {
+          // collectionAsync: new Promise<any>(resolve => window.setTimeout(() => {
           //   resolve([{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }]);
           // }, 250)),
         },
@@ -244,6 +244,8 @@ export class Example02 {
         hideTotalItemCount: false,
         hideLastUpdateTimestamp: false
       },
+      // forceSyncScrolling: true,
+      rowTopOffsetRenderType: 'transform' // defaults: 'top'
     };
   }
 
@@ -293,6 +295,8 @@ export class Example02 {
   }
 
   groupByDuration() {
+    // you need to manually add the sort icon(s) in UI
+    this.sgb?.slickGrid?.setSortColumns([{ columnId: 'duration', sortAsc: true }]);
     this.sgb?.dataView?.setGrouping({
       getter: 'duration',
       formatter: (g) => `Duration: ${g.value} <span class="text-green">(${g.count} items)</span>`,
@@ -304,9 +308,6 @@ export class Example02 {
       aggregateCollapsed: false,
       lazyTotalsCalculation: true
     } as Grouping);
-
-    // you need to manually add the sort icon(s) in UI
-    this.sgb?.slickGrid?.setSortColumns([{ columnId: 'duration', sortAsc: true }]);
     this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 
@@ -327,7 +328,9 @@ export class Example02 {
   }
 
   groupByDurationEffortDriven() {
-    this.sgb?.slickGrid?.setSortColumns([]);
+    // you need to manually add the sort icon(s) in UI
+    const sortColumns = [{ columnId: 'duration', sortAsc: true }, { columnId: 'effortDriven', sortAsc: true }];
+    this.sgb?.slickGrid?.setSortColumns(sortColumns);
     this.sgb?.dataView?.setGrouping([
       {
         getter: 'duration',
@@ -350,15 +353,17 @@ export class Example02 {
         lazyTotalsCalculation: true
       }
     ] as Grouping[]);
-
-    // you need to manually add the sort icon(s) in UI
-    const sortColumns = [{ columnId: 'duration', sortAsc: true }, { columnId: 'effortDriven', sortAsc: true }];
-    this.sgb?.slickGrid?.setSortColumns(sortColumns);
     this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 
   groupByDurationEffortDrivenPercent() {
-    this.sgb?.slickGrid?.setSortColumns([]);
+    // you need to manually add the sort icon(s) in UI
+    const sortColumns = [
+      { columnId: 'duration', sortAsc: true },
+      { columnId: 'effortDriven', sortAsc: true },
+      { columnId: 'percentComplete', sortAsc: true }
+    ];
+    this.sgb?.slickGrid?.setSortColumns(sortColumns);
     this.sgb?.dataView?.setGrouping([
       {
         getter: 'duration',
@@ -390,14 +395,6 @@ export class Example02 {
         lazyTotalsCalculation: true
       }
     ] as Grouping[]);
-
-    // you need to manually add the sort icon(s) in UI
-    const sortColumns = [
-      { columnId: 'duration', sortAsc: true },
-      { columnId: 'effortDriven', sortAsc: true },
-      { columnId: 'percentComplete', sortAsc: true }
-    ];
-    this.sgb?.slickGrid?.setSortColumns(sortColumns);
     this.sgb?.slickGrid?.invalidate(); // invalidate all rows and re-render
   }
 }
