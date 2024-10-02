@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 /* make sure to add the @import the SlickGrid Material Theme AFTER the variables changes */
 // @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material-with-font.scss';
 // @import '@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material.scss';
@@ -152,9 +154,9 @@
       --slick-row-mouse-hover-color: #505050;
       --slick-row-selected-color: #474747;
       --ms-checkbox-color: #66bb6a;
-      --ms-checkbox-hover-color: #{lighten(#49a54e, 13%)};
+      --ms-checkbox-hover-color: #{color.adjust(#49a54e, $lightness: 13%)};
       --ms-ok-button-text-color: #66bb6a;
-      --ms-ok-button-text-hover-color: #{lighten(#66bb6a, 5%)};
+      --ms-ok-button-text-hover-color: #{color.adjust(#66bb6a, $lightness: 5%)};
 
       .slick-headerrow {
         .search-filter.filled .input-group-addon.slider-value,
