@@ -65,8 +65,29 @@ module.exports = ({ production } = {}) => ({
   module: {
     rules: [
       { test: /\.css$/i, use: [{ loader: MiniCssExtractPlugin.loader }, 'css-loader'] },
-      { test: /\.(sass|scss)$/, use: ['style-loader', 'css-loader', 'sass-loader'], issuer: /\.[tj]s$/i },
-      { test: /\.(sass|scss)$/, use: ['css-loader', 'sass-loader'], issuer: /\.html?$/i },
+      {
+        test: /\.(sass|scss)$/, use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: { quietDeps: true },
+            },
+          }
+        ], issuer: /\.[tj]s$/i
+      },
+      {
+        test: /\.(sass|scss)$/, use: [
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: { quietDeps: true },
+            },
+          }
+        ], issuer: /\.html?$/i
+      },
       { test: /\.html$/i, loader: 'html-loader', options: { esModule: false } },
       {
         test: /\.ts?$/,
