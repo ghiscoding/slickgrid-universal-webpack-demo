@@ -21,8 +21,8 @@ export class Example22 {
   dataset!: any[];
   sgb!: SlickVanillaGridBundle;
   translateService: TranslateService;
-  selectedLanguage: string;
-  selectedLanguageFile: string;
+  selectedLanguage = 'en';
+  selectedLanguageFile = 'en.json';
   fetchResult = '';
   statusClass = 'is-success';
   statusStyle = 'display: none';
@@ -31,6 +31,8 @@ export class Example22 {
   constructor() {
     this.translateService = (<any>window).TranslateService;
     this.selectedLanguage = this.translateService.getCurrentLanguage();
+    this.translateService.use('en');
+    this.selectedLanguage = 'en';
     this.selectedLanguageFile = `${this.selectedLanguage}.json`;
     this._bindingEventService = new BindingEventService();
   }
