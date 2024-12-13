@@ -16,9 +16,8 @@ import {
 import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-import fetchJsonp from 'fetch-jsonp';
-// import { fetch } from 'whatwg-fetch';
 
+import fetchJsonp from './jsonp';
 import { ExampleGridOptions } from './example-grid-options';
 import './example04.scss';
 
@@ -252,7 +251,7 @@ export class Example04 {
           editorOptions: {
             minLength: 3,
             fetch: (searchText, updateCallback) => {
-              fetchJsonp(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
+              fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`, { crossorigin: true })
                 .then((response) => response.json())
                 .then((json) => updateCallback(json))
                 .catch((ex) => console.log('invalid JSONP response', ex));

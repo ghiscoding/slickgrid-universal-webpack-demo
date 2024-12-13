@@ -52,7 +52,6 @@
     "@slickgrid-universal/vanilla-force-bundle": "^5.10.2",
     "bulma": "^1.0.2",
     "dompurify": "^3.2.2",
-    "fetch-jsonp": "^1.3.0",
     "flatpickr": "^4.6.13",
     "moment-mini": "^2.29.4",
     "rxjs": "^7.8.1",
