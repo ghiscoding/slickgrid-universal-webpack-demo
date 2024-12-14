@@ -34,6 +34,7 @@ export class AppRouting {
       { route: 'example28', name: 'example28', title: 'Example28', moduleId: './examples/example28' },
       { route: 'example29', name: 'example29', title: 'Example29', moduleId: './examples/example29' },
       { route: 'example30', name: 'example30', title: 'Example30', moduleId: './examples/example30' },
+      { route: 'example31', name: 'example31', title: 'Example31', moduleId: './examples/example31' },
       { route: '', redirect: 'example01' },
       { route: '**', redirect: 'example01' }
     ];
