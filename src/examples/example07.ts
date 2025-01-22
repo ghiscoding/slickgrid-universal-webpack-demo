@@ -1,12 +1,4 @@
-import {
-  type Column,
-  Editors,
-  FieldType,
-  Filters,
-  Formatters,
-  type GridOption,
-  OperatorType,
-} from '@slickgrid-universal/common';
+import { type Column, Editors, FieldType, Filters, Formatters, type GridOption, OperatorType } from '@slickgrid-universal/common';
 import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
@@ -17,7 +9,9 @@ import type { TranslateService } from '../translate.service';
 import './example07.scss';
 import '../material-styles.scss';
 
-export class Example07 {
+const NB_ITEMS = 500;
+
+export default class Example07 {
   private _bindingEventService: BindingEventService;
   private _darkMode = false;
   columnDefinitions: Column[];
@@ -52,11 +46,16 @@ export class Example07 {
 
   async attached() {
     this.initializeGrid();
-    this.dataset = this.loadData(500);
+    this.dataset = this.loadData(NB_ITEMS);
     const gridContainerElm = document.querySelector(`.grid7`) as HTMLDivElement;
     this._bindingEventService.bind(gridContainerElm, 'oncellchange', this.handleOnCellChange.bind(this));
     this._bindingEventService.bind(gridContainerElm, 'onvalidationerror', this.handleValidationError.bind(this));
-    this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
+    this.sgb = new Slicker.GridBundle(
+      gridContainerElm,
+      this.columnDefinitions,
+      { ...ExampleGridOptions, ...this.gridOptions },
+      this.dataset
+    );
     document.body.classList.add('material-theme');
   }
 
@@ -71,65 +70,97 @@ export class Example07 {
   initializeGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', nameKey: 'TITLE', field: 'title', filterable: true,
+        id: 'title',
+        nameKey: 'TITLE',
+        field: 'title',
+        filterable: true,
         editor: { model: Editors.longText, required: true, alwaysSaveOnEnterKey: true },
         // formatter: this.taskTranslateFormatter.bind(this),
         // params: { useFormatterOuputToFilter: true }
       },
       {
-        id: 'action', name: 'Action', field: 'action', minWidth: 55, maxWidth: 55,
-        excludeFromExport: true, excludeFromHeaderMenu: true,
+        id: 'action',
+        name: 'Action',
+        field: 'action',
+        minWidth: 55,
+        maxWidth: 55,
+        excludeFromExport: true,
+        excludeFromHeaderMenu: true,
         cssClass: 'justify-center',
-        formatter: () => `<div class="button-style action-btn height-80"><span class="mdi mdi-chevron-down mdi-22px text-color-primary"></span></div>`,
+        formatter: () =>
+          `<div class="button-style action-btn height-80"><span class="mdi mdi-chevron-down mdi-22px text-color-primary"></span></div>`,
         cellMenu: {
           hideCloseButton: false,
           subItemChevronClass: 'mdi mdi-chevron-down mdi-rotate-270',
           commandTitleKey: 'COMMANDS',
           commandItems: [
             {
-              command: 'command1', titleKey: 'DELETE_ROW',
-              iconCssClass: 'mdi mdi-close', cssClass: 'has-text-danger', textCssClass: 'bold',
+              command: 'command1',
+              titleKey: 'DELETE_ROW',
+              iconCssClass: 'mdi mdi-close',
+              cssClass: 'has-text-danger',
+              textCssClass: 'bold',
               action: (_e, args) => {
                 if (confirm(`Do you really want to delete row (${args.row! + 1}) with "${args.dataContext.title}"?`)) {
                   this.sgb?.gridService.deleteItemById(args.dataContext.id);
                 }
-              }
+              },
             },
             'divider',
             {
-              command: 'help', titleKey: 'HELP', iconCssClass: 'mdi mdi-help-circle',
-              action: () => alert('Please help!')
+              command: 'help',
+              titleKey: 'HELP',
+              iconCssClass: 'mdi mdi-help-circle',
+              action: () => alert('Please help!'),
             },
             { command: '', divider: true, positionOrder: 98 },
             {
               // we can also have multiple nested sub-menus
-              command: 'export', title: 'Exports', iconCssClass: 'mdi mdi-download', positionOrder: 99,
+              command: 'export',
+              title: 'Exports',
+              iconCssClass: 'mdi mdi-download',
+              positionOrder: 99,
               commandItems: [
                 { command: 'exports-txt', title: 'Text (tab delimited)' },
                 {
-                  command: 'sub-menu', title: 'Excel', cssClass: 'green', subMenuTitle: 'available formats', subMenuTitleCssClass: 'text-italic orange',
+                  command: 'sub-menu',
+                  title: 'Excel',
+                  cssClass: 'green',
+                  subMenuTitle: 'available formats',
+                  subMenuTitleCssClass: 'text-italic orange',
                   commandItems: [
                     { command: 'exports-csv', title: 'Excel (csv)' },
                     { command: 'exports-xlsx', title: 'Excel (xlsx)' },
-                  ]
-                }
-              ]
+                  ],
+                },
+              ],
             },
             {
-              command: 'feedback', title: 'Feedback', positionOrder: 100,
+              command: 'feedback',
+              title: 'Feedback',
+              positionOrder: 100,
               commandItems: [
-                { command: 'request-update', title: 'Request update from supplier', iconCssClass: 'mdi mdi-star', tooltip: 'this will automatically send an alert to the shipping team to contact the user for an update' },
+                {
+                  command: 'request-update',
+                  title: 'Request update from supplier',
+                  iconCssClass: 'mdi mdi-star',
+                  tooltip: 'this will automatically send an alert to the shipping team to contact the user for an update',
+                },
                 'divider',
                 {
-                  command: 'sub-menu', title: 'Contact Us', iconCssClass: 'mdi mdi-account', subMenuTitle: 'contact us...', subMenuTitleCssClass: 'italic',
+                  command: 'sub-menu',
+                  title: 'Contact Us',
+                  iconCssClass: 'mdi mdi-account',
+                  subMenuTitle: 'contact us...',
+                  subMenuTitleCssClass: 'italic',
                   commandItems: [
                     { command: 'contact-email', title: 'Email us', iconCssClass: 'mdi mdi-pencil-outline' },
                     { command: 'contact-chat', title: 'Chat with us', iconCssClass: 'mdi mdi-message-text-outline' },
                     { command: 'contact-meeting', title: 'Book an appointment', iconCssClass: 'mdi mdi-coffee' },
-                  ]
-                }
-              ]
-            }
+                  ],
+                },
+              ],
+            },
           ],
           onCommand: (_e, args) => {
             // to keep menu open you can preventDefault & return false
@@ -156,49 +187,78 @@ export class Example07 {
             { option: false, titleKey: 'FALSE', iconCssClass: 'mdi mdi-checkbox-blank-outline' },
             {
               // we can also have multiple nested sub-menus
-              option: null, title: 'Sub-Options (demo)', subMenuTitleKey: 'CHANGE_COMPLETED_FLAG', optionItems: [
+              option: null,
+              title: 'Sub-Options (demo)',
+              subMenuTitleKey: 'CHANGE_COMPLETED_FLAG',
+              optionItems: [
                 { option: true, titleKey: 'TRUE', iconCssClass: 'mdi mdi-check-box-outline' },
                 { option: false, titleKey: 'FALSE', iconCssClass: 'mdi mdi-checkbox-blank-outline' },
-              ]
-            }
+              ],
+            },
           ],
           onOptionSelected: (_e, args) => {
             this.changeCompletedOption(args.dataContext, args.item.option as boolean);
           },
-        }
+        },
       },
       {
-        id: 'duration', nameKey: 'DURATION', field: 'duration', sortable: true, filterable: true,
-        type: 'number', editor: { model: Editors.text, alwaysSaveOnEnterKey: true, },
-        formatter: this.dayDurationTranslateFormatter.bind(this)
+        id: 'duration',
+        nameKey: 'DURATION',
+        field: 'duration',
+        sortable: true,
+        filterable: true,
+        type: 'number',
+        editor: { model: Editors.text, alwaysSaveOnEnterKey: true },
+        formatter: this.dayDurationTranslateFormatter.bind(this),
       },
       {
-        id: 'percentComplete', nameKey: 'PERCENT_COMPLETE', field: 'percentComplete', type: 'number',
-        filterable: true, sortable: true, editor: { model: Editors.slider, minValue: 0, maxValue: 100, },
+        id: 'percentComplete',
+        nameKey: 'PERCENT_COMPLETE',
+        field: 'percentComplete',
+        type: 'number',
+        filterable: true,
+        sortable: true,
+        editor: { model: Editors.slider, minValue: 0, maxValue: 100 },
       },
       {
-        id: 'start', nameKey: 'START', field: 'start', formatter: Formatters.dateIso,
-        filterable: true, sortable: true,
+        id: 'start',
+        nameKey: 'START',
+        field: 'start',
+        formatter: Formatters.dateIso,
+        filterable: true,
+        sortable: true,
         filter: { model: Filters.compoundDate },
-        editor: { model: Editors.date }, type: FieldType.date,/* outputType: FieldType.dateUs, */ saveOutputType: FieldType.dateUtc,
+        editor: { model: Editors.date },
+        type: FieldType.date,
+        /* outputType: FieldType.dateUs, */ saveOutputType: FieldType.dateUtc,
       },
       {
-        id: 'finish', nameKey: 'FINISH', field: 'finish', formatter: Formatters.dateIso,
-        filterable: true, sortable: true,
+        id: 'finish',
+        nameKey: 'FINISH',
+        field: 'finish',
+        formatter: Formatters.dateIso,
+        filterable: true,
+        sortable: true,
         filter: { model: Filters.compoundDate },
-        editor: { model: Editors.date }, type: FieldType.dateIso, saveOutputType: FieldType.dateUtc,
+        editor: { model: Editors.date },
+        type: FieldType.dateIso,
+        saveOutputType: FieldType.dateUtc,
       },
       {
-        id: 'completed', nameKey: 'COMPLETED', field: 'completed', formatter: Formatters.checkmarkMaterial,
-        filterable: true, sortable: true,
+        id: 'completed',
+        nameKey: 'COMPLETED',
+        field: 'completed',
+        formatter: Formatters.checkmarkMaterial,
+        filterable: true,
+        sortable: true,
         filter: {
           enableRenderHtml: true,
           collection: [
             { value: '', label: '' },
             { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check mdi-16px"></i> ` },
-            { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close mdi-16px"></i> ` }
+            { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close mdi-16px"></i> ` },
           ],
-          model: Filters.singleSelect
+          model: Filters.singleSelect,
         },
         editor: {
           model: Editors.singleSelect,
@@ -208,12 +268,14 @@ export class Example07 {
 
           // Select Editor can also support collection that are async, it could be a Promise (shown below) or Fetch result
           enableRenderHtml: true,
-          collectionAsync: new Promise<any>(resolve => setTimeout(() => {
-            resolve([
-              { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check mdi-16px"></i> ` },
-              { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close mdi-16px"></i> ` }
-            ]);
-          }, 250)),
+          collectionAsync: new Promise<any>((resolve) =>
+            window.setTimeout(() => {
+              resolve([
+                { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check mdi-16px"></i> ` },
+                { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close mdi-16px"></i> ` },
+              ]);
+            }, 250)
+          ),
         },
       },
       {
@@ -242,8 +304,15 @@ export class Example07 {
 
           // OR 2- use a Promise
           collectionAsync: new Promise<any>((resolve) => {
-            setTimeout(() => {
-              resolve(Array.from(Array((this.dataset || []).length).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })));
+            window.setTimeout(() => {
+              resolve(
+                Array.from(Array((this.dataset || []).length).keys()).map((k) => ({
+                  value: k,
+                  label: k,
+                  prefix: 'Task',
+                  suffix: 'days',
+                }))
+              );
             }, 500);
           }),
 
@@ -252,7 +321,7 @@ export class Example07 {
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
-            fieldType: FieldType.number
+            fieldType: FieldType.number,
           },
           customStructure: {
             label: 'label',
@@ -260,24 +329,24 @@ export class Example07 {
             labelPrefix: 'prefix',
           },
           collectionOptions: {
-            separatorBetweenTextLabels: ' '
+            separatorBetweenTextLabels: ' ',
           },
           model: Editors.multipleSelect,
         },
         filter: {
           // collectionAsync: fetch(URL_SAMPLE_COLLECTION_DATA),
           collectionAsync: new Promise((resolve) => {
-            setTimeout(() => {
-              resolve(Array.from(Array((this.dataset || []).length).keys()).map(k => ({ value: k, label: `Task ${k}` })));
+            window.setTimeout(() => {
+              resolve(Array.from(Array((this.dataset || []).length).keys()).map((k) => ({ value: k, label: `Task ${k}` })));
             });
           }),
 
           // OR a regular collection load
-          // collection: Array.from(Array((this.dataset || []).length).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })),
+          // collection: Array.from(Array(NB_ITEMS).keys()).map(k => ({ value: k, label: k, prefix: 'Task', suffix: 'days' })),
           collectionSortBy: {
             property: 'value',
             sortDesc: true,
-            fieldType: FieldType.number
+            fieldType: FieldType.number,
           },
           customStructure: {
             label: 'label',
@@ -285,19 +354,19 @@ export class Example07 {
             labelPrefix: 'prefix',
           },
           collectionOptions: {
-            separatorBetweenTextLabels: ' '
+            separatorBetweenTextLabels: ' ',
           },
           model: Filters.multipleSelect,
           operator: OperatorType.inContains,
         },
-      }
+      },
     ];
 
     this.gridOptions = {
       enableAutoResize: true,
       autoResize: {
         container: '.demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       darkMode: this._darkMode,
       gridMenu: {
@@ -309,7 +378,7 @@ export class Example07 {
       showCustomFooter: true,
       enableExcelExport: true,
       excelExportOptions: {
-        sanitizeDataExport: true
+        sanitizeDataExport: true,
       },
       enableCellMenu: true,
       enableFiltering: true,
@@ -321,7 +390,7 @@ export class Example07 {
       enableRowSelection: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
-        selectActiveRow: false
+        selectActiveRow: false,
       },
       checkboxSelector: {
         hideSelectAllCheckbox: false, // hide the "Select All" from title bar
@@ -352,8 +421,8 @@ export class Example07 {
         // the RECOMMENDED is to use "dataContextIds" since that will always work even with Pagination, while "gridRowIndexes" is only good for 1 page
         rowSelection: {
           // gridRowIndexes: [2],       // the row position of what you see on the screen (UI)
-          dataContextIds: [2, 3, 6, 7]  // (recommended) select by your data object IDs
-        }
+          dataContextIds: [2, 3, 6, 7], // (recommended) select by your data object IDs
+        },
       },
     };
   }
@@ -364,7 +433,7 @@ export class Example07 {
     const newRows = this.loadData(1, lastRowIndex);
 
     // wrap into a timer to simulate a backend async call
-    setTimeout(() => {
+    window.setTimeout(() => {
       // at any time, we can poke the "collection" property and modify it
       const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites') as Column;
       if (requisiteColumnDef) {
@@ -440,7 +509,8 @@ export class Example07 {
       if (columnFilter.filterable) {
         const filterElm = `modal-allfilter-${columnFilter.id}`;
         const innerHtml = document.querySelector('#modal-allFilter-table')!.innerHTML;
-        document.querySelector('#modal-allFilter-table')!.innerHTML = innerHtml +
+        document.querySelector('#modal-allFilter-table')!.innerHTML =
+          innerHtml +
           `<div class="row slick-headerrow-columns">
               <div class="column">${columnFilter.name}</div>
               <div id="${filterElm}" class="column slick-state-default slick-headerrow-column"></div>
@@ -476,7 +546,7 @@ export class Example07 {
   loadData(itemCount: number, startingIndex = 0) {
     // Set up some test columns.
     const tempDataset: any[] = [];
-    for (let i = startingIndex; i < (startingIndex + itemCount); i++) {
+    for (let i = startingIndex; i < startingIndex + itemCount; i++) {
       tempDataset.push({
         id: i,
         title: 'Task ' + i,
@@ -484,8 +554,8 @@ export class Example07 {
         percentComplete: Math.round(Math.random() * 100),
         start: new Date(2009, 0, 1),
         finish: new Date(2009, 0, 5),
-        completed: (i % 5 === 0),
-        prerequisites: (i % 2 === 0) && i !== 0 && i < 50 ? [i, i - 1] : [],
+        completed: i % 5 === 0,
+        prerequisites: i % 2 === 0 && i !== 0 && i < 50 ? [i, i - 1] : [],
       });
     }
     return tempDataset;
@@ -495,10 +565,13 @@ export class Example07 {
     return collection.sort((item1, item2) => item1.value - item2.value);
   }
 
-  onBeforeMoveRow(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number; }) {
+  onBeforeMoveRow(e: MouseEvent | TouchEvent, data: { rows: number[]; insertBefore: number }) {
     for (const rowIdx of data.rows) {
       // no point in moving before or after itself
-      if (rowIdx === data.insertBefore || (rowIdx === data.insertBefore - 1 && ((data.insertBefore - 1) !== this.sgb.dataView?.getItemCount()))) {
+      if (
+        rowIdx === data.insertBefore ||
+        (rowIdx === data.insertBefore - 1 && data.insertBefore - 1 !== this.sgb.dataView?.getItemCount())
+      ) {
         e.stopPropagation();
         return false;
       }
@@ -506,7 +579,7 @@ export class Example07 {
     return true;
   }
 
-  onMoveRows(_e: MouseEvent | TouchEvent, args: { rows: number[]; insertBefore: number; }) {
+  onMoveRows(_e: MouseEvent | TouchEvent, args: { rows: number[]; insertBefore: number }) {
     // rows and insertBefore references,
     // note that these references are assuming that the dataset isn't filtered at all
     // which is not always the case so we will recalcualte them and we won't use these reference afterward
@@ -525,11 +598,13 @@ export class Example07 {
     const filteredItems = this.sgb.dataView?.getFilteredItems() as any[];
 
     const itemOnRight = this.sgb.dataView?.getItem(insertBefore);
-    const insertBeforeFilteredIdx = (itemOnRight ? this.sgb.dataView?.getIdxById(itemOnRight.id) : this.sgb.dataView?.getItemCount()) as number;
+    const insertBeforeFilteredIdx = (
+      itemOnRight ? this.sgb.dataView?.getIdxById(itemOnRight.id) : this.sgb.dataView?.getItemCount()
+    ) as number;
 
     const filteredRowItems: any[] = [];
-    rows.forEach(row => filteredRowItems.push(filteredItems[row] as any));
-    const filteredRows = (filteredRowItems.map(item => this.sgb.dataView?.getIdxById(item.id))) as number[];
+    rows.forEach((row) => filteredRowItems.push(filteredItems[row] as any));
+    const filteredRows = filteredRowItems.map((item) => this.sgb.dataView?.getIdxById(item.id)) as number[];
 
     const left = tmpDataset.slice(0, insertBeforeFilteredIdx);
     const right = tmpDataset.slice(insertBeforeFilteredIdx, tmpDataset.length);
@@ -568,7 +643,7 @@ export class Example07 {
   }
 
   async switchLanguage() {
-    const nextLanguage = (this.selectedLanguage === 'en') ? 'fr' : 'en';
+    const nextLanguage = this.selectedLanguage === 'en' ? 'fr' : 'en';
     await this.translateService.use(nextLanguage);
     this.selectedLanguage = nextLanguage;
     this.selectedLanguageFile = `${this.selectedLanguage}.json`;
@@ -592,7 +667,9 @@ export class Example07 {
         required: true,
         // validator: myCustomTitleValidator, // use a custom validator
       },
-      sortable: true, minWidth: 100, filterable: true,
+      sortable: true,
+      minWidth: 100,
+      filterable: true,
       // formatter: this.taskTranslateFormatter.bind(this),
       // params: { useFormatterOuputToFilter: true },
     };
@@ -600,7 +677,6 @@ export class Example07 {
     // you can dynamically add your column to your column definitions
     // and then use the spread operator [...cols] OR slice to force the framework to review the changes
     this.sgb.columnDefinitions.push(newCol);
-    this.sgb.columnDefinitions = this.sgb.columnDefinitions.slice(); // or use spread operator [...cols]
 
     // NOTE if you use an Extensions (Checkbox Selector, Row Detail, ...) that modifies the column definitions in any way
     // you MUST use "getAllColumnDefinitions()" from the GridService, using this will be ALL columns including the 1st column that is created internally
@@ -614,7 +690,6 @@ export class Example07 {
 
   dynamicallyRemoveLastColumn() {
     this.sgb.columnDefinitions.pop();
-    this.sgb.columnDefinitions = this.sgb.columnDefinitions.slice();
 
     /*
     const allColumns = this.slickerGridInstance.gridService.getAllColumnDefinitions();
@@ -634,6 +709,11 @@ export class Example07 {
 
     // or with multiple Ids and extra options
     // this.sgb.gridService.hideColumnByIds(['duration', 'finish'], { autoResizeColumns: false, hideFromColumnPicker: true, hideFromGridMenu: false });
+  }
+
+  showColumnSubset() {
+    // note that calling this function will NOT include dynamically created columns like row selection & row move, you need to include them yourself
+    this.sgb.gridService.showColumnByIds(['_move', '_checkbox_selector', 'title', 'action', 'percentComplete', 'start', 'finish']);
   }
 
   // Disable/Enable Filtering/Sorting functionalities

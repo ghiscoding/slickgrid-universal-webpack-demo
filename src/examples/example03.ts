@@ -34,15 +34,15 @@ interface ReportItem {
   effortDriven: boolean;
 }
 
-export class Example03 {
+export default class Example03 {
   private _bindingEventService: BindingEventService;
   private _darkMode = false;
-  columnDefinitions: Column<ReportItem & { action: string; }>[];
+  columnDefinitions: Column<ReportItem & { action: string }>[];
   gridOptions: GridOption;
   dataset: any[];
   editCommandQueue: EditCommand[] = [];
   excelExportService: ExcelExportService;
-  sgb: SlickVanillaGridBundle<ReportItem & { action: string; }>;
+  sgb: SlickVanillaGridBundle<ReportItem & { action: string }>;
   durationOrderByCount = false;
   draggableGroupingPlugin: SlickDraggableGrouping;
   loadingClass = '';
@@ -62,9 +62,18 @@ export class Example03 {
     this._bindingEventService.bind(gridContainerElm, 'oncellchange', this.handleOnCellChange.bind(this));
     this._bindingEventService.bind(gridContainerElm, 'onvalidationerror', this.handleValidationError.bind(this));
     this._bindingEventService.bind(gridContainerElm, 'onitemdeleted', this.handleItemDeleted.bind(this));
-    this._bindingEventService.bind(gridContainerElm, 'onbeforeexporttoexcel', () => this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-22px');
-    this._bindingEventService.bind(gridContainerElm, 'onafterexporttoexcel', () => this.loadingClass = '');
-    this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
+    this._bindingEventService.bind(
+      gridContainerElm,
+      'onbeforeexporttoexcel',
+      () => (this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-22px')
+    );
+    this._bindingEventService.bind(gridContainerElm, 'onafterexporttoexcel', () => (this.loadingClass = ''));
+    this.sgb = new Slicker.GridBundle(
+      gridContainerElm,
+      this.columnDefinitions,
+      { ...ExampleGridOptions, ...this.gridOptions },
+      this.dataset
+    );
   }
 
   dispose() {
@@ -77,8 +86,12 @@ export class Example03 {
   initializeGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'title', columnGroup: 'Common Factor',
-        sortable: true, type: FieldType.string,
+        id: 'title',
+        name: 'Title',
+        field: 'title',
+        columnGroup: 'Common Factor',
+        sortable: true,
+        type: FieldType.string,
         editor: {
           model: Editors.longText,
           required: true,
@@ -92,12 +105,16 @@ export class Example03 {
           formatter: (g) => `Title: ${g.value} <span class="text-color-primary">(${g.count} items)</span>`,
           aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
-        }
+          collapsed: false,
+        },
       },
       {
-        id: 'duration', name: 'Duration', field: 'duration', columnGroup: 'Common Factor',
-        sortable: true, filterable: true,
+        id: 'duration',
+        name: 'Duration',
+        field: 'duration',
+        columnGroup: 'Common Factor',
+        sortable: true,
+        filterable: true,
         editor: {
           model: Editors.float,
           // required: true,
@@ -112,53 +129,63 @@ export class Example03 {
           getter: 'duration',
           formatter: (g) => `Duration: ${g.value} <span class="text-color-primary">(${g.count} items)</span>`,
           comparer: (a, b) => {
-            return this.durationOrderByCount ? (a.count - b.count) : SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc);
+            return this.durationOrderByCount ? a.count - b.count : SortComparers.numeric(a.value, b.value, SortDirectionNumber.asc);
           },
           aggregators: [new Aggregators.Sum('duration'), new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
-        }
+          collapsed: false,
+        },
       },
       {
-        id: 'start', name: 'Start', field: 'start', sortable: true, columnGroup: 'Period',
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        sortable: true,
+        columnGroup: 'Period',
         // formatter: Formatters.dateIso,
-        type: FieldType.date, outputType: FieldType.dateIso,
-        filterable: true, filter: { model: Filters.compoundDate },
+        type: FieldType.date,
+        outputType: FieldType.dateIso,
+        filterable: true,
+        filter: { model: Filters.compoundDate },
         formatter: Formatters.dateIso,
         editor: { model: Editors.date },
         grouping: {
           getter: 'start',
           formatter: (g) => `Start: ${g.value} <span class="text-color-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
-        }
+          collapsed: false,
+        },
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish', columnGroup: 'Period',
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        columnGroup: 'Period',
         sortable: true,
         editor: {
           model: Editors.date,
-          editorOptions: { range: { min: 'today' } } as VanillaCalendarOption
+          editorOptions: { range: { min: 'today' } } as VanillaCalendarOption,
         },
         // formatter: Formatters.dateIso,
-        type: FieldType.date, outputType: FieldType.dateIso,
+        type: FieldType.date,
+        outputType: FieldType.dateIso,
         formatter: Formatters.dateIso,
-        filterable: true, filter: { model: Filters.dateRange },
+        filterable: true,
+        filter: { model: Filters.dateRange },
         grouping: {
           getter: 'finish',
           formatter: (g) => `Finish: ${g.value} <span class="text-color-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
-        }
+          collapsed: false,
+        },
       },
       {
-        id: 'cost', name: 'Cost', field: 'cost', columnGroup: 'Analysis',
+        id: 'cost',
+        name: 'Cost',
+        field: 'cost',
+        columnGroup: 'Analysis',
         width: 90,
         sortable: true,
         filterable: true,
@@ -170,15 +197,16 @@ export class Example03 {
         grouping: {
           getter: 'cost',
           formatter: (g) => `Cost: ${g.value} <span class="text-color-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: true,
-          collapsed: true
-        }
+          collapsed: true,
+        },
       },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete', columnGroup: 'Analysis',
+        id: 'percentComplete',
+        name: '% Complete',
+        field: 'percentComplete',
+        columnGroup: 'Analysis',
         type: FieldType.number,
         editor: {
           model: Editors.slider,
@@ -186,44 +214,53 @@ export class Example03 {
           maxValue: 100,
           // editorOptions: { hideSliderNumber: true } as SliderOption,
         },
-        sortable: true, filterable: true,
+        sortable: true,
+        filterable: true,
         filter: { model: Filters.slider, operator: '>=' },
         groupTotalsFormatter: GroupTotalFormatters.avgTotalsPercentage,
         grouping: {
           getter: 'percentComplete',
           formatter: (g) => `% Complete:  ${g.value} <span class="text-color-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('cost')
-          ],
+          aggregators: [new Aggregators.Sum('cost')],
           aggregateCollapsed: false,
-          collapsed: false
+          collapsed: false,
         },
         params: { groupFormatterPrefix: '<i>Avg</i>: ' },
       },
       {
-        id: 'effortDriven', name: 'Effort-Driven', field: 'effortDriven', columnGroup: 'Analysis',
-        width: 80, minWidth: 20, maxWidth: 100,
+        id: 'effortDriven',
+        name: 'Effort-Driven',
+        field: 'effortDriven',
+        columnGroup: 'Analysis',
+        width: 80,
+        minWidth: 20,
+        maxWidth: 100,
         cssClass: 'cell-effort-driven',
         sortable: true,
         filterable: true,
         filter: {
-          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
-          model: Filters.singleSelect
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'True' },
+            { value: false, label: 'False' },
+          ],
+          model: Filters.singleSelect,
         },
         exportWithFormatter: false,
         formatter: Formatters.checkmarkMaterial,
         grouping: {
           getter: 'effortDriven',
           formatter: (g) => `Effort-Driven: ${g.value ? 'True' : 'False'} <span class="text-color-primary">(${g.count} items)</span>`,
-          aggregators: [
-            new Aggregators.Sum('duration'),
-            new Aggregators.Sum('cost')
-          ],
-          collapsed: false
-        }
+          aggregators: [new Aggregators.Sum('duration'), new Aggregators.Sum('cost')],
+          collapsed: false,
+        },
       },
       {
-        id: 'action', name: 'Action', field: 'action', width: 90, maxWidth: 90,
+        id: 'action',
+        name: 'Action',
+        field: 'action',
+        width: 90,
+        maxWidth: 90,
         excludeFromExport: true,
         formatter: () => {
           return `<div class="fake-hyperlink text-color-primary flex justify-center">Action <i class="mdi mdi-chevron-down"></i></div>`;
@@ -243,7 +280,9 @@ export class Example03 {
           commandItems: [
             // array of command item objects, you can also use the "positionOrder" that will be used to sort the items in the list
             {
-              command: 'command2', title: 'Command 2', positionOrder: 62,
+              command: 'command2',
+              title: 'Command 2',
+              positionOrder: 62,
               // you can use the "action" callback and/or use "onCallback" callback from the grid options, they both have the same arguments
               action: (_e, args) => {
                 console.log(args.dataContext, args.column);
@@ -252,16 +291,20 @@ export class Example03 {
               // only enable command when the task is not completed
               itemUsabilityOverride: (args) => {
                 return !args.dataContext.completed;
-              }
+              },
             },
             { command: 'command1', title: 'Command 1', cssClass: 'orange', positionOrder: 61 },
             {
-              command: 'delete-row', title: 'Delete Row', positionOrder: 64,
-              iconCssClass: 'mdi mdi-close', cssClass: 'red', textCssClass: 'bold',
+              command: 'delete-row',
+              title: 'Delete Row',
+              positionOrder: 64,
+              iconCssClass: 'mdi mdi-close',
+              cssClass: 'red',
+              textCssClass: 'bold',
               // only show command to 'Delete Row' when the task is not completed
               itemVisibilityOverride: (args) => {
                 return !args.dataContext.completed;
-              }
+              },
             },
             // you can pass divider as a string or an object with a boolean (if sorting by position, then use the object)
             // note you should use the "divider" string only when items array is already sorted and positionOrder are not specified
@@ -274,14 +317,14 @@ export class Example03 {
               iconCssClass: 'mdi mdi-help-circle-outline',
               positionOrder: 66,
             },
-            { command: 'something', title: 'Disabled Command', disabled: true, positionOrder: 67, }
+            { command: 'something', title: 'Disabled Command', disabled: true, positionOrder: 67 },
           ],
           optionTitle: 'Change Effort-Driven Flag',
           optionItems: [
             { option: true, title: 'True', iconCssClass: 'mdi mdi-check-box-outline' },
             { option: false, title: 'False', iconCssClass: 'mdi mdi-checkbox-blank-outline' },
-          ]
-        }
+          ],
+        },
       },
     ];
 
@@ -293,13 +336,13 @@ export class Example03 {
         container: '.demo-container',
       },
       dataView: {
-        useCSPSafeFilter: true
+        useCSPSafeFilter: true,
       },
       headerMenu: {
         hideFreezeColumnsCommand: false,
       },
       gridMenu: {
-        hideClearFrozenColumnsCommand: false
+        hideClearFrozenColumnsCommand: false,
       },
       enableAutoSizeColumns: true,
       enableAutoResize: true,
@@ -307,13 +350,13 @@ export class Example03 {
       enableTextExport: true,
       enableExcelExport: true,
       excelExportOptions: {
-        exportWithFormatter: true
+        exportWithFormatter: true,
       },
       externalResources: [new TextExportService(), this.excelExportService],
       enableFiltering: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
-        selectActiveRow: false
+        selectActiveRow: false,
       },
       showCustomFooter: true,
 
@@ -339,8 +382,9 @@ export class Example03 {
         sortAscIconCssClass: 'mdi mdi-arrow-up',
         sortDescIconCssClass: 'mdi mdi-arrow-down',
         onGroupChanged: (_e, args) => this.onGroupChanged(args),
-        onExtensionRegistered: (extension) => this.draggableGroupingPlugin = extension,
+        onExtensionRegistered: (extension) => (this.draggableGroupingPlugin = extension),
         // groupIconCssClass: 'mdi mdi-drag-vertical',
+        initialGroupBy: ['duration'],
       },
       enableCheckboxSelector: true,
       enableRowSelection: true,
@@ -376,10 +420,10 @@ export class Example03 {
     const currentYear = new Date().getFullYear();
 
     for (let i = 0; i < count; i++) {
-      const randomFinishYear = (new Date().getFullYear() - 3) + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
+      const randomFinishYear = new Date().getFullYear() - 3 + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
-      const randomFinish = new Date(randomFinishYear, (randomMonth + 1), randomDay);
+      const randomDay = Math.floor(Math.random() * 29);
+      const randomFinish = new Date(randomFinishYear, randomMonth + 1, randomDay);
       const randomCost = Math.round(Math.random() * 10000) / 100;
 
       tmpArray[i] = {
@@ -389,8 +433,8 @@ export class Example03 {
         percentComplete: Math.round(Math.random() * 100),
         start: new Date(currentYear - 2, randomMonth, randomDay),
         finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
-        cost: (i % 33 === 0) ? -randomCost : randomCost,
-        effortDriven: (i % 5 === 0)
+        cost: i % 33 === 0 ? -randomCost : randomCost,
+        effortDriven: i % 5 === 0,
       };
 
       // if (i % 8) {
@@ -412,7 +456,7 @@ export class Example03 {
   }
 
   clearGroupingSelects() {
-    this.selectedGroupingFields.forEach((_g, i) => this.selectedGroupingFields[i] = '');
+    this.selectedGroupingFields.forEach((_g, i) => (this.selectedGroupingFields[i] = ''));
     this.selectedGroupingFields = [...this.selectedGroupingFields]; // force dirty checking
   }
 
@@ -434,7 +478,7 @@ export class Example03 {
   exportToExcel() {
     this.excelExportService.exportToExcel({
       filename: 'Export',
-      format: FileType.xlsx
+      format: FileType.xlsx,
     });
   }
 
@@ -462,6 +506,14 @@ export class Example03 {
     }
   }
 
+  setFiltersDynamically() {
+    // we can Set Filters Dynamically (or different filters) afterward through the FilterService
+    this.sgb.filterService.updateFilters([
+      { columnId: 'percentComplete', operator: '>=', searchTerms: ['55'] },
+      { columnId: 'cost', operator: '<', searchTerms: ['80'] },
+    ]);
+  }
+
   showTopHeader() {
     this.sgb?.slickGrid?.setTopHeaderPanelVisibility(true);
   }
@@ -483,13 +535,13 @@ export class Example03 {
     this.sgb?.slickGrid?.setTopHeaderPanelVisibility(!this.sgb?.slickGrid?.getOptions().showTopHeaderPanel);
   }
 
-  onGroupChanged(change: { caller?: string; groupColumns: Grouping[]; }) {
-    const caller = change && change.caller || [];
-    const groups = change && change.groupColumns || [];
+  onGroupChanged(change: { caller?: string; groupColumns: Grouping[] }) {
+    const caller = (change && change.caller) || [];
+    const groups = (change && change.groupColumns) || [];
 
     if (Array.isArray(this.selectedGroupingFields) && Array.isArray(groups) && groups.length > 0) {
       // update all Group By select dropdown
-      this.selectedGroupingFields.forEach((_g, i) => this.selectedGroupingFields[i] = groups[i] && groups[i].getter || '');
+      this.selectedGroupingFields.forEach((_g, i) => (this.selectedGroupingFields[i] = (groups[i] && groups[i].getter) || ''));
       this.selectedGroupingFields = [...this.selectedGroupingFields]; // force dirty checking
     } else if (groups.length === 0 && caller === 'remove-group') {
       this.clearGroupingSelects();

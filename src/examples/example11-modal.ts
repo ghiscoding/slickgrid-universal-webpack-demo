@@ -1,17 +1,11 @@
-import {
-  type Column,
-  type DOMEvent,
-  type Formatter,
-  Formatters,
-  type GridOption,
-} from '@slickgrid-universal/common';
+import { type Column, type DOMEvent, type Formatter, Formatters, type GridOption } from '@slickgrid-universal/common';
 import { BindingEventService } from '@slickgrid-universal/binding';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import { ExampleGridOptions } from './example-grid-options';
 import './example11-modal.scss';
 
-export class Example11Modal {
+export default class Example11Modal {
   private _bindingEventService: BindingEventService;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -37,10 +31,15 @@ export class Example11Modal {
         this._bindingEventService.bind(this.gridContainerElm, 'onvalidationerror', this.handleValidationError.bind(this));
 
         const dataset = [this.createEmptyItem(bindings.columnDefinitions)];
-        this.sgb = new Slicker.GridBundle(this.gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, dataset);
+        this.sgb = new Slicker.GridBundle(
+          this.gridContainerElm,
+          this.columnDefinitions,
+          { ...ExampleGridOptions, ...this.gridOptions },
+          dataset
+        );
 
         // force editor to open (top-left)
-        setTimeout(() => this.sgb.slickGrid?.gotoCell(0, 0, true), 50);
+        window.setTimeout(() => this.sgb.slickGrid?.gotoCell(0, 0, true), 50);
       }
       this.remoteCallbackFn = bindings.remoteCallback;
       this.selectedIds = bindings.selectedIds || [];
@@ -68,7 +67,7 @@ export class Example11Modal {
 
   createEmptyItem(columnDefinitions: Column[]) {
     const emptyObj: any = { id: 0 };
-    columnDefinitions.forEach(column => {
+    columnDefinitions.forEach((column) => {
       emptyObj[column.id] = undefined;
     });
 
@@ -152,7 +151,7 @@ export class Example11Modal {
     });
 
     if (modalCloseBtnElms) {
-      modalCloseBtnElms.forEach(closeElm => closeElm.addEventListener('click', () => this.closeBulmaModal(callback)));
+      modalCloseBtnElms.forEach((closeElm) => closeElm.addEventListener('click', () => this.closeBulmaModal(callback)));
     }
   }
 

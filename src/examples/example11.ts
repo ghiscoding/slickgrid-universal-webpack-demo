@@ -49,7 +49,7 @@ const myCustomTitleValidator = (value) => {
 const customEditableInputFormatter = (_row, _cell, value, columnDef, _dataContext, grid) => {
   const gridOptions = grid.getOptions();
   const isEditableItem = gridOptions.editable && columnDef.editor;
-  value = (value === null || value === undefined) ? '' : value;
+  value = value === null || value === undefined ? '' : value;
   return isEditableItem ? { html: value, addClasses: 'editable-field', toolTip: 'Click to Edit' } : value;
 };
 
@@ -64,7 +64,7 @@ export interface ViewDefinition {
   pinning?: CurrentPinning;
 }
 
-export class Example11 {
+export default class Example11 {
   private _bindingEventService: BindingEventService;
   allColumnIds = ['title', 'duration', 'cost', 'percentComplete', 'start', 'finish', 'completed', 'product', 'countryOfOrigin', 'action'];
   columnDefinitions: Column[];
@@ -74,7 +74,7 @@ export class Example11 {
   isGridEditable = true;
   dropdownDeleteViewClass = 'dropdown-item dropdown-item-disabled';
   dropdownUpdateViewClass = 'dropdown-item dropdown-item-disabled';
-  editQueue: Array<{ item: any; column: Column; editCommand: EditCommand; }> = [];
+  editQueue: Array<{ item: any; column: Column; editCommand: EditCommand }> = [];
   editedItems = {};
   sgb: SlickVanillaGridBundle;
   gridContainerElm: HTMLDivElement;
@@ -86,23 +86,25 @@ export class Example11 {
       value: 'previousYears',
       isSelected: false,
       isUserDefined: false,
-      columns: [...this.allColumnIds].map(colId => ({ columnId: `${colId}` })).filter(col => col.columnId !== 'product' && col.columnId !== 'countryOfOrigin'), // remove "Product", "Country of Origin"
+      columns: [...this.allColumnIds]
+        .map((colId) => ({ columnId: `${colId}` }))
+        .filter((col) => col.columnId !== 'product' && col.columnId !== 'countryOfOrigin'), // remove "Product", "Country of Origin"
       filters: [
         { columnId: 'finish', operator: OperatorType.lessThanOrEqual, searchTerms: [`${this.currentYear}-01-01`] },
-        { columnId: 'completed', operator: OperatorType.equal, searchTerms: [true], },
+        { columnId: 'completed', operator: OperatorType.equal, searchTerms: [true] },
         { columnId: 'percentComplete', operator: OperatorType.greaterThan, searchTerms: [50] },
       ] as CurrentFilter[],
-      sorters: [{ columnId: 'finish', direction: 'desc' }] as CurrentSorter[]
+      sorters: [{ columnId: 'finish', direction: 'desc' }] as CurrentSorter[],
     },
     {
       label: 'Tasks Finishing in Future Years (wo/Cost)',
       value: 'greaterCurrentYear',
       isSelected: false,
       isUserDefined: false,
-      columns: [...this.allColumnIds].map(colId => ({ columnId: `${colId}` })).filter(col => col.columnId !== 'cost'), // remove "Cost"
+      columns: [...this.allColumnIds].map((colId) => ({ columnId: `${colId}` })).filter((col) => col.columnId !== 'cost'), // remove "Cost"
       filters: [{ columnId: 'finish', operator: '>=', searchTerms: [`${this.currentYear + 1}-01-01`] }],
-      sorters: [{ columnId: 'finish', direction: 'asc' }] as CurrentSorter[]
-    }
+      sorters: [{ columnId: 'finish', direction: 'asc' }] as CurrentSorter[],
+    },
   ] as ViewDefinition[];
   predefinedViews = [...this.defaultPredefinedPresets];
 
@@ -120,7 +122,12 @@ export class Example11 {
     this.gridContainerElm = document.querySelector(`.grid11`) as HTMLDivElement;
     this.viewSelectElm = document.querySelector('.selected-view') as HTMLSelectElement;
 
-    this.sgb = new Slicker.GridBundle(this.gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, this.dataset);
+    this.sgb = new Slicker.GridBundle(
+      this.gridContainerElm,
+      this.columnDefinitions,
+      { ...ExampleGridOptions, ...this.gridOptions },
+      this.dataset
+    );
 
     // bind any of the grid events
     this._bindingEventService.bind(this.gridContainerElm, 'onvalidationerror', this.handleValidationError.bind(this));
@@ -138,14 +145,29 @@ export class Example11 {
   initializeGrid() {
     this.columnDefinitions = [
       {
-        id: 'title', name: 'Title', field: 'title', sortable: true, minWidth: 80,
+        id: 'title',
+        name: 'Title',
+        field: 'title',
+        sortable: true,
+        minWidth: 80,
         cssClass: 'text-bold text-uppercase',
-        editor: { model: Editors.text, massUpdate: true, required: true, alwaysSaveOnEnterKey: true, validator: myCustomTitleValidator, },
+        editor: {
+          model: Editors.text,
+          massUpdate: true,
+          required: true,
+          alwaysSaveOnEnterKey: true,
+          validator: myCustomTitleValidator,
+        },
         filterable: true,
       },
       {
-        id: 'duration', name: 'Duration', field: 'duration', sortable: true, filterable: true, minWidth: 80,
-        editor: { model: Editors.float, massUpdate: true, decimal: 2, valueStep: 1, maxValue: 10000, alwaysSaveOnEnterKey: true, },
+        id: 'duration',
+        name: 'Duration',
+        field: 'duration',
+        sortable: true,
+        filterable: true,
+        minWidth: 80,
+        editor: { model: Editors.float, massUpdate: true, decimal: 2, valueStep: 1, maxValue: 10000, alwaysSaveOnEnterKey: true },
         formatter: (_row, _cell, value) => {
           if (value === null || value === undefined) {
             return '';
@@ -155,58 +177,110 @@ export class Example11 {
         type: FieldType.number,
       },
       {
-        id: 'cost', name: 'Cost', field: 'cost', minWidth: 80, width: 90,
-        sortable: true, filterable: true, type: FieldType.number,
+        id: 'cost',
+        name: 'Cost',
+        field: 'cost',
+        minWidth: 80,
+        width: 90,
+        sortable: true,
+        filterable: true,
+        type: FieldType.number,
         filter: { model: Filters.compoundInputNumber },
         formatter: Formatters.dollar,
       },
       {
-        id: 'percentComplete', name: '% Complete', field: 'percentComplete', type: FieldType.number, minWidth: 80,
-        editor: { model: Editors.slider, massUpdate: true, minValue: 0, maxValue: 100, editorOptions: { hideSliderNumber: true } as SliderOption },
-        sortable: true, filterable: true,
+        id: 'percentComplete',
+        name: '% Complete',
+        field: 'percentComplete',
+        type: FieldType.number,
+        minWidth: 80,
+        editor: {
+          model: Editors.slider,
+          massUpdate: true,
+          minValue: 0,
+          maxValue: 100,
+          editorOptions: { hideSliderNumber: true } as SliderOption,
+        },
+        sortable: true,
+        filterable: true,
         filter: { model: Filters.slider, operator: '>=' },
       },
       {
-        id: 'start', name: 'Start', field: 'start', sortable: true, minWidth: 80,
+        id: 'start',
+        name: 'Start',
+        field: 'start',
+        sortable: true,
+        minWidth: 80,
         formatter: Formatters.dateIso,
-        type: FieldType.date, outputType: FieldType.dateIso,
+        type: FieldType.date,
+        outputType: FieldType.dateIso,
         filterable: true,
         filter: { model: Filters.compoundDate },
-        editor: { model: Editors.date, massUpdate: true },
+        editor: { model: Editors.date, massUpdate: true, editorOptions: { allowInput: true } },
       },
       {
-        id: 'finish', name: 'Finish', field: 'finish', sortable: true, minWidth: 80,
+        id: 'finish',
+        name: 'Finish',
+        field: 'finish',
+        sortable: true,
+        minWidth: 80,
         editor: { model: Editors.date, massUpdate: true, editorOptions: { range: { min: 'today' } } as VanillaCalendarOption },
         formatter: Formatters.dateIso,
-        type: FieldType.date, outputType: FieldType.dateIso,
+        type: FieldType.date,
+        outputType: FieldType.dateIso,
         filterable: true,
         filter: {
           model: Filters.compoundDate,
           filterShortcuts: [
-            { title: 'Until Now', searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD')], operator: '<=', iconCssClass: 'mdi mdi-calendar', },
-            { title: 'In the Future', searchTerms: [tempoFormat(addDay(new Date(), 1), 'YYYY-MM-DD')], operator: '>=', iconCssClass: 'mdi mdi-calendar-clock', },
-          ]
+            {
+              title: 'Until Now',
+              searchTerms: [tempoFormat(new Date(), 'YYYY-MM-DD')],
+              operator: '<=',
+              iconCssClass: 'mdi mdi-calendar',
+            },
+            {
+              title: 'In the Future',
+              searchTerms: [tempoFormat(addDay(new Date(), 1), 'YYYY-MM-DD')],
+              operator: '>=',
+              iconCssClass: 'mdi mdi-calendar-clock',
+            },
+          ],
         },
       },
       {
-        id: 'completed', name: 'Completed', field: 'completed', width: 80, minWidth: 80, maxWidth: 100,
-        sortable: true, filterable: true,
+        id: 'completed',
+        name: 'Completed',
+        field: 'completed',
+        width: 80,
+        minWidth: 80,
+        maxWidth: 100,
+        sortable: true,
+        filterable: true,
         editor: {
           model: Editors.singleSelect,
-          collection: [{ value: true, label: 'True' }, { value: false, label: 'False' }],
+          collection: [
+            { value: true, label: 'True' },
+            { value: false, label: 'False' },
+          ],
           massUpdate: true,
-          editorOptions: { showClear: true } as MultipleSelectOption
+          editorOptions: { showClear: true } as MultipleSelectOption,
         },
         filter: {
           model: Filters.singleSelect,
-          collection: [{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }],
-          filterOptions: { showClear: true } as MultipleSelectOption
+          collection: [
+            { value: '', label: '' },
+            { value: true, label: 'True' },
+            { value: false, label: 'False' },
+          ],
+          filterOptions: { showClear: true } as MultipleSelectOption,
         },
         exportWithFormatter: false,
         formatter: Formatters.checkmarkMaterial,
       },
       {
-        id: 'product', name: 'Product', field: 'product',
+        id: 'product',
+        name: 'Product',
+        field: 'product',
         filterable: true,
         minWidth: 100,
         exportWithFormatter: true,
@@ -225,7 +299,7 @@ export class Example11 {
             minLength: 1,
             fetch: (searchText, updateCallback) => {
               const products = this.mockProducts();
-              updateCallback(products.filter(product => product.itemName.toLowerCase().includes(searchText.toLowerCase())));
+              updateCallback(products.filter((product) => product.itemName.toLowerCase().includes(searchText.toLowerCase())));
             },
             renderItem: {
               // layout: 'twoRows',
@@ -241,10 +315,12 @@ export class Example11 {
           // placeholder: '🔎︎ search city',
           type: FieldType.string,
           queryField: 'product.itemName',
-        }
+        },
       },
       {
-        id: 'countryOfOrigin', name: 'Country of Origin', field: 'countryOfOrigin',
+        id: 'countryOfOrigin',
+        name: 'Country of Origin',
+        field: 'countryOfOrigin',
         formatter: Formatters.complexObject,
         exportWithFormatter: true,
         dataKey: 'code',
@@ -263,7 +339,7 @@ export class Example11 {
             fetch: (searchText, updateCallback) => {
               const countries: any[] = require('./data/countries.json');
               const foundCountries = countries.filter((country) => country.name.toLowerCase().includes(searchText.toLowerCase()));
-              updateCallback(foundCountries.map(item => ({ label: item.name, value: item.code, })));
+              updateCallback(foundCountries.map((item) => ({ label: item.name, value: item.code })));
             },
           } as AutocompleterOption,
         },
@@ -272,15 +348,21 @@ export class Example11 {
           type: 'string',
           queryField: 'countryOfOrigin.name',
           filterShortcuts: [
-            { title: 'Blank Values', searchTerms: ['< A'], iconCssClass: 'mdi mdi-filter-minus-outline', },
-            { title: 'Non-Blank Values', searchTerms: ['> A'], iconCssClass: 'mdi mdi-filter-plus-outline', },
-          ]
+            { title: 'Blank Values', searchTerms: ['< A'], iconCssClass: 'mdi mdi-filter-minus-outline' },
+            { title: 'Non-Blank Values', searchTerms: ['> A'], iconCssClass: 'mdi mdi-filter-plus-outline' },
+          ],
         },
       },
       {
-        id: 'action', name: 'Action', field: 'action', minWidth: 70, width: 75, maxWidth: 75,
+        id: 'action',
+        name: 'Action',
+        field: 'action',
+        minWidth: 70,
+        width: 75,
+        maxWidth: 75,
         excludeFromExport: true,
-        formatter: () => `<span class="button-style padding-1px action-btns"title"Delete the Row"><span class="mdi mdi-close text-color-danger" title="Delete Current Row"></span></span>
+        formatter:
+          () => `<span class="button-style padding-1px action-btns"title"Delete the Row"><span class="mdi mdi-close text-color-danger" title="Delete Current Row"></span></span>
         &nbsp;<span class="button-style padding-1px action-btns" title="Mark as Completed"><span class="mdi mdi-check-underline"></span></span>`,
         onCellClick: (event: Event, args) => {
           const dataContext = args.dataContext;
@@ -292,7 +374,7 @@ export class Example11 {
             this.slickerGridInstance?.gridService.updateItem({ ...dataContext, completed: true });
             alert(`The "${dataContext.title}" is now Completed`);
           }
-        }
+        },
       },
     ];
 
@@ -312,13 +394,13 @@ export class Example11 {
       showCustomFooter: true,
       enableExcelExport: true,
       excelExportOptions: {
-        exportWithFormatter: true
+        exportWithFormatter: true,
       },
       externalResources: [new ExcelExportService(), new SlickCustomTooltip()],
       enableFiltering: true,
       rowSelectionOptions: {
         // True (Single Selection), False (Multiple Selections)
-        selectActiveRow: false
+        selectActiveRow: false,
       },
       rowHeight: 33,
       headerRowHeight: 35,
@@ -349,7 +431,7 @@ export class Example11 {
             iconCssClass: 'mdi mdi-table-edit',
           },
         ],
-        onCommand: (e, args) => this.executeCommand(e, args)
+        onCommand: (e, args) => this.executeCommand(e, args),
       },
       headerMenu: {
         hideFreezeColumnsCommand: false,
@@ -365,14 +447,14 @@ export class Example11 {
             positionOrder: 66,
           },
         ],
-        onCommand: (e, args) => this.executeCommand(e, args)
-      }
+        onCommand: (e, args) => this.executeCommand(e, args),
+      },
     };
 
     const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
     const definedPresets = storedData ? JSON.parse(storedData) : null;
     if (definedPresets) {
-      const presetSelection = definedPresets.find(presetSelect => presetSelect.isSelected);
+      const presetSelection = definedPresets.find((presetSelect) => presetSelect.isSelected);
       this.predefinedViews = definedPresets;
 
       if (presetSelection?.filters) {
@@ -380,7 +462,7 @@ export class Example11 {
         this.dropdownDeleteViewClass = presetSelection.isUserDefined ? 'dropdown-item' : 'dropdown-item dropdown-item-disabled';
         this.dropdownUpdateViewClass = this.dropdownDeleteViewClass;
         this.gridOptions.presets = {
-          filters: presetSelection.filters
+          filters: presetSelection.filters,
         };
         if (presetSelection.columns) {
           this.gridOptions.presets.columns = presetSelection.columns;
@@ -401,10 +483,10 @@ export class Example11 {
     for (let i = 0; i < count; i++) {
       const randomItemId = Math.floor(Math.random() * this.mockProducts().length);
       const randomYear = 2000 + Math.floor(Math.random() * 10);
-      const randomFinishYear = (new Date().getFullYear() - 3) + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
+      const randomFinishYear = new Date().getFullYear() - 3 + Math.floor(Math.random() * 10); // use only years not lower than 3 years ago
       const randomMonth = Math.floor(Math.random() * 11);
-      const randomDay = Math.floor((Math.random() * 29));
-      const randomFinish = new Date(randomFinishYear, (randomMonth + 1), randomDay);
+      const randomDay = Math.floor(Math.random() * 29);
+      const randomFinish = new Date(randomFinishYear, randomMonth + 1, randomDay);
       const randomPercentComplete = Math.floor(Math.random() * 100) + 15; // make it over 15 for E2E testing purposes
 
       tmpArray[i] = {
@@ -413,13 +495,11 @@ export class Example11 {
         duration: Math.floor(Math.random() * 100) + 10,
         percentComplete: randomPercentComplete > 100 ? 100 : randomPercentComplete,
         start: new Date(randomYear, randomMonth, randomDay),
-        finish: (i < 3) ? '' : randomFinish, // make sure the random date is earlier than today and it's index is bigger than 3
-        cost: (i % 33 === 0) ? null : Math.round(Math.random() * 10000) / 100,
-        completed: (randomFinish < new Date()),
-        product: { id: this.mockProducts()[randomItemId]?.id, itemName: this.mockProducts()[randomItemId]?.itemName, },
-        countryOfOrigin: i % 33
-          ? (i % 2) ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' }
-          : null
+        finish: i < 3 ? '' : randomFinish, // make sure the random date is earlier than today and it's index is bigger than 3
+        cost: i % 33 === 0 ? null : Math.round(Math.random() * 10000) / 100,
+        completed: randomFinish < new Date(),
+        product: { id: this.mockProducts()[randomItemId]?.id, itemName: this.mockProducts()[randomItemId]?.itemName },
+        countryOfOrigin: i % 33 ? (i % 2 ? { code: 'CA', name: 'Canada' } : { code: 'US', name: 'United States' }) : null,
       };
 
       if (!(i % 8)) {
@@ -494,8 +574,8 @@ export class Example11 {
     }
   }
 
-  remoteCallbackFn(args: { item: any, selectedIds: string[], updateType: 'selection' | 'mass'; }) {
-    const fields: Array<{ fieldName: string; value: any; }> = [];
+  remoteCallbackFn(args: { item: any; selectedIds: string[]; updateType: 'selection' | 'mass' }) {
+    const fields: Array<{ fieldName: string; value: any }> = [];
     for (const key in args.item) {
       if (args.item.hasOwnProperty(key)) {
         fields.push({ fieldName: key, value: args.item[key] });
@@ -521,7 +601,7 @@ export class Example11 {
       // update every rows (full mass update)
       for (const itemProp in args.item) {
         if (args.item.hasOwnProperty(itemProp)) {
-          this.dataset.forEach(item => item[itemProp] = args.item[itemProp]);
+          this.dataset.forEach((item) => (item[itemProp] = args.item[itemProp]));
         }
       }
       this.sgb.dataset = this.dataset;
@@ -582,7 +662,6 @@ export class Example11 {
       this.removeUnsavedStylingFromCell(lastEdit.item, lastEdit.column, lastEditCommand.row);
       this.sgb.slickGrid?.invalidate();
 
-
       // optionally open the last cell editor associated
       if (showLastEditor) {
         this.sgb?.slickGrid?.gotoCell(lastEditCommand.row, lastEditCommand.cell, false);
@@ -610,7 +689,7 @@ export class Example11 {
 
   pushNewViewToViewsList(predefinedViews: ViewDefinition | ViewDefinition[], isOptionSelected = false) {
     if (isOptionSelected) {
-      this.predefinedViews.forEach(viewSelect => viewSelect.isSelected = false); // reset selection
+      this.predefinedViews.forEach((viewSelect) => (viewSelect.isSelected = false)); // reset selection
     }
     const presetViews: ViewDefinition[] = Array.isArray(predefinedViews) ? predefinedViews : [predefinedViews];
 
@@ -651,7 +730,7 @@ export class Example11 {
       return;
     }
 
-    this.predefinedViews.forEach(viewSelect => viewSelect.isSelected = false); // reset selection
+    this.predefinedViews.forEach((viewSelect) => (viewSelect.isSelected = false)); // reset selection
     const currentGridState = this.sgb.gridStateService.getCurrentGridState();
     const { columns, filters, sorters, pinning } = currentGridState;
 
@@ -685,7 +764,7 @@ export class Example11 {
       return;
     }
     if (this.currentSelectedViewPreset) {
-      const selectedViewIndex = this.predefinedViews.findIndex(preset => preset.value === this.currentSelectedViewPreset?.value);
+      const selectedViewIndex = this.predefinedViews.findIndex((preset) => preset.value === this.currentSelectedViewPreset?.value);
       this.predefinedViews.splice(selectedViewIndex, 1);
     }
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.predefinedViews));
@@ -711,7 +790,7 @@ export class Example11 {
     const { columns, filters, sorters, pinning } = currentGridState;
 
     if (this.currentSelectedViewPreset && filters) {
-      const filterName = await prompt(`Update View name or click on OK to continue.`, this.currentSelectedViewPreset.label) as string;
+      const filterName = (await prompt(`Update View name or click on OK to continue.`, this.currentSelectedViewPreset.label)) as string;
       this.currentSelectedViewPreset.label = filterName;
       this.currentSelectedViewPreset.value = filterName.replace(/\s/g, '');
       this.currentSelectedViewPreset.columns = columns || [];
@@ -724,8 +803,8 @@ export class Example11 {
   }
 
   usePredefinedView(viewName: string) {
-    this.predefinedViews.forEach(view => view.isSelected = false); // reset selection
-    const selectedView = this.predefinedViews.find(view => view.value === viewName);
+    this.predefinedViews.forEach((view) => (view.isSelected = false)); // reset selection
+    const selectedView = this.predefinedViews.find((view) => view.value === viewName);
     if (selectedView) {
       selectedView.isSelected = true;
       this.dropdownDeleteViewClass = selectedView.isUserDefined ? 'dropdown-item' : 'dropdown-item dropdown-item-disabled';
@@ -743,7 +822,7 @@ export class Example11 {
       this.sgb.gridService.clearPinning();
       this.sgb.filterService.clearFilters();
       this.sgb.sortService.clearSorting();
-      this.sgb.gridStateService.changeColumnsArrangement([...this.columnDefinitions].map(col => ({ columnId: `${col.id}` })));
+      this.sgb.gridStateService.changeColumnsArrangement([...this.columnDefinitions].map((col) => ({ columnId: `${col.id}` })));
     }
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(this.predefinedViews));
     this.currentSelectedViewPreset = selectedView;
@@ -774,7 +853,7 @@ export class Example11 {
         id: 2,
         itemName: 'Awesome Wooden Mouse',
         itemNameTranslated: 'super old mouse',
-        listPrice: 15.00,
+        listPrice: 15.0,
         itemTypeName: 'I',
         image: 'https://i.imgur.com/RaVJuLr.jpg',
         icon: `mdi ${this.getRandomIcon(2)}`,
@@ -891,7 +970,7 @@ export class Example11 {
       'mdi-table-refresh',
       'mdi-undo',
     ];
-    const randomNumber = Math.floor((Math.random() * icons.length - 1));
+    const randomNumber = Math.floor(Math.random() * icons.length - 1);
     return icons[iconIndex ?? randomNumber];
   }
 

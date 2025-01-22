@@ -1,5 +1,14 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
-import { type Column, Editors, FieldType, Filters, type GridOption, type GridStateChange, type Metrics, OperatorType, } from '@slickgrid-universal/common';
+import {
+  type Column,
+  Editors,
+  FieldType,
+  Filters,
+  type GridOption,
+  type GridStateChange,
+  type Metrics,
+  OperatorType,
+} from '@slickgrid-universal/common';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { GridOdataService, type OdataServiceApi, type OdataOption } from '@slickgrid-universal/odata';
 import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
@@ -11,7 +20,7 @@ import './example15.scss';
 
 const defaultPageSize = 20;
 
-export class Example15 {
+export default class Example15 {
   private _bindingEventService: BindingEventService;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -28,7 +37,10 @@ export class Example15 {
   statusClass = 'is-success';
   isOtherGenderAdded = false;
   isPageErrorTest = false;
-  genderCollection = [{ value: 'male', label: 'male' }, { value: 'female', label: 'female' }];
+  genderCollection = [
+    { value: 'male', label: 'male' },
+    { value: 'female', label: 'female' },
+  ];
 
   constructor() {
     this._bindingEventService = new BindingEventService();
@@ -63,33 +75,43 @@ export class Example15 {
   initializeGrid() {
     this.columnDefinitions = [
       {
-        id: 'name', name: 'Name', field: 'name', sortable: true,
+        id: 'name',
+        name: 'Name',
+        field: 'name',
+        sortable: true,
         type: FieldType.string,
         filterable: true,
         editor: {
           model: Editors.text,
         },
         filter: {
-          model: Filters.compoundInput
+          model: Filters.compoundInput,
         },
       },
       {
-        id: 'gender', name: 'Gender', field: 'gender', filterable: true,
+        id: 'gender',
+        name: 'Gender',
+        field: 'gender',
+        filterable: true,
         editor: {
           model: Editors.singleSelect,
           // collection: this.genderCollection,
-          collectionAsync: of(this.genderCollection)
+          collectionAsync: of(this.genderCollection),
         },
         filter: {
           model: Filters.singleSelect,
           collectionAsync: of(this.genderCollection),
           collectionOptions: {
-            addBlankEntry: true
-          }
-        }
+            addBlankEntry: true,
+          },
+        },
       },
       {
-        id: 'company', name: 'Company', field: 'company', filterable: true, sortable: true,
+        id: 'company',
+        name: 'Company',
+        field: 'company',
+        filterable: true,
+        sortable: true,
         customTooltip: {
           // you can use the Custom Tooltip in 2 ways (synchronous or asynchronous)
           // example 1 (sync):
@@ -99,14 +121,15 @@ export class Example15 {
           // when using async, the `formatter` will contain the loading spinner
           // you will need to provide an `asyncPost` function returning a Promise and also `asyncPostFormatter` formatter to display the result once the Promise resolves
           formatter: () => `<div><span class="mdi mdi-load mdi-spin-1s"></span> loading...</div>`,
-          asyncProcess: (_row, _cell, _value, _column, dataContext) => new Observable((observer) => {
-            observer.next({
-              // return random door number & zip code to simulare company address
-              doorNumber: dataContext.id + 100,
-              zip: dataContext.id + 600000
-            });
-            observer.complete();
-          }).pipe(delay(150)),
+          asyncProcess: (_row, _cell, _value, _column, dataContext) =>
+            new Observable((observer) => {
+              observer.next({
+                // return random door number & zip code to simulare company address
+                doorNumber: dataContext.id + 100,
+                zip: dataContext.id + 600000,
+              });
+              observer.complete();
+            }).pipe(delay(150)),
           asyncPostFormatter: this.tooltipCompanyAddressFormatter,
 
           // optional conditional usability callback
@@ -119,12 +142,12 @@ export class Example15 {
       enableAutoResize: true,
       autoResize: {
         container: '.demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       checkboxSelector: {
         // you can toggle these 2 properties to show the "select all" checkbox in different location
         hideInFilterHeaderRow: false,
-        hideInColumnTitleRow: true
+        hideInColumnTitleRow: true,
       },
       editable: true,
       autoEdit: true,
@@ -150,13 +173,13 @@ export class Example15 {
           // direction can be written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
           { columnId: 'name', direction: 'asc' },
         ],
-        pagination: { pageNumber: 2, pageSize: 20 }
+        pagination: { pageNumber: 2, pageSize: 20 },
       },
       backendServiceApi: {
         service: new GridOdataService(),
         options: {
           enableCount: this.isCountEnabled, // add the count in the OData query, which will return a property named "odata.count" (v2) or "@odata.count" (v4)
-          version: this.odataVersion        // defaults to 2, the query string is slightly different between OData 2 and 4
+          version: this.odataVersion, // defaults to 2, the query string is slightly different between OData 2 and 4
         },
         onError: (error: Error) => {
           this.errorStatus = error.message;
@@ -173,9 +196,9 @@ export class Example15 {
           this.metrics = response.metrics;
           this.displaySpinner(false);
           this.getCustomerCallback(response);
-        }
+        },
       } as OdataServiceApi,
-      externalResources: [new RxJsResource(), new SlickCustomTooltip()]
+      externalResources: [new RxJsResource(), new SlickCustomTooltip()],
     };
   }
 
@@ -212,8 +235,8 @@ export class Example15 {
 
   displaySpinner(isProcessing, isError?: boolean) {
     this.processing = isProcessing;
-    this.status = (isProcessing) ? 'loading...' : 'finished!!';
-    this.statusClass = (isProcessing) ? 'notification is-light is-warning' : 'notification is-light is-success';
+    this.status = isProcessing ? 'loading...' : 'finished!!';
+    this.statusClass = isProcessing ? 'notification is-light is-warning' : 'notification is-light is-success';
     if (isError) {
       this.status = 'ERROR!!!';
       this.statusClass = 'notification is-light is-danger';
@@ -225,7 +248,7 @@ export class Example15 {
     // however we need to force a dirty check, doing a clone object will do just that
     let countPropName = 'totalRecordCount'; // you can use "totalRecordCount" or any name or "odata.count" when "enableCount" is set
     if (this.isCountEnabled) {
-      countPropName = (this.odataVersion === 4) ? '@odata.count' : 'odata.count';
+      countPropName = this.odataVersion === 4 ? '@odata.count' : 'odata.count';
     }
     if (this.metrics) {
       this.metrics.totalItemCount = data[countPropName];
@@ -264,13 +287,13 @@ export class Example15 {
 
       for (const param of queryParams) {
         if (param.includes('$top=')) {
-          top = +(param.substring('$top='.length));
+          top = +param.substring('$top='.length);
           if (top === 50000) {
             throw new Error('Server timed out retrieving 50,000 rows');
           }
         }
         if (param.includes('$skip=')) {
-          skip = +(param.substring('$skip='.length));
+          skip = +param.substring('$skip='.length);
         }
         if (param.includes('$orderby=')) {
           orderBy = param.substring('$orderby='.length);
@@ -321,11 +344,7 @@ export class Example15 {
         throw new Error('Server could not sort using the field "Company"');
       }
 
-      const sort = orderBy.includes('asc')
-        ? 'ASC'
-        : orderBy.includes('desc')
-          ? 'DESC'
-          : '';
+      const sort = orderBy.includes('asc') ? 'ASC' : orderBy.includes('desc') ? 'DESC' : '';
 
       let data = require('./data/customers_100.json') as { name: string; gender: string; company: string; id: string, category: { id: string; name: string } }[];
       switch (sort) {
@@ -343,7 +362,7 @@ export class Example15 {
       if (columnFilters) {
         for (const columnId in columnFilters) {
           if (columnFilters.hasOwnProperty(columnId)) {
-            filteredData = filteredData.filter(column => {
+            filteredData = filteredData.filter((column) => {
               const filterType = columnFilters[columnId].type;
               const searchTerm = columnFilters[columnId].term;
               let colId = columnId;
@@ -357,16 +376,26 @@ export class Example15 {
                 const [term1, term2] = Array.isArray(searchTerm) ? searchTerm : [searchTerm];
                 switch (filterType) {
                   case 'eq':
-                  case 'equal': return filterTerm.toLowerCase() === term1;
-                  case 'ne': return filterTerm.toLowerCase() !== term1;
-                  case 'le': return filterTerm.toLowerCase() <= term1;
-                  case 'lt': return filterTerm.toLowerCase() < term1;
-                  case 'gt': return filterTerm.toLowerCase() > term1;
-                  case 'ge': return filterTerm.toLowerCase() >= term1;
-                  case 'ends': return filterTerm.toLowerCase().endsWith(term1);
-                  case 'starts': return filterTerm.toLowerCase().startsWith(term1);
-                  case 'starts+ends': return filterTerm.toLowerCase().startsWith(term1) && filterTerm.toLowerCase().endsWith(term2);
-                  case 'substring': return filterTerm.toLowerCase().includes(term1);
+                  case 'equal':
+                    return filterTerm.toLowerCase() === term1;
+                  case 'ne':
+                    return filterTerm.toLowerCase() !== term1;
+                  case 'le':
+                    return filterTerm.toLowerCase() <= term1;
+                  case 'lt':
+                    return filterTerm.toLowerCase() < term1;
+                  case 'gt':
+                    return filterTerm.toLowerCase() > term1;
+                  case 'ge':
+                    return filterTerm.toLowerCase() >= term1;
+                  case 'ends':
+                    return filterTerm.toLowerCase().endsWith(term1);
+                  case 'starts':
+                    return filterTerm.toLowerCase().startsWith(term1);
+                  case 'starts+ends':
+                    return filterTerm.toLowerCase().startsWith(term1) && filterTerm.toLowerCase().endsWith(term2);
+                  case 'substring':
+                    return filterTerm.toLowerCase().includes(term1);
                 }
               }
             });
@@ -382,10 +411,10 @@ export class Example15 {
       }
       const updatedData = filteredData.slice(firstRow, firstRow + top);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         let countPropName = 'totalRecordCount';
         if (this.isCountEnabled) {
-          countPropName = (this.odataVersion === 4) ? '@odata.count' : 'odata.count';
+          countPropName = this.odataVersion === 4 ? '@odata.count' : 'odata.count';
         }
         const backendResult = { items: updatedData, [countPropName]: countTotalItems, query };
         // console.log('Backend Result', backendResult);
@@ -427,9 +456,7 @@ export class Example15 {
   }
 
   setSortingDynamically() {
-    this.sgb?.sortService.updateSorting([
-      { columnId: 'name', direction: 'DESC' },
-    ]);
+    this.sgb?.sortService.updateSorting([{ columnId: 'name', direction: 'DESC' }]);
   }
 
   throwPageChangeError() {
@@ -450,9 +477,9 @@ export class Example15 {
   // THE FOLLOWING METHODS ARE ONLY FOR DEMO PURPOSES DO NOT USE THIS CODE
   // ---
 
-  changeCountEnableFlag() {
+  changeCountEnableFlag(checked: boolean) {
     this.displaySpinner(true);
-    this.isCountEnabled = !this.isCountEnabled;
+    this.isCountEnabled = checked;
     const odataService = this.gridOptions.backendServiceApi!.service;
     odataService.updateOptions({ enableCount: this.isCountEnabled } as OdataOption);
     odataService.clearFilters?.();

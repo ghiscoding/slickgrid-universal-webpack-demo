@@ -1,7 +1,18 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
-import { type Column, FieldType, Filters, type GridOption, type GridStateChange, type Metrics, OperatorType, type GridState, } from '@slickgrid-universal/common';
+import {
+  type Column,
+  FieldType,
+  Filters,
+  type GridOption,
+  type GridStateChange,
+  type Metrics,
+  OperatorType,
+  type GridState,
+  type CurrentColumn,
+} from '@slickgrid-universal/common';
 import { GridOdataService, type OdataServiceApi, type OdataOption } from '@slickgrid-universal/odata';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
+
 import { ExampleGridOptions } from './example-grid-options';
 import './example09.scss';
 
@@ -10,7 +21,7 @@ const defaultPageSize = 20;
 const CARET_HTML_ESCAPED = '%5E';
 const PERCENT_HTML_ESCAPED = '%25';
 
-export class Example09 {
+export default class Example09 {
   private _bindingEventService: BindingEventService;
   columnDefinitions: Column[];
   gridOptions: GridOption;
@@ -76,7 +87,10 @@ export class Example09 {
   initializeGrid() {
     this.columnDefinitions = [
       {
-        id: 'name', name: 'Name', field: 'name', sortable: true,
+        id: 'name',
+        name: 'Name',
+        field: 'name',
+        sortable: true,
         type: FieldType.string,
         filterable: true,
         filter: {
@@ -89,36 +103,48 @@ export class Example09 {
             { operator: 'a*', desc: 'Starts With' },
             { operator: 'Custom', desc: 'SQL Like' },
           ],
-        }
+        },
       },
       {
-        id: 'gender', name: 'Gender', field: 'gender', filterable: true, sortable: true,
+        id: 'gender',
+        name: 'Gender',
+        field: 'gender',
+        filterable: true,
+        sortable: true,
         filter: {
           model: Filters.singleSelect,
-          collection: [{ value: '', label: '' }, { value: 'male', label: 'male' }, { value: 'female', label: 'female' }]
-        }
+          collection: [
+            { value: '', label: '' },
+            { value: 'male', label: 'male' },
+            { value: 'female', label: 'female' },
+          ],
+        },
       },
       { id: 'company', name: 'Company', field: 'company', filterable: true, sortable: true },
       {
-        id: 'category_name', name: 'Category', field: 'category/name', filterable: true, sortable: true,
-        formatter: (_row, _cell, _val, _colDef, dataContext) => dataContext['category']?.['name'] || ''
-      }
+        id: 'category_name',
+        name: 'Category',
+        field: 'category/name',
+        filterable: true,
+        sortable: true,
+        formatter: (_row, _cell, _val, _colDef, dataContext) => dataContext['category']?.['name'] || '',
+      },
     ];
 
     this.gridOptions = {
       enableAutoResize: true,
       autoResize: {
         container: '.demo-container',
-        rightPadding: 10
+        rightPadding: 10,
       },
       checkboxSelector: {
         // you can toggle these 2 properties to show the "select all" checkbox in different location
         hideInFilterHeaderRow: false,
-        hideInColumnTitleRow: true
+        hideInColumnTitleRow: true,
       },
       compoundOperatorAltTexts: {
         // where '=' is any of the `OperatorString` type shown above
-        text: { 'Custom': { operatorAlt: '%%', descAlt: 'SQL Like' } },
+        text: { Custom: { operatorAlt: '%%', descAlt: 'SQL Like' } },
       },
       enableCellNavigation: true,
       enableFiltering: true,
@@ -129,18 +155,20 @@ export class Example09 {
         pageSizes: [10, 20, 50, 100, 500, 50000],
         pageSize: defaultPageSize,
       },
-      presets: localStorage.getItem(STORAGE_KEY) ? JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') as GridState : {
-        // you can also type operator as string, e.g.: operator: 'EQ'
-        filters: [
-          // { columnId: 'name', searchTerms: ['w'], operator: OperatorType.startsWith },
-          { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
-        ],
-        sorters: [
-          // direction can be written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
-          { columnId: 'name', direction: 'asc' },
-        ],
-        pagination: { pageNumber: 2, pageSize: 20 }
-      },
+      presets: localStorage.getItem(STORAGE_KEY)
+        ? (JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') as GridState)
+        : {
+          // you can also type operator as string, e.g.: operator: 'EQ'
+          filters: [
+            // { columnId: 'name', searchTerms: ['w'], operator: OperatorType.startsWith },
+            { columnId: 'gender', searchTerms: ['male'], operator: OperatorType.equal },
+          ],
+          sorters: [
+            // direction can be written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+            { columnId: 'name', direction: 'asc' },
+          ],
+          pagination: { pageNumber: 2, pageSize: 20 },
+        },
       backendServiceApi: {
         service: new GridOdataService(),
         options: {
@@ -151,12 +179,12 @@ export class Example09 {
             if (columnFilterOperator === OperatorType.custom && columnDef?.id === 'name') {
               let matchesSearch = searchValues[0].replace(/\*/g, '.*');
               matchesSearch = matchesSearch.slice(0, 1) + CARET_HTML_ESCAPED + matchesSearch.slice(1);
-              matchesSearch = matchesSearch.slice(0, -1) + '$\'';
+              matchesSearch = matchesSearch.slice(0, -1) + "$'";
 
               return `matchesPattern(${fieldName}, ${matchesSearch})`;
             }
           },
-          version: this.odataVersion        // defaults to 2, the query string is slightly different between OData 2 and 4
+          version: this.odataVersion, // defaults to 2, the query string is slightly different between OData 2 and 4
         },
         onError: (error: Error) => {
           this.errorStatus = error.message;
@@ -174,7 +202,7 @@ export class Example09 {
           this.displaySpinner(false);
           this.getCustomerCallback(response);
         },
-      } as OdataServiceApi
+      } as OdataServiceApi,
     };
   }
 
@@ -185,8 +213,8 @@ export class Example09 {
       this.status = 'ERROR!!!';
       this.statusClass = 'notification is-light is-danger';
     } else {
-      this.status = (isProcessing) ? 'loading...' : 'finished!!';
-      this.statusClass = (isProcessing) ? 'notification is-light is-warning' : 'notification is-light is-success';
+      this.status = isProcessing ? 'loading...' : 'finished!!';
+      this.statusClass = isProcessing ? 'notification is-light is-warning' : 'notification is-light is-success';
     }
   }
 
@@ -195,7 +223,7 @@ export class Example09 {
     // however we need to force a dirty check, doing a clone object will do just that
     let totalItemCount: number = data['totalRecordCount']; // you can use "totalRecordCount" or any name or "odata.count" when "enableCount" is set
     if (this.isCountEnabled) {
-      totalItemCount = (this.odataVersion === 4) ? data['@odata.count'] : data['d']['__count'];
+      totalItemCount = this.odataVersion === 4 ? data['@odata.count'] : data['d']['__count'];
     }
     if (this.metrics) {
       this.metrics.totalItemCount = totalItemCount;
@@ -236,13 +264,13 @@ export class Example09 {
 
       for (const param of queryParams) {
         if (param.includes('$top=')) {
-          top = +(param.substring('$top='.length));
+          top = +param.substring('$top='.length);
           if (top === 50000) {
             throw new Error('Server timed out retrieving 50,000 rows');
           }
         }
         if (param.includes('$skip=')) {
-          skip = +(param.substring('$skip='.length));
+          skip = +param.substring('$skip='.length);
         }
         if (param.includes('$orderby=')) {
           orderBy = param.substring('$orderby='.length);
@@ -339,7 +367,7 @@ export class Example09 {
       if (columnFilters) {
         for (const columnId in columnFilters) {
           if (columnFilters.hasOwnProperty(columnId)) {
-            filteredData = filteredData.filter(column => {
+            filteredData = filteredData.filter((column) => {
               const filterType = columnFilters[columnId].type;
               const searchTerm = columnFilters[columnId].term;
               let colId = columnId;
@@ -359,17 +387,28 @@ export class Example09 {
                 const [term1, term2] = Array.isArray(searchTerm) ? searchTerm : [searchTerm];
 
                 switch (filterType) {
-                  case 'eq': return filterTerm.toLowerCase() === term1;
-                  case 'ne': return filterTerm.toLowerCase() !== term1;
-                  case 'le': return filterTerm.toLowerCase() <= term1;
-                  case 'lt': return filterTerm.toLowerCase() < term1;
-                  case 'gt': return filterTerm.toLowerCase() > term1;
-                  case 'ge': return filterTerm.toLowerCase() >= term1;
-                  case 'ends': return filterTerm.toLowerCase().endsWith(term1);
-                  case 'starts': return filterTerm.toLowerCase().startsWith(term1);
-                  case 'starts+ends': return filterTerm.toLowerCase().startsWith(term1) && filterTerm.toLowerCase().endsWith(term2);
-                  case 'substring': return filterTerm.toLowerCase().includes(term1);
-                  case 'matchespattern': return new RegExp((term1 as string).replaceAll(PERCENT_HTML_ESCAPED, '.*'), 'i').test(filterTerm);
+                  case 'eq':
+                    return filterTerm.toLowerCase() === term1;
+                  case 'ne':
+                    return filterTerm.toLowerCase() !== term1;
+                  case 'le':
+                    return filterTerm.toLowerCase() <= term1;
+                  case 'lt':
+                    return filterTerm.toLowerCase() < term1;
+                  case 'gt':
+                    return filterTerm.toLowerCase() > term1;
+                  case 'ge':
+                    return filterTerm.toLowerCase() >= term1;
+                  case 'ends':
+                    return filterTerm.toLowerCase().endsWith(term1);
+                  case 'starts':
+                    return filterTerm.toLowerCase().startsWith(term1);
+                  case 'starts+ends':
+                    return filterTerm.toLowerCase().startsWith(term1) && filterTerm.toLowerCase().endsWith(term2);
+                  case 'substring':
+                    return filterTerm.toLowerCase().includes(term1);
+                  case 'matchespattern':
+                    return new RegExp((term1 as string).replaceAll(PERCENT_HTML_ESCAPED, '.*'), 'i').test(filterTerm);
                 }
               }
             });
@@ -385,7 +424,7 @@ export class Example09 {
       }
       const updatedData = filteredData.slice(firstRow, firstRow + top);
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         const backendResult = { query };
         if (!this.isCountEnabled) {
           backendResult['totalRecordCount'] = countTotalItems;
@@ -427,8 +466,11 @@ export class Example09 {
   gridStateChanged(event) {
     if (event?.detail) {
       const gridStateChanges: GridStateChange = event.detail;
-      // console.log('Client sample, Grid State changed:: ', gridStateChanges);
-      console.log('Client sample, Grid State changed:: ', gridStateChanges.change);
+      // console.log('Grid State changed:: ', gridStateChanges);
+      console.log('Grid State changed:: ', gridStateChanges.change);
+      if (gridStateChanges.change?.type === 'columns') {
+        console.log(`Grid State changed, ${(gridStateChanges.change.newValues as CurrentColumn[]).length} columns displayed`);
+      }
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(gridStateChanges.gridState));
     }
@@ -443,9 +485,7 @@ export class Example09 {
   }
 
   setSortingDynamically() {
-    this.sgb?.sortService.updateSorting([
-      { columnId: 'name', direction: 'DESC' },
-    ]);
+    this.sgb?.sortService.updateSorting([{ columnId: 'name', direction: 'DESC' }]);
   }
 
   clearLocalStorage() {
@@ -460,20 +500,20 @@ export class Example09 {
   // THE FOLLOWING METHODS ARE ONLY FOR DEMO PURPOSES DO NOT USE THIS CODE
   // ---
 
-  changeCountEnableFlag() {
-    this.isCountEnabled = !this.isCountEnabled;
+  changeCountEnableFlag(checked: boolean) {
+    this.isCountEnabled = checked;
     this.resetOptions({ enableCount: this.isCountEnabled });
     return true;
   }
 
-  changeEnableSelectFlag() {
-    this.isSelectEnabled = !this.isSelectEnabled;
+  changeEnableSelectFlag(checked: boolean) {
+    this.isSelectEnabled = checked;
     this.resetOptions({ enableSelect: this.isSelectEnabled });
     return true;
   }
 
-  changeEnableExpandFlag() {
-    this.isExpandEnabled = !this.isExpandEnabled;
+  changeEnableExpandFlag(checked: boolean) {
+    this.isExpandEnabled = checked;
     this.resetOptions({ enableExpand: this.isExpandEnabled });
     return true;
   }
