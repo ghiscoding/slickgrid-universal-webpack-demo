@@ -27,10 +27,7 @@ const removeScript = (scriptId: string) => {
   }
 };
 
-function fetchJsonp<T = any>(
-  _url: string,
-  options: Partial<JsonpOptions> = {}
-): Promise<{ ok: boolean; json: () => Promise<T> }> {
+function fetchJsonp<T = any>(_url: string, options: Partial<JsonpOptions> = {}): Promise<{ ok: boolean; json: () => Promise<T> }> {
   // to avoid param reassign
   let url = _url;
   const timeout = options.timeout || defaultOptions.timeout;
@@ -44,7 +41,7 @@ function fetchJsonp<T = any>(
     (window as any)[callbackFunction] = (response: T) => {
       // keep consistent with fetch API
       resolve({ ok: true, json: () => Promise.resolve(response) });
-      if (timeoutId) { clearTimeout(timeoutId); }
+      if (timeoutId) clearTimeout(timeoutId);
       removeScript(scriptId);
       clearFunction(callbackFunction);
     };
@@ -84,7 +81,7 @@ function fetchJsonp<T = any>(
       reject(new Error(`JSONP request to ${_url} failed`));
       clearFunction(callbackFunction);
       removeScript(scriptId);
-      if (timeoutId) { clearTimeout(timeoutId); }
+      if (timeoutId) clearTimeout(timeoutId);
     };
   });
 }

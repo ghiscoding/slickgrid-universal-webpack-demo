@@ -542,7 +542,7 @@ export default class Example11 {
         const columnDefinitionsClone = deepCopy(this.columnDefinitions);
         const massUpdateColumnDefinitions = columnDefinitionsClone?.filter((col: Column) => col.editor?.massUpdate) || [];
         const selectedItems = this.sgb.gridService.getSelectedRowsDataItem();
-        const selectedIds = selectedItems.map(selectedItem => selectedItem.id);
+        const selectedIds = selectedItems.map((selectedItem) => selectedItem.id);
         loadComponent(modalContainerElm, './example11-modal', { columnDefinitions: massUpdateColumnDefinitions, selectedIds, remoteCallback: this.remoteCallbackFn.bind(this) });
         break;
     }
