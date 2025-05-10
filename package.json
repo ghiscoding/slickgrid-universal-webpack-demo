@@ -52,8 +52,6 @@
     "@slickgrid-universal/vanilla-force-bundle": "^5.14.0",
     "bulma": "^1.0.4",
     "dompurify": "^3.2.5",
-    "flatpickr": "^4.6.13",
-    "moment-mini": "^2.29.4",
     "rxjs": "^7.8.2",
     "whatwg-fetch": "^3.6.20"
   },
