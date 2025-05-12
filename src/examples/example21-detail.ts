@@ -1,6 +1,8 @@
 import { createDomElement, emptyElement, type GridState, type Column, type GridOption } from '@slickgrid-universal/common';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
+import './example21-detail.scss';
+
 export interface Distributor {
   id: number;
   companyId: number;
@@ -77,11 +79,13 @@ export class InnerGridExample {
       enableCellNavigation: true,
       datasetIdPropertyName: 'orderId',
       presets: gridState,
+      rowTopOffsetRenderType: 'top', // RowDetail and/or RowSpan don't render well with "transform", you should use "top"
     };
   }
 
   mount(containerElm: HTMLElement) {
     const { fragment, innerGrid } = this.render();
+    containerElm.textContent = '';
     containerElm.appendChild(fragment);
     this.innerSgb = new Slicker.GridBundle(innerGrid, this.innerColDefs, this.innerGridOptions, [...this.itemDetail.orderData]);
   }
@@ -91,7 +95,7 @@ export class InnerGridExample {
     //     <div class="row-detail-${this.itemDetail.id}">
     //       <h4 class="title is-4">${this.itemDetail.title} - Order Details</h4>
     //       <div class="container">
-    //         <div class="innergrid-${this.itemDetail.id}"></div>
+    //         <div class="innergrid innergrid-${this.itemDetail.id}"></div>
     //       </div>
     //     </div>
     //   `;
@@ -103,7 +107,7 @@ export class InnerGridExample {
         textContent: `${this.itemDetail.companyName} - Order Details (id: ${this.itemDetail.id})`,
       })
     );
-    const innerGrid = createDomElement('div', { className: `innergrid-${this.itemDetail.id}` });
+    const innerGrid = createDomElement('div', { className: `innergrid innergrid-${this.itemDetail.id}` });
     const gridContainer = createDomElement('div', { className: 'container' });
     gridContainer.appendChild(innerGrid);
     rowDetailContainer.appendChild(gridContainer);

@@ -4,7 +4,6 @@ import {
   type ColumnEditorDualInput,
   type EditCommand,
   Editors,
-  FieldType,
   Filters,
   type Formatter,
   Formatters,
@@ -74,7 +73,7 @@ export default class Example04 {
 
     // this._bindingEventService.bind(gridContainerElm, 'onclick', handleOnClick);
     this._bindingEventService.bind(gridContainerElm, 'onvalidationerror', this.handleOnValidationError.bind(this));
-    this._bindingEventService.bind(gridContainerElm, 'onitemdeleted', this.handleOnItemDeleted.bind(this));
+    this._bindingEventService.bind(gridContainerElm, 'onitemsdeleted', this.handleOnItemsDeleted.bind(this));
     this.sgb = new Slicker.GridBundle(gridContainerElm, this.columnDefinitions, { ...ExampleGridOptions, ...this.gridOptions }, dataset);
   }
 
@@ -91,7 +90,6 @@ export default class Example04 {
         name: 'Title',
         field: 'title',
         sortable: true,
-        type: FieldType.string,
         editor: {
           model: Editors.longText,
           required: true,
@@ -107,7 +105,7 @@ export default class Example04 {
         field: 'percentComplete',
         sortable: true,
         filterable: true,
-        type: FieldType.number,
+        type: 'number',
         editor: {
           // We can also add HTML text to be rendered (any bad script will be sanitized) but we have to opt-in, else it will be sanitized
           enableRenderHtml: true,
@@ -135,7 +133,7 @@ export default class Example04 {
           //   console.log(args);
           //   return updatedCollection.filter((col) => args.dataContext.id % 2 ? col.value < 50 : col.value >= 50);
           // },
-          editorOptions: {
+          options: {
             filter: true, // adds a filter on top of the multi-select dropdown
           },
           model: Editors.singleSelect,
@@ -146,7 +144,7 @@ export default class Example04 {
         name: 'Start',
         field: 'start',
         minWidth: 60,
-        type: FieldType.dateIso,
+        type: 'dateIso',
         filterable: true,
         sortable: true,
         filter: { model: Filters.compoundDate },
@@ -157,7 +155,7 @@ export default class Example04 {
         name: 'Finish',
         field: 'finish',
         minWidth: 60,
-        type: FieldType.dateIso,
+        type: 'dateIso',
         filterable: true,
         sortable: true,
         filter: { model: Filters.compoundDate },
@@ -281,7 +279,7 @@ export default class Example04 {
 
           // We can use the autocomplete through 3 ways "collection", "collectionAsync" or with your own autocomplete options
           // use your own autocomplete options, instead of fetch-jsonp, use HttpClient or FetchClient
-          editorOptions: {
+          options: {
             minLength: 3,
             fetch: (searchText, updateCallback) => {
               fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
@@ -312,7 +310,7 @@ export default class Example04 {
 
           // OR use your own autocomplete options, instead of fetchJsonp, use HttpClient or FetchClient
           // here we use fetchJsonp just because I'm not sure how to configure HttpClient with JSONP and CORS
-          filterOptions: {
+          options: {
             minLength: 3,
             fetch: (searchText, updateCallback) => {
               fetchJsonp<string[]>(`http://gd.geobytes.com/AutoCompleteCity?q=${searchText}`)
@@ -574,15 +572,15 @@ export default class Example04 {
 
   handleOnValidationError(event) {
     console.log('handleOnValidationError', event.detail);
-    const args = event.detail && event.detail.args;
+    const args = event?.detail?.args;
     if (args.validationResults) {
       alert(args.validationResults.msg);
       return false;
     }
   }
 
-  handleOnItemDeleted(event) {
-    const itemId = event && event.detail;
+  handleOnItemsDeleted(event) {
+    const itemId = event?.detail;
     console.log('item deleted with id:', itemId);
   }
 

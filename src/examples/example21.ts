@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { BindingEventService } from '@slickgrid-universal/binding';
-import { type Column, createDomElement, type GridOption, SlickEventHandler, ExtensionName } from '@slickgrid-universal/common';
+import { type Column, createDomElement, ExtensionName, type GridOption, SlickEventHandler } from '@slickgrid-universal/common';
 import { SlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
@@ -22,11 +22,12 @@ export default class Example21 {
   private _darkMode = false;
   private _eventHandler: SlickEventHandler;
   private _views: CreatedView[] = [];
-  detailViewRowCount = 11;
+  detailViewRowCount = 9;
   gridOptions!: GridOption;
   columnDefinitions!: Column<Distributor>[];
   dataset!: Distributor[];
   isUsingInnerGridStatePresets = false;
+  isUsingAutoHeight = false;
   sgb!: SlickVanillaGridBundle;
   selectedRowString = '';
   serverApiDelay = 400;
@@ -45,7 +46,7 @@ export default class Example21 {
 
     // mock some data (different in each dataset)
     this.dataset = this.mockData(NB_ITEMS);
-    this.gridContainerElm = document.querySelector<HTMLDivElement>(`.grid21`) as HTMLDivElement;
+    this.gridContainerElm = document.querySelector<HTMLDivElement>('.grid21') as HTMLDivElement;
 
     this.sgb = new Slicker.GridBundle(
       this.gridContainerElm,
@@ -56,7 +57,17 @@ export default class Example21 {
 
     // add all row detail event listeners
     this.addRowDetailEventHandlers();
-    this._bindingEventService.bind(this.gridContainerElm, 'onfilterchanged', this.redrawAllViewComponents.bind(this));
+    this._bindingEventService.bind(
+      this.gridContainerElm,
+      [
+        'onfilterchanged',
+        'ongridmenucolumnschanged',
+        'oncolumnpickercolumnschanged',
+        'ongridmenuclearallfilters',
+        'ongridmenuclearallsorting',
+      ],
+      () => this.redrawAllViewComponents()
+    );
   }
 
   dispose() {
@@ -123,6 +134,7 @@ export default class Example21 {
     this.gridOptions = {
       autoResize: {
         container: '.demo-container',
+        autoHeight: this.isUsingAutoHeight, // works with/without autoHeight
       },
       enableFiltering: true,
       enableRowDetailView: true,
@@ -132,13 +144,13 @@ export default class Example21 {
         this.rowDetail = new SlickRowDetailView(pubSubService);
         return [{ name: ExtensionName.rowDetailView, instance: this.rowDetail }];
       },
+      rowTopOffsetRenderType: 'top', // RowDetail and/or RowSpan don't render well with "transform", you should use "top"
       rowHeight: 33,
       rowDetailView: {
-        cssClass: 'detail-view-toggle',
         loadOnce: false, // you can't use loadOnce with inner grid because only HTML template are re-rendered, not JS events
-        preTemplate: this.loadingTemplate.bind(this),
-        postTemplate: (itemDetail) => `<div class="container_${itemDetail.id}"></div>`,
-        process: this.simulateServerAsyncCall.bind(this),
+        preTemplate: () => this.loadingTemplate(),
+        postTemplate: (itemDetail) => createDomElement('div', { className: `container_${itemDetail.id}` }),
+        process: (item) => this.simulateServerAsyncCall(item),
         useRowClick: false,
         // how many grid rows do we want to use for the detail panel
         panelRows: this.detailViewRowCount,
@@ -171,16 +183,16 @@ export default class Example21 {
   }
 
   redrawAllViewComponents() {
-    // const itemIds = this.rowDetail.getExpandedRowIds();
     this.rowDetail.resetRenderedRows();
-    // this.disposeAllViewComponents();
-    // itemIds.forEach((id) => {
-    //   console.log('redraw', id);
-    //   const item = this.sgb.dataView?.getItemById(id);
-    //   if (item) {
-    //     this.renderView(item);
-    //   }
-    // });
+    setTimeout(() => {
+      const itemIds = this.rowDetail.getExpandedRowIds();
+      itemIds.forEach((id) => {
+        const item = this.sgb.dataView?.getItemById(id);
+        if (item) {
+          this.renderView(item);
+        }
+      });
+    }, 10);
   }
 
   /** Dispose of all the opened Row Detail Panels Components */
@@ -210,7 +222,7 @@ export default class Example21 {
   }
 
   renderView(item: Distributor) {
-    if (this._views.findIndex((obj) => obj.id === item.id) >= 0) {
+    if (this._views.some((obj) => obj.id === item.id)) {
       this.disposeView(item.id);
     }
     const gridContainerElm = this.sgb.slickGrid?.getContainerNode();
@@ -233,12 +245,27 @@ export default class Example21 {
     this.rowDetail.collapseAll();
   }
 
+  redrawAllRowDetails() {
+    // you can call do it via these 2 approaches
+    this.rowDetail.recalculateOutOfRangeViews();
+
+    // 2. or your own redraw
+    // this.redrawAllRowDetails();
+  }
+
   changeDetailViewRowCount() {
     const options = this.rowDetail.getOptions();
     if (options?.panelRows) {
       options.panelRows = this.detailViewRowCount; // change number of rows dynamically
       this.rowDetail.setOptions(options);
     }
+  }
+
+  changeUsingResizerAutoHeight(checked: boolean) {
+    this.isUsingAutoHeight = checked;
+    this.sgb.slickGrid?.setOptions({ autoResize: { ...this.gridOptions.autoResize, autoHeight: checked } });
+    this.sgb.resizerService.resizeGrid();
+    return true;
   }
 
   changeUsingInnerGridStatePresets(checked: boolean) {
@@ -309,7 +336,6 @@ export default class Example21 {
     this.rowDetail.onAsyncResponse.notify(
       {
         item: itemDetail,
-        itemDetail,
         params: { isUsingInnerGridStatePresets: this.isUsingInnerGridStatePresets },
       },
       undefined,

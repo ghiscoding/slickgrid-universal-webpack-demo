@@ -23,7 +23,7 @@
       in the grid by itself and that is why they these features are all disabled in this example). Also, column/row freezing (pinning) are
       also not supported, or at least not recommended unless you know exactly what you're doing (like in this demo here because we know our
       pinning doesn't intersect)! Any freezing column/row that could intersect with a <code>colspan</code>/<code>rowspan</code>
-      <b>will cause problems</b>.
+      <b>&nbsp;will cause problems</b>.
     </p>
   </div>
 </div>
@@ -60,6 +60,9 @@
     >
       <span class="mdi mdi-chevron-down mdi-rotate-270"></span>
       Navigate to Right Cell
+    </button>
+    <button class="button is-small" data-test="toggle-employee-id" onclick.trigger="toggleEmployeeIdVisibility()">
+      Show/Hide EmployeeID
     </button>
     <button class="button is-small mx-1" onclick.trigger="toggleEditing()" data-test="toggle-editing">
       <span class="mdi mdi-pencil-outline"></span>

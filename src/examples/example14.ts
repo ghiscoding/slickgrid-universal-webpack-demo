@@ -4,7 +4,6 @@ import {
   type EditCommand,
   Editors,
   EventNamingStyle,
-  FieldType,
   Filters,
   type Formatter,
   Formatters,
@@ -151,7 +150,6 @@ export default class Example14 {
         name: 'Title',
         field: 'title',
         sortable: true,
-        type: FieldType.string,
         minWidth: 65,
         cssClass: 'text-bold text-uppercase',
         // you can adjust the resize calculation via multiple options
@@ -208,7 +206,7 @@ export default class Example14 {
           required: true,
           alwaysSaveOnEnterKey: true,
           maxLength: 12,
-          editorOptions: {
+          options: {
             cols: 45,
             rows: 6,
             buttonTexts: {
@@ -226,7 +224,7 @@ export default class Example14 {
         sortable: true,
         filterable: true,
         width: 110,
-        type: FieldType.number,
+        type: 'number',
         columnGroup: 'Common Factor',
         formatter: (_row, _cell, value) => {
           if (value === null || value === undefined || value === '') {
@@ -251,7 +249,7 @@ export default class Example14 {
         minWidth: 65,
         sortable: true,
         filterable: true,
-        type: FieldType.number,
+        type: 'number',
         columnGroup: 'Analysis',
         filter: { model: Filters.compoundInputNumber },
         formatter: Formatters.dollar,
@@ -261,7 +259,7 @@ export default class Example14 {
         name: '% Complete',
         field: 'percentComplete',
         minWidth: 150,
-        type: FieldType.number,
+        type: 'number',
         sortable: true,
         filterable: true,
         columnGroup: 'Analysis',
@@ -270,7 +268,7 @@ export default class Example14 {
           model: Filters.sliderRange,
           operator: '>=',
           // searchTerms: [15, 78],
-          filterOptions: {
+          options: {
             enableSliderTrackColoring: true,
             hideSliderNumbers: false,
           } as SliderRangeOption,
@@ -308,12 +306,12 @@ export default class Example14 {
         formatter: Formatters.dateUs,
         columnGroup: 'Period',
         exportCustomFormatter: Formatters.dateUs,
-        type: FieldType.date,
-        outputType: FieldType.dateUs,
-        saveOutputType: FieldType.dateUtc,
+        type: 'date',
+        outputType: 'dateUs',
+        saveOutputType: 'dateUtc',
         filterable: true,
         filter: { model: Filters.compoundDate },
-        editor: { model: Editors.date, editorOptions: { hideClearButton: false } as VanillaCalendarOption },
+        editor: { model: Editors.date, options: { hideClearButton: false } as VanillaCalendarOption },
       },
       {
         id: 'completed',
@@ -346,15 +344,15 @@ export default class Example14 {
         sortable: true,
         formatter: Formatters.dateUs,
         columnGroup: 'Period',
-        type: FieldType.date,
-        outputType: FieldType.dateUs,
-        saveOutputType: FieldType.dateUtc,
+        type: 'date',
+        outputType: 'dateUs',
+        saveOutputType: 'dateUtc',
         filterable: true,
         filter: { model: Filters.compoundDate },
         exportCustomFormatter: Formatters.dateUs,
         editor: {
           model: Editors.date,
-          editorOptions: { range: { min: 'today' } } as VanillaCalendarOption,
+          options: { displayDateMin: 'today' } as VanillaCalendarOption,
           validator: (value, args) => {
             const dataContext = args && args.item;
             if (dataContext && dataContext.completed && !value) {
@@ -379,14 +377,14 @@ export default class Example14 {
         labelKey: 'itemName',
         formatter: Formatters.complexObject,
         exportCustomFormatter: Formatters.complex, // without the Editing cell Formatter
-        type: FieldType.object,
+        type: 'object',
         sortComparer: SortComparers.objectString,
         editor: {
           model: Editors.autocompleter,
           alwaysSaveOnEnterKey: true,
 
           // example with a Remote API call
-          editorOptions: {
+          options: {
             minLength: 1,
             fetch: (searchText, updateCallback) => {
               const products = this.mockProducts();
@@ -403,8 +401,8 @@ export default class Example14 {
         },
         filter: {
           model: Filters.inputText,
+          type: 'string',
           // placeholder: '🔎︎ search product',
-          type: FieldType.string,
           queryField: 'product.itemName',
         },
       },
@@ -417,7 +415,7 @@ export default class Example14 {
         exportCustomFormatter: Formatters.complex, // without the Editing cell Formatter
         dataKey: 'code',
         labelKey: 'name',
-        type: FieldType.object,
+        type: 'object',
         sortComparer: SortComparers.objectString,
         filterable: true,
         sortable: true,
@@ -425,7 +423,7 @@ export default class Example14 {
         editor: {
           model: Editors.autocompleter,
           alwaysSaveOnEnterKey: true,
-          editorOptions: {
+          options: {
             minLength: 0,
             showOnFocus: false,
             fetch: (searchText, updateCallback) => {
