@@ -27,7 +27,7 @@
     "npm": ">=6.14.13"
   },
   "main": "src/slickgrid-universal/index",
-  "browser":{
+  "browser": {
     "child_process": false
   },
   "browserslist": [
@@ -36,20 +36,20 @@
     "not dead"
   ],
   "dependencies": {
-    "@faker-js/faker": "^9.8.0",
+    "@faker-js/faker": "^9.9.0",
     "@fnando/sparkline": "^0.3.10",
     "@formkit/tempo": "^0.1.2",
-    "@slickgrid-universal/common": "^9.2.0",
-    "@slickgrid-universal/composite-editor-component": "^9.2.0",
-    "@slickgrid-universal/custom-tooltip-plugin": "^9.2.0",
-    "@slickgrid-universal/excel-export": "^9.2.0",
-    "@slickgrid-universal/graphql": "^9.2.0",
-    "@slickgrid-universal/odata": "^9.2.0",
-    "@slickgrid-universal/row-detail-view-plugin": "^9.2.0",
-    "@slickgrid-universal/rxjs-observable": "^9.2.0",
-    "@slickgrid-universal/text-export": "^9.2.0",
-    "@slickgrid-universal/vanilla-bundle": "^9.2.0",
-    "@slickgrid-universal/vanilla-force-bundle": "^9.2.0",
+    "@slickgrid-universal/common": "^9.3.0",
+    "@slickgrid-universal/composite-editor-component": "^9.3.0",
+    "@slickgrid-universal/custom-tooltip-plugin": "^9.3.0",
+    "@slickgrid-universal/excel-export": "^9.3.0",
+    "@slickgrid-universal/graphql": "^9.3.0",
+    "@slickgrid-universal/odata": "^9.3.0",
+    "@slickgrid-universal/row-detail-view-plugin": "^9.3.0",
+    "@slickgrid-universal/rxjs-observable": "^9.3.0",
+    "@slickgrid-universal/text-export": "^9.3.0",
+    "@slickgrid-universal/vanilla-bundle": "^9.3.0",
+    "@slickgrid-universal/vanilla-force-bundle": "^9.3.0",
     "bulma": "^1.0.4",
     "dompurify": "^3.2.6",
     "rxjs": "^7.8.2",
