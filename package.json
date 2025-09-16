@@ -50,6 +50,7 @@
     "@slickgrid-universal/text-export": "^9.8.0",
     "@slickgrid-universal/vanilla-bundle": "^9.8.0",
     "@slickgrid-universal/vanilla-force-bundle": "^9.8.0",
+    "alien-signals": "^2.0.7",
     "bulma": "^1.0.4",
     "dompurify": "^3.2.6",
     "rxjs": "^7.8.2"
