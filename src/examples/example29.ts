@@ -1,7 +1,6 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
-import { type Column, Editors, Formatters, type GridOption, SlickGlobalEditorLock } from '@slickgrid-universal/common';
+import { Editors, Formatters, isDefined, SlickGlobalEditorLock, type Column, type GridOption } from '@slickgrid-universal/common';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import './example29.scss';
 
@@ -57,7 +56,7 @@ export default class Example29 {
         field: 'name',
         width: 300,
         cssClass: 'cell-title',
-        editor: { model: Editors.Text },
+        editor: { model: Editors.text },
         validator: this.requiredFieldValidator,
       },
       {
@@ -230,13 +229,13 @@ export default class Example29 {
 
   handleOnDragEnd(e: CustomEvent) {
     const args = e.detail?.args;
-    if (this.dragMode != 'recycle') {
+    if (this.dragMode !== 'recycle') {
       return;
     }
     this.dragHelper.remove();
     document.querySelector<HTMLDivElement>('#dropzone')?.classList.remove('drag-dropzone', 'drag-hover');
 
-    if (this.dragMode != 'recycle' || args.target.id !== 'dropzone') {
+    if (this.dragMode !== 'recycle' || args.target.id !== 'dropzone') {
       return;
     }
 
@@ -251,7 +250,7 @@ export default class Example29 {
   }
 
   requiredFieldValidator(value: any) {
-    if (value == null || value == undefined || !value.length) {
+    if (isDefined(value)) {
       return { valid: false, msg: 'This is a required field' };
     } else {
       return { valid: true, msg: null };
