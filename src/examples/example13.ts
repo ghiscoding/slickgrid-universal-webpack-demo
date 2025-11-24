@@ -1,8 +1,7 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
-import { type Column, Editors, type GridOption } from '@slickgrid-universal/common';
+import { Editors, type Column, type GridOption } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import '../material-styles.scss';
 import './example13.scss';
@@ -108,13 +107,13 @@ export default class Example13 {
     const command = args.command;
 
     if (command === 'toggle-highlight') {
-      if (button.cssClass === 'mdi mdi-lightbulb-on text-color-danger') {
+      if (button.cssClass === 'mdi mdi-lightbulb-on color-danger') {
         if (gridNo === 1) {
           delete columns1WithHighlightingById[column.id];
         } else {
           delete columns2WithHighlightingById[column.id];
         }
-        button.cssClass = 'mdi mdi-lightbulb-outline text-color-warning faded';
+        button.cssClass = 'mdi mdi-lightbulb-outline color-warning faded';
         button.tooltip = 'Highlight negative numbers.';
       } else {
         if (gridNo === 1) {
@@ -122,7 +121,7 @@ export default class Example13 {
         } else {
           columns2WithHighlightingById[column.id] = true;
         }
-        button.cssClass = 'mdi mdi-lightbulb-on text-color-danger';
+        button.cssClass = 'mdi mdi-lightbulb-on color-danger';
         button.tooltip = 'Remove highlight.';
       }
       this[`sgb${gridNo}`].slickGrid?.invalidate();
@@ -153,7 +152,7 @@ export default class Example13 {
         header: {
           buttons: [
             {
-              cssClass: 'mdi mdi-lightbulb-outline text-color-warning faded',
+              cssClass: 'mdi mdi-lightbulb-outline color-warning faded',
               command: 'toggle-highlight',
               tooltip: 'Highlight negative numbers.',
               itemVisibilityOverride: (args) => {

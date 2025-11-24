@@ -1,14 +1,14 @@
 import {
   addWhiteSpaces,
   Aggregators,
-  type Column,
   decimalFormatted,
   Filters,
   findItemInTreeStructure,
-  type Formatter,
   Formatters,
-  type GridOption,
   isNumber,
+  type Column,
+  type Formatter,
+  type GridOption,
   type SlickDataView,
   // GroupTotalFormatters,
   // italicFormatter,
@@ -16,7 +16,6 @@ import {
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TextExportService } from '@slickgrid-universal/text-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import './example06.scss';
 import { ExampleGridOptions } from './example-grid-options';
 
@@ -26,7 +25,6 @@ export default class Example06 {
   datasetFlat: any[];
   datasetHierarchical: any[] = [];
   sgb: SlickVanillaGridBundle;
-  durationOrderByCount = false;
   isExcludingChildWhenFiltering = false;
   isAutoApproveParentItemWhenTreeColumnIsValid = true;
   isAutoRecalcTotalsOnFilterChange = false;
@@ -46,6 +44,7 @@ export default class Example06 {
       undefined,
       this.datasetHierarchical
     );
+    // this.sgb.datasetHierarchical = this.datasetHierarchical;
     document.body.classList.add('salesforce-theme');
   }
 
@@ -124,12 +123,12 @@ export default class Example06 {
               // when found Avg & Sum, we'll display both
               return isNaN(sumVal)
                 ? ''
-                : `<span class="text-color-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> / <span class="avg-total">avg: ${decimalFormatted(avgVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
+                : `<span class="color-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> / <span class="avg-total">avg: ${decimalFormatted(avgVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
             } else if (sumVal !== undefined) {
               // or when only Sum is aggregated, then just show Sum
               return isNaN(sumVal)
                 ? ''
-                : `<span class="text-color-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
+                : `<span class="color-primary bold">sum: ${decimalFormatted(sumVal, 0, 2)} MB</span> <span class="total-suffix">(${treeLevel === 0 ? 'total' : 'sub-total'})</span>`;
             }
           }
           // reaching this line means it's a regular dataContext without totals, so regular formatter output will be used
@@ -166,6 +165,7 @@ export default class Example06 {
         columnId: 'file',
         childrenPropName: 'files',
         excludeChildrenWhenFilteringTree: this.isExcludingChildWhenFiltering, // defaults to false
+        // initiallyCollapsed: true,
 
         // skip any other filter criteria(s) if the column holding the Tree (file) passes its own filter criteria
         // (e.g. filtering with "Files = music AND Size > 7", the row "Music" and children will only show up when this flag is enabled
@@ -235,22 +235,6 @@ export default class Example06 {
     (document.querySelector('input.search') as HTMLInputElement).value = '';
   }
 
-  executeCommand(_e, args) {
-    // const columnDef = args.column;
-    const command = args.command;
-
-    switch (command) {
-      case 'exports-csv':
-      case 'exports-txt':
-      case 'exports-xlsx':
-        alert(`Exporting as ${args.item.title}`);
-        break;
-      default:
-        alert('Command: ' + args.command);
-        break;
-    }
-  }
-
   searchFile(event: KeyboardEvent) {
     this.searchString = (event.target as HTMLInputElement)?.value || '';
     this.updateFilter();
@@ -279,7 +263,7 @@ export default class Example06 {
     const indentSpacer = addWhiteSpaces(5 * treeLevel);
 
     if (data[idx + 1]?.[treeLevelPropName] > data[idx][treeLevelPropName] || data[idx]['__hasChildren']) {
-      const folderPrefix = `<i class="mdi mdi-22px ${dataContext.__collapsed ? 'mdi-folder' : 'mdi-folder-open'}"></i>`;
+      const folderPrefix = `<i class="mdi font-22px ${dataContext.__collapsed ? 'mdi-folder' : 'mdi-folder-open'}"></i>`;
       if (dataContext.__collapsed) {
         return `<span class="hidden">${exportIndentationLeadingChar}</span>${spacer}${indentSpacer} <span class="slick-group-toggle collapsed" level="${treeLevel}"></span>${folderPrefix} ${prefix} ${value}`;
       } else {
@@ -293,15 +277,15 @@ export default class Example06 {
   getFileIcon(value: string) {
     let prefix = '';
     if (value.includes('.pdf')) {
-      prefix = '<i class="mdi mdi-20px mdi-file-pdf-outline"></i>';
+      prefix = '<i class="mdi font-20px mdi-file-pdf-outline"></i>';
     } else if (value.includes('.txt')) {
-      prefix = '<i class="mdi mdi-20px mdi-file-document-outline"></i>';
+      prefix = '<i class="mdi font-20px mdi-file-document-outline"></i>';
     } else if (value.includes('.csv') || value.includes('.xls')) {
-      prefix = '<i class="mdi mdi-20px mdi-file-excel-outline"></i>';
+      prefix = '<i class="mdi font-20px mdi-file-excel-outline"></i>';
     } else if (value.includes('.mp3')) {
-      prefix = '<i class="mdi mdi-20px mdi-file-music-outline"></i>';
+      prefix = '<i class="mdi font-20px mdi-file-music-outline"></i>';
     } else if (value.includes('.')) {
-      prefix = '<i class="mdi mdi-20px mdi-file-question-outline"></i>';
+      prefix = '<i class="mdi font-20px mdi-file-question-outline"></i>';
     }
     return prefix;
   }
@@ -330,7 +314,7 @@ export default class Example06 {
       this.sgb.datasetHierarchical = this.datasetHierarchical;
 
       // scroll into the position where the item was added with a delay since it needs to recreate the tree grid
-      window.setTimeout(() => {
+      setTimeout(() => {
         const rowIndex = this.sgb.dataView?.getRowById(newId) as number;
         this.sgb.slickGrid?.scrollRowIntoView(rowIndex + 3);
       }, 0);

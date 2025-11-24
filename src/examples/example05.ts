@@ -1,17 +1,16 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  type Column,
   Filters,
   Formatters,
+  type Column,
   type GridOption,
   type GridStateChange,
   type OnSelectedRowsChangedEventArgs,
   type TreeToggledItem,
   type TreeToggleStateChange,
 } from '@slickgrid-universal/common';
-import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import './example05.scss';
 
@@ -70,12 +69,12 @@ export default class Example05 {
   }
 
   hideSpinner() {
-    window.setTimeout(() => (this.loadingClass = ''), 200); // delay the hide spinner a bit to avoid show/hide too quickly
+    setTimeout(() => (this.loadingClass = ''), 200); // delay the hide spinner a bit to avoid show/hide too quickly
   }
 
   showSpinner() {
     if (this.isLargeDataset) {
-      this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-24px text-color-alt-success';
+      this.loadingClass = 'mdi mdi-load mdi-spin-1s font-24px color-alt-success';
     }
   }
 
@@ -289,7 +288,7 @@ export default class Example05 {
         titleFormatter: (_row, _cell, value, _def, dataContext) => {
           let titleResult = '';
           if (dataContext.treeLevel > 0) {
-            titleResult = `<span class="mdi mdi-subdirectory-arrow-right text-color-se-secondary"></span>`;
+            titleResult = `<span class="mdi mdi-subdirectory-arrow-right color-se-secondary"></span>`;
           }
           titleResult += `<span class="bold">${value}</span>`;
           if (dataContext.parentId) {

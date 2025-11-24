@@ -1,23 +1,22 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   createDomElement,
-  type Column,
-  type EditCommand,
   Editors,
   Filters,
   Formatters,
+  OperatorType,
+  type Column,
+  type EditCommand,
   type GridOption,
   type MultipleSelectOption,
-  OperatorType,
   type SliderOption,
   type SliderRangeOption,
   type VanillaCalendarOption,
 } from '@slickgrid-universal/common';
-import { BindingEventService } from '@slickgrid-universal/binding';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TextExportService } from '@slickgrid-universal/text-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import './example16.scss';
 
@@ -47,7 +46,7 @@ export default class Example16 {
     this._bindingEventService.bind(
       gridContainerElm,
       'onbeforeexporttoexcel',
-      () => (this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-22px')
+      () => (this.loadingClass = 'mdi mdi-load mdi-spin-1s font-22px')
     );
     this._bindingEventService.bind(gridContainerElm, 'onafterexporttoexcel', () => (this.loadingClass = ''));
     this.sgb = new Slicker.GridBundle(
@@ -92,7 +91,7 @@ export default class Example16 {
           formatter: () => `<div><span class="mdi mdi-load mdi-spin-1s"></span> loading...</div>`,
           asyncProcess: () =>
             new Promise((resolve) => {
-              window.setTimeout(() => resolve({ ratio: (Math.random() * 10) / 10, lifespan: Math.random() * 100 }), this.serverApiDelay);
+              setTimeout(() => resolve({ ratio: (Math.random() * 10) / 10, lifespan: Math.random() * 100 }), this.serverApiDelay);
             }),
           asyncPostFormatter: this.tooltipTaskAsyncFormatter,
 
@@ -239,7 +238,7 @@ export default class Example16 {
           // 2- delay the opening by a simple Promise and `setTimeout`
           asyncProcess: () =>
             new Promise((resolve) => {
-              window.setTimeout(() => resolve({}), this.serverApiDelay); // delayed by half a second
+              setTimeout(() => resolve({}), this.serverApiDelay); // delayed by half a second
             }),
           asyncPostFormatter: this.tooltipFormatter.bind(this),
         },
@@ -312,7 +311,7 @@ export default class Example16 {
 
           // OR 2- use a Promise
           collectionAsync: new Promise<any>((resolve) => {
-            window.setTimeout(() => {
+            setTimeout(() => {
               resolve(
                 Array.from(Array((this.dataset || []).length).keys()).map((k) => ({
                   value: k,
@@ -339,7 +338,7 @@ export default class Example16 {
             this.notificationContainerClass = 'column is-4';
 
             return new Promise((resolve) => {
-              window.setTimeout(() => {
+              setTimeout(() => {
                 this.notificationContainerClass = 'column invisible is-4';
                 resolve(Array.from(Array((this.dataset || []).length).keys()).map((k) => ({ value: k, label: `Task ${k}` })));
               }, this.serverApiDelay);
@@ -365,8 +364,7 @@ export default class Example16 {
         minWidth: 55,
         maxWidth: 55,
         cssClass: 'justify-center flex',
-        formatter: () =>
-          `<div class="button-style action-btn"><span class="mdi mdi-chevron-down mdi-22px text-color-primary"></span></div>`,
+        formatter: () => `<div class="button-style action-btn"><span class="mdi mdi-chevron-down font-22px color-primary"></span></div>`,
         excludeFromExport: true,
         // customTooltip: {
         //   formatter: () => `Click to open Cell Menu`, // return empty so it won't show any pre-tooltip
@@ -505,7 +503,7 @@ export default class Example16 {
         id: i,
         title: 'Task ' + i,
         duration: Math.round(Math.random() * 100),
-        description: `This is a sample task description.\nIt can be multiline\r\rAnother line...`,
+        description: i > 500 ? null : `This is a sample task description.\nIt can be multiline\r\rAnother line...`,
         percentComplete: Math.floor(Math.random() * (100 - 5 + 1) + 5),
         start: new Date(randomYear, randomMonth, randomDay),
         finish: randomFinish < new Date() ? '' : randomFinish, // make sure the random date is earlier than today
@@ -541,6 +539,10 @@ export default class Example16 {
         }
         break;
     }
+  }
+
+  setFiltersDynamically(descOperator: OperatorType) {
+    this.sgb?.filterService.updateFilters([{ columnId: 'desc2', searchTerms: [''], operator: descOperator }]);
   }
 
   headerFormatter(_row, _cell, _value, column) {
@@ -580,7 +582,7 @@ export default class Example16 {
       dataContext,
       grid
     ) as HTMLElement;
-    const out = `<div class="text-color-primary header-tooltip-title">${tooltipTitle}</div>
+    const out = `<div class="color-primary header-tooltip-title">${tooltipTitle}</div>
       <div class="tooltip-2cols-row"><div>Completion:</div> <div>${completionBar.outerHTML || ''}</div></div>
       <div class="tooltip-2cols-row"><div>Lifespan:</div> <div>${dataContext.__params.lifespan.toFixed(2)}</div></div>
       <div class="tooltip-2cols-row"><div>Ratio:</div> <div>${dataContext.__params.ratio.toFixed(2)}</div></div>
@@ -603,8 +605,7 @@ export default class Example16 {
       iconCount = 5;
     }
     for (let i = 0; i < iconCount; i++) {
-      const iconColor =
-        iconCount === 5 ? 'text-color-success' : iconCount >= 3 ? 'text-color-alt-warning' : 'text-color-se-secondary-light';
+      const iconColor = iconCount === 5 ? 'color-success' : iconCount >= 3 ? 'color-alt-warning' : 'color-se-secondary-light';
       output += `<span class="mdi mdi-check-circle-outline ${iconColor}"></span>`;
     }
     return output;

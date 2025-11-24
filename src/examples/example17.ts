@@ -1,18 +1,16 @@
 import {
   Aggregators,
-  type Column,
   Formatters,
-  type GridOption,
-  type Grouping,
   GroupTotalFormatters,
   SlickCellRangeSelector,
   SlickCellSelectionModel,
   SlickRowSelectionModel,
+  type Column,
+  type GridOption,
+  type Grouping,
 } from '@slickgrid-universal/common';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
-
 // use any of the Styling Theme
 // import '../material-styles.scss';
 import './example17.scss';
@@ -33,6 +31,7 @@ export default class Example17 {
   minInterval = 30;
   maxInterval = 600;
   delayCursor = 5;
+  frozenColumnCount = -1;
 
   attached() {
     this.defineGrids();
@@ -158,6 +157,9 @@ export default class Example17 {
       frozenColumn: -1,
       frozenRow: -1,
       // enableExcelCopyBuffer: true,
+      headerMenu: {
+        hideFreezeColumnsCommand: false,
+      },
     };
 
     // copy the same Grid Options and Column Definitions to 2nd grid
@@ -190,6 +192,15 @@ export default class Example17 {
     }
 
     return mockDataset;
+  }
+
+  /** change dynamically, through slickgrid "setOptions()" the number of pinned columns */
+  changeFrozenColumnCount() {
+    if (this.sgb1?.slickGrid?.setOptions) {
+      this.sgb1?.slickGrid.setOptions({
+        frozenColumn: +this.frozenColumnCount,
+      });
+    }
   }
 
   groupByDuration1() {
@@ -237,6 +248,7 @@ export default class Example17 {
     );
 
     this.sgb2.slickGrid?.setSelectionModel(
+      // or use SlickHybridSelectionModel with `selectionType: 'row'`
       new SlickRowSelectionModel({
         cellRangeSelector: new SlickCellRangeSelector({
           selectionCss: {

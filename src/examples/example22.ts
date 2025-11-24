@@ -1,10 +1,9 @@
-import { type Column, Formatters, type GridOption, Editors } from '@slickgrid-universal/common';
+import { BindingEventService } from '@slickgrid-universal/binding';
+import { Editors, Formatters, type Column, type GridOption } from '@slickgrid-universal/common';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-import { BindingEventService } from '@slickgrid-universal/binding';
-
-import { ExampleGridOptions } from './example-grid-options';
 import type { TranslateService } from '../translate.service';
+import { ExampleGridOptions } from './example-grid-options';
 import './example22.scss';
 
 const NB_ITEMS = 20;
@@ -192,18 +191,18 @@ export default class Example22 {
           cancelButtonClassName: 'button-style padding-3px',
           cancelButtonTitle: 'Cancel row',
           cancelButtonTitleKey: 'RBE_BTN_CANCEL',
-          iconCancelButtonClassName: 'mdi mdi-undo text-color-danger',
+          iconCancelButtonClassName: 'mdi mdi-undo color-danger',
           cancelButtonPrompt: 'Are you sure you want to cancel your changes?',
 
           updateButtonClassName: 'button-style padding-3px mr-2',
           updateButtonTitle: 'Update row',
           updateButtonTitleKey: 'RBE_BTN_UPDATE',
-          iconUpdateButtonClassName: 'mdi mdi-check text-color-success',
+          iconUpdateButtonClassName: 'mdi mdi-check color-success',
           updateButtonPrompt: 'Save changes?',
 
           deleteButtonClassName: 'button-style padding-3px',
           deleteButtonTitle: 'Delete row',
-          iconDeleteButtonClassName: 'mdi mdi-trash-can text-color-danger',
+          iconDeleteButtonClassName: 'mdi mdi-trash-can color-danger',
           deleteButtonPrompt: 'Are you sure you want to delete this row?',
         },
       },
@@ -266,7 +265,7 @@ export default class Example22 {
 
 function fakeFetch(_input: string | URL | Request, _init?: RequestInit | undefined): Promise<Response> {
   return new Promise((resolve) => {
-    window.setTimeout(
+    setTimeout(
       () => {
         resolve(new Response(JSON.stringify({ status: 200, message: 'success' })));
         // reduces the delay for automated Cypress tests

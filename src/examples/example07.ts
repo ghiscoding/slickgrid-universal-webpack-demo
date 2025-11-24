@@ -1,11 +1,10 @@
-import { type Column, Editors, Filters, Formatters, type GridOption, OperatorType } from '@slickgrid-universal/common';
 import { BindingEventService } from '@slickgrid-universal/binding';
+import { Editors, Filters, Formatters, OperatorType, type Column, type GridOption } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import DOMPurify from 'dompurify';
-
-import { ExampleGridOptions } from './example-grid-options';
 import type { TranslateService } from '../translate.service';
+import { ExampleGridOptions } from './example-grid-options';
 import './example07.scss';
 import '../material-styles.scss';
 
@@ -88,7 +87,7 @@ export default class Example07 {
         excludeFromHeaderMenu: true,
         cssClass: 'justify-center',
         formatter: () =>
-          `<div class="button-style action-btn height-80"><span class="mdi mdi-chevron-down mdi-22px text-color-primary"></span></div>`,
+          `<div class="button-style action-btn height-80"><span class="mdi mdi-chevron-down font-22px color-primary"></span></div>`,
         cellMenu: {
           hideCloseButton: false,
           subItemChevronClass: 'mdi mdi-chevron-down mdi-rotate-270',
@@ -255,8 +254,8 @@ export default class Example07 {
           enableRenderHtml: true,
           collection: [
             { value: '', label: '' },
-            { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check mdi-16px"></i> ` },
-            { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close mdi-16px"></i> ` },
+            { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check font-16px"></i> ` },
+            { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close font-16px"></i> ` },
           ],
           model: Filters.singleSelect,
         },
@@ -269,10 +268,10 @@ export default class Example07 {
           // Select Editor can also support collection that are async, it could be a Promise (shown below) or Fetch result
           enableRenderHtml: true,
           collectionAsync: new Promise<any>((resolve) =>
-            window.setTimeout(() => {
+            setTimeout(() => {
               resolve([
-                { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check mdi-16px"></i> ` },
-                { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close mdi-16px"></i> ` },
+                { value: true, label: 'True', labelSuffix: `<i class="mdi mdi-check font-16px"></i> ` },
+                { value: false, label: 'False', labelSuffix: `<i class="mdi mdi-close font-16px"></i> ` },
               ]);
             }, 250)
           ),
@@ -303,7 +302,7 @@ export default class Example07 {
 
           // OR 2- use a Promise
           collectionAsync: new Promise<any>((resolve) => {
-            window.setTimeout(() => {
+            setTimeout(() => {
               resolve(
                 Array.from(Array((this.dataset || []).length).keys()).map((k) => ({
                   value: k,
@@ -335,7 +334,7 @@ export default class Example07 {
         filter: {
           // collectionAsync: fetch(SAMPLE_COLLECTION_DATA_URL),
           collectionAsync: new Promise((resolve) => {
-            window.setTimeout(() => {
+            setTimeout(() => {
               resolve(Array.from(Array((this.dataset || []).length).keys()).map((k) => ({ value: k, label: `Task ${k}` })));
             });
           }),
@@ -432,7 +431,7 @@ export default class Example07 {
     const newRows = this.loadData(1, lastRowIndex);
 
     // wrap into a timer to simulate a backend async call
-    window.setTimeout(() => {
+    setTimeout(() => {
       // at any time, we can poke the "collection" property and modify it
       const requisiteColumnDef = this.columnDefinitions.find((column: Column) => column.id === 'prerequisites') as Column;
       if (requisiteColumnDef) {

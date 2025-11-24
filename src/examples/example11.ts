@@ -1,35 +1,34 @@
+import { addDay, format as tempoFormat } from '@formkit/tempo';
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
+  deepCopy,
+  Editors,
+  Filters,
+  formatNumber,
+  Formatters,
+  OperatorType,
+  SlickGlobalEditorLock,
+  SortComparers,
   type AutocompleterOption,
-  type DOMEvent,
   type Column,
   type CurrentColumn,
   type CurrentFilter,
   type CurrentPinning,
   type CurrentSorter,
+  type DOMEvent,
   type EditCommand,
-  Editors,
-  Filters,
   type Formatter,
-  Formatters,
   type GridOption,
-  OperatorType,
-  SlickGlobalEditorLock,
   type SliderOption,
-  SortComparers,
   type VanillaCalendarOption,
-
-  // utilities
-  deepCopy,
-  formatNumber,
 } from '@slickgrid-universal/common';
-import { BindingEventService } from '@slickgrid-universal/binding';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-import { format as tempoFormat, addDay } from '@formkit/tempo';
 import { type MultipleSelectOption } from 'multiple-select-vanilla';
 
 import { ExampleGridOptions } from './example-grid-options';
+import Example11Modal from './example11-modal';
 import { loadComponent } from './utilities';
 import './example11.scss';
 
@@ -364,7 +363,7 @@ export default class Example11 {
         maxWidth: 75,
         excludeFromExport: true,
         formatter:
-          () => `<span class="button-style padding-1px action-btns"title"Delete the Row"><span class="mdi mdi-close text-color-danger" title="Delete Current Row"></span></span>
+          () => `<span class="button-style padding-1px action-btns"title"Delete the Row"><span class="mdi mdi-close color-danger" title="Delete Current Row"></span></span>
         &nbsp;<span class="button-style padding-1px action-btns" title="Mark as Completed"><span class="mdi mdi-check-underline"></span></span>`,
         onCellClick: (event: Event, args) => {
           const dataContext = args.dataContext;
@@ -792,15 +791,17 @@ export default class Example11 {
     const { columns, filters, sorters, pinning } = currentGridState;
 
     if (this.currentSelectedViewPreset && filters) {
-      const filterName = (await prompt(`Update View name or click on OK to continue.`, this.currentSelectedViewPreset.label)) as string;
-      this.currentSelectedViewPreset.label = filterName;
-      this.currentSelectedViewPreset.value = filterName.replace(/\s/g, '');
-      this.currentSelectedViewPreset.columns = columns || [];
-      this.currentSelectedViewPreset.filters = filters || [];
-      this.currentSelectedViewPreset.sorters = sorters || [];
-      this.currentSelectedViewPreset.pinning = pinning || {};
-      this.recreatePredefinedViews();
-      localStorage.setItem('gridViewPreset', JSON.stringify(this.predefinedViews));
+      const filterName = await prompt(`Update View name or click on OK to continue.`, this.currentSelectedViewPreset.label);
+      if (filterName) {
+        this.currentSelectedViewPreset.label = filterName;
+        this.currentSelectedViewPreset.value = filterName.replace(/\s/g, '');
+        this.currentSelectedViewPreset.columns = columns || [];
+        this.currentSelectedViewPreset.filters = filters || [];
+        this.currentSelectedViewPreset.sorters = sorters || [];
+        this.currentSelectedViewPreset.pinning = pinning || {};
+        this.recreatePredefinedViews();
+        localStorage.setItem('gridViewPreset', JSON.stringify(this.predefinedViews));
+      }
     }
   }
 
@@ -818,8 +819,8 @@ export default class Example11 {
       const pinning = selectedView?.pinning ?? { frozenBottom: false, frozenColumn: -1, frozenRow: -1 };
       this.sgb.filterService.updateFilters(filters as CurrentFilter[]);
       this.sgb.sortService.updateSorting(sorters as CurrentSorter[]);
-      this.sgb.gridService.setPinning(pinning);
       this.sgb.gridStateService.changeColumnsArrangement(columns);
+      this.sgb.gridService.setPinning(pinning); // make sure to set pinning last in case some columns were hidden which would offset the pinning
     } else {
       this.sgb.gridService.clearPinning();
       this.sgb.filterService.clearFilters();
@@ -980,11 +981,11 @@ export default class Example11 {
     return `<div class="autocomplete-container-list">
       <div class="autocomplete-left">
         <!--<img src="http://i.stack.imgur.com/pC1Tv.jpg" width="50" />-->
-        <span class="mdi ${item.icon} mdi-26px"></span>
+        <span class="mdi ${item.icon} font-26px"></span>
       </div>
       <div>
         <span class="autocomplete-top-left">
-          <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} mdi-14px"></span>
+          <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} font-14px"></span>
           ${item.itemName}
         </span>
       <div>
@@ -998,11 +999,11 @@ export default class Example11 {
     return `<div class="autocomplete-container-list">
           <div class="autocomplete-left">
             <!--<img src="http://i.stack.imgur.com/pC1Tv.jpg" width="50" />-->
-            <span class="mdi ${item.icon} mdi-26px"></span>
+            <span class="mdi ${item.icon} font-26px"></span>
           </div>
           <div>
             <span class="autocomplete-top-left">
-              <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} mdi-14px"></span>
+              <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} font-14px"></span>
               ${item.itemName}
             </span>
             <span class="autocomplete-top-right">${formatNumber(item.listPrice, 2, 2, false, '$')}</span>

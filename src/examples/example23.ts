@@ -1,22 +1,21 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  type Aggregator,
   Aggregators,
-  type Column,
   Editors,
+  Formatters,
+  GroupTotalFormatters,
+  type Aggregator,
+  type Column,
   type ExcelCellValueParserArgs,
   type ExcelGroupValueParserArgs,
   type Formatter,
-  Formatters,
   type GridOption,
   type Grouping,
-  GroupTotalFormatters,
   type SlickGrid,
   type SlickGroupTotals,
 } from '@slickgrid-universal/common';
-import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
-
+import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { ExampleGridOptions } from './example-grid-options';
 import './example23.scss';
 
@@ -501,7 +500,7 @@ export default class Example23 {
     this.sgb?.dataView?.setGrouping({
       getter: 'taxable',
       formatter: (g) =>
-        `Taxable: <span class="mdi ${g.value ? checkIcon : uncheckIcon} text-color-se-danger"></span> <span class="text-color-primary">(${g.count} items)</span>`,
+        `Taxable: <span class="mdi ${g.value ? checkIcon : uncheckIcon} color-se-danger"></span> <span class="color-primary">(${g.count} items)</span>`,
       comparer: (a, b) => b.value - a.value,
       aggregators: [
         new Aggregators.Sum('price'),

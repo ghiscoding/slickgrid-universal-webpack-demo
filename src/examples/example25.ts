@@ -1,21 +1,19 @@
 import { addDay, format } from '@formkit/tempo';
-
-import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
-import { ExcelExportService } from '@slickgrid-universal/excel-export';
-import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  type Column,
-  type CurrentFilter,
   Filters,
   Formatters,
+  OperatorType,
+  type Column,
+  type CurrentFilter,
   type GridOption,
   type GridStateChange,
   type MultipleSelectOption,
-  OperatorType,
   type SliderRangeOption,
 } from '@slickgrid-universal/common';
-import { BindingEventService } from '@slickgrid-universal/binding';
+import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import { ExampleGridOptions } from './example-grid-options';
 import { type TranslateService } from '../translate.service';

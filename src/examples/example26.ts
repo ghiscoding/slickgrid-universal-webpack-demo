@@ -2,14 +2,14 @@ import { format } from '@formkit/tempo';
 import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   Aggregators,
-  type Column,
   Filters,
+  OperatorType,
+  SortComparers,
+  type Column,
   type GridOption,
   type Grouping,
   type Metrics,
   type OnRowCountChangedEventArgs,
-  OperatorType,
-  SortComparers,
 } from '@slickgrid-universal/common';
 import { GridOdataService, type OdataServiceApi } from '@slickgrid-universal/odata';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
@@ -308,7 +308,6 @@ export default class Example26 {
 
       // read the JSON and create a fresh copy of the data that we are free to modify
       let data = require('./data/customers_100.json') as { name: string; gender: string; company: string; id: string, category: { id: string; name: string } }[];
-
       data = JSON.parse(JSON.stringify(data));
 
       // Sort the data
@@ -401,7 +400,7 @@ export default class Example26 {
       }
       const updatedData = filteredData.slice(firstRow, firstRow + top);
 
-      window.setTimeout(() => {
+      setTimeout(() => {
         const backendResult = { query };
         backendResult['value'] = updatedData;
         backendResult['@odata.count'] = countTotalItems;

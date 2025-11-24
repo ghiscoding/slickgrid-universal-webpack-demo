@@ -1,15 +1,15 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  type Column,
   Editors,
   Filters,
+  OperatorType,
+  type Column,
   type GridOption,
   type GridStateChange,
   type Metrics,
-  OperatorType,
 } from '@slickgrid-universal/common';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
-import { GridOdataService, type OdataServiceApi, type OdataOption } from '@slickgrid-universal/odata';
+import { GridOdataService, type OdataOption, type OdataServiceApi } from '@slickgrid-universal/odata';
 import { RxJsResource } from '@slickgrid-universal/rxjs-observable';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { delay, Observable, of, type Subject } from 'rxjs';
@@ -409,7 +409,7 @@ export default class Example15 {
       }
       const updatedData = filteredData.slice(firstRow, firstRow + top);
 
-      window.setTimeout(() => {
+      setTimeout(() => {
         let countPropName = 'totalRecordCount';
         if (this.isCountEnabled) {
           countPropName = this.odataVersion === 4 ? '@odata.count' : 'odata.count';
@@ -467,7 +467,7 @@ export default class Example15 {
 
     // display random address and zip code to simulate company address
     const randomStreet = dataContext.id % 3 ? 'Belleville' : 'Hollywood';
-    return `<div class="text-color-se-danger text-bold">${tooltipTitle}</div>
+    return `<div class="color-se-danger text-bold">${tooltipTitle}</div>
       <div class="tooltip-2cols-row"><div>Address:</div> <div>${dataContext.__params.doorNumber.toFixed(0)} ${randomStreet} blvd</div></div>
       <div class="tooltip-2cols-row"><div>Zip:</div> <div>${dataContext.__params.zip.toFixed(0)}</div></div>`;
   }

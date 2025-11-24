@@ -1,28 +1,27 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  type AutocompleterOption,
-  type Column,
-  type EditCommand,
   Editors,
   EventNamingStyle,
   Filters,
-  type Formatter,
+  // utilities
+  formatNumber,
   Formatters,
+  SlickGlobalEditorLock,
+  SortComparers,
+  Utilities,
+  type AutocompleterOption,
+  type Column,
+  type EditCommand,
+  type Formatter,
   type GridOption,
   type GridStateChange,
   type LongTextEditorOption,
   type SearchTerm,
-  SlickGlobalEditorLock,
   type SliderRangeOption,
-  SortComparers,
   type VanillaCalendarOption,
-
-  // utilities
-  formatNumber,
-  Utilities,
 } from '@slickgrid-universal/common';
-import { BindingEventService } from '@slickgrid-universal/binding';
-import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { SlickCustomTooltip } from '@slickgrid-universal/custom-tooltip-plugin';
+import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import { ExampleGridOptions } from './example-grid-options';
@@ -354,7 +353,7 @@ export default class Example14 {
           model: Editors.date,
           options: { displayDateMin: 'today' } as VanillaCalendarOption,
           validator: (value, args) => {
-            const dataContext = args && args.item;
+            const dataContext = args?.item;
             if (dataContext && dataContext.completed && !value) {
               return { valid: false, msg: 'You must provide a "Finish" date when "Completed" is checked.' };
             }
@@ -448,8 +447,7 @@ export default class Example14 {
         maxWidth: 70,
         excludeFromExport: true,
         cssClass: 'justify-center flex',
-        formatter: () =>
-          `<div class="button-style action-btn"><span class="mdi mdi-chevron-down mdi-22px text-color-primary"></span></div>`,
+        formatter: () => `<div class="button-style action-btn"><span class="mdi mdi-chevron-down font-22px color-primary"></span></div>`,
         cellMenu: {
           hideCloseButton: false,
           commandTitle: 'Commands',
@@ -466,9 +464,9 @@ export default class Example14 {
               command: 'delete-row',
               title: 'Delete Row',
               positionOrder: 64,
-              iconCssClass: 'mdi mdi-close text-color-danger',
+              iconCssClass: 'mdi mdi-close color-danger',
               cssClass: 'red',
-              textCssClass: 'text-italic text-color-danger-light',
+              textCssClass: 'text-italic color-danger-light',
               // only show command to 'Delete Row' when the task is not completed
               itemVisibilityOverride: (args) => {
                 return !args.dataContext?.completed;
@@ -550,7 +548,8 @@ export default class Example14 {
       editable: true,
       autoAddCustomEditorFormatter: customEditableInputFormatter,
       enableCellNavigation: true,
-      autoEdit: true,
+      autoEdit: false,
+      autoEditByKeypress: true,
       autoCommitEdit: true,
       autoResize: {
         container: '.grid-container',
@@ -649,11 +648,11 @@ export default class Example14 {
   }
 
   hideSpinner() {
-    window.setTimeout(() => (this.loadingClass = ''), 200); // delay the hide spinner a bit to avoid show/hide too quickly
+    setTimeout(() => (this.loadingClass = ''), 200); // delay the hide spinner a bit to avoid show/hide too quickly
   }
 
   showSpinner() {
-    this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-24px text-color-alt-success';
+    this.loadingClass = 'mdi mdi-load mdi-spin-1s font-24px color-alt-success';
   }
 
   loadData(count: number) {
@@ -746,7 +745,7 @@ export default class Example14 {
 
   handleOnCellChange(event) {
     const args = event?.detail?.args;
-    const dataContext = args && args.item;
+    const dataContext = args?.item;
 
     // when the field "completed" changes to false, we also need to blank out the "finish" date
     if (dataContext && !dataContext.completed) {
@@ -867,6 +866,14 @@ export default class Example14 {
     //   shouldTriggerEvent: true,
     //   applyGridRowSelection: true
     // });
+  }
+
+  toggleAutoEdit(state: boolean) {
+    this.sgb.slickGrid?.setOptions({ autoEdit: state });
+  }
+
+  toggleAutoEditByKeypress(state: boolean) {
+    this.sgb.slickGrid?.setOptions({ autoEditByKeypress: state });
   }
 
   undoLastEdit(showLastEditor = false) {
@@ -1053,11 +1060,11 @@ export default class Example14 {
     return `<div class="autocomplete-container-list">
       <div class="autocomplete-left">
         <!--<img src="http://i.stack.imgur.com/pC1Tv.jpg" width="50" />-->
-        <span class="mdi ${item.icon} mdi-26px"></span>
+        <span class="mdi ${item.icon} font-26px"></span>
       </div>
       <div>
         <span class="autocomplete-top-left">
-          <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} mdi-14px"></span>
+          <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} font-14px"></span>
           ${item.itemName}
         </span>
       <div>
@@ -1071,11 +1078,11 @@ export default class Example14 {
     return `<div class="autocomplete-container-list">
           <div class="autocomplete-left">
             <!--<img src="http://i.stack.imgur.com/pC1Tv.jpg" width="50" />-->
-            <span class="mdi ${item.icon} mdi-26px"></span>
+            <span class="mdi ${item.icon} font-26px"></span>
           </div>
           <div>
             <span class="autocomplete-top-left">
-              <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} mdi-14px"></span>
+              <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} font-14px"></span>
               ${item.itemName}
             </span>
             <span class="autocomplete-top-right">${formatNumber(item.listPrice, 2, 2, false, '$')}</span>

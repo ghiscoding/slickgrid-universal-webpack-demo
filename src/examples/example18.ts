@@ -2,17 +2,16 @@ import { faker } from '@faker-js/faker';
 import sparkline from '@fnando/sparkline';
 import {
   Aggregators,
-  type Column,
   createDomElement,
   deepCopy,
   Filters,
-  type Formatter,
   Formatters,
-  type GridOption,
   GroupTotalFormatters,
+  type Column,
+  type Formatter,
+  type GridOption,
 } from '@slickgrid-universal/common';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import './example18.scss';
 import '../material-styles.scss';
@@ -26,7 +25,7 @@ const priceFormatter: Formatter = (_cell, _row, value, _col, dataContext) => {
   const direction = dataContext.priceChange >= 0 ? 'up' : 'down';
   const fragment = new DocumentFragment();
   const divElm = document.createElement('div');
-  divElm.className = `d-inline-flex align-items-center text-color-${direction === 'up' ? 'success' : 'danger'}`;
+  divElm.className = `d-inline-flex align-items-center color-${direction === 'up' ? 'success' : 'danger'}`;
   const spanElm = document.createElement('span');
   spanElm.className = `mdi mdi-arrow-${direction}`;
   divElm.appendChild(spanElm);
@@ -40,7 +39,7 @@ const priceFormatter: Formatter = (_cell, _row, value, _col, dataContext) => {
 };
 
 const transactionTypeFormatter: Formatter = (_row, _cell, value: string) =>
-  `<div class="d-inline-flex align-items-center gap-5px"><span class="mdi mdi-16px mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'text-color-info' : 'text-color-warning'}"></span> ${value}</div>`;
+  `<div class="d-inline-flex align-items-center gap-5px"><span class="mdi font-16px mdi-${value === 'Buy' ? 'plus' : 'minus'}-circle ${value === 'Buy' ? 'color-info' : 'color-warning'}"></span> ${value}</div>`;
 
 const historicSparklineFormatter: Formatter = (_row, _cell, _value: string, _col, dataContext) => {
   if (dataContext.historic.length < 2) {
@@ -88,7 +87,7 @@ export default class Example18 {
   minChangePerCycle = 0;
   maxChangePerCycle = 10;
   refreshRate = 75;
-  timer: number;
+  timer: any;
   toggleClassName = this.isFullScreen ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand';
   sgb: SlickVanillaGridBundle;
 
@@ -105,7 +104,7 @@ export default class Example18 {
       this.dataset
     );
 
-    window.setTimeout(() => {
+    setTimeout(() => {
       this.startSimulation();
     }, this.refreshRate);
     document.body.classList.add('material-theme');
@@ -143,7 +142,7 @@ export default class Example18 {
         grouping: {
           getter: 'currency',
           formatter: (g) =>
-            `Currency: <span class="text-color-primary text-bold">${g.value}</span>  <span class="text-color-success-light">(${g.count} items)</span>`,
+            `Currency: <span class="color-primary text-bold">${g.value}</span>  <span class="color-success-light">(${g.count} items)</span>`,
           aggregators: [new Aggregators.Sum('amount')],
           aggregateCollapsed: true,
           collapsed: false,
@@ -161,7 +160,7 @@ export default class Example18 {
         grouping: {
           getter: 'market',
           formatter: (g) =>
-            `Market: <span class="text-color-primary text-bold">${g.value}</span>  <span class="text-color-success-light">(${g.count} items)</span>`,
+            `Market: <span class="color-primary text-bold">${g.value}</span>  <span class="color-success-light">(${g.count} items)</span>`,
           aggregators: [new Aggregators.Sum('amount')],
           aggregateCollapsed: true,
           collapsed: false,
@@ -188,7 +187,7 @@ export default class Example18 {
         grouping: {
           getter: 'trsnType',
           formatter: (g) =>
-            `Type: <span class="text-color-primary text-bold">${g.value}</span>  <span class="text-color-success-light">(${g.count} items)</span>`,
+            `Type: <span class="color-primary text-bold">${g.value}</span>  <span class="color-success-light">(${g.count} items)</span>`,
           aggregators: [new Aggregators.Sum('amount')],
           aggregateCollapsed: true,
           collapsed: false,
@@ -284,7 +283,7 @@ export default class Example18 {
       },
       draggableGrouping: {
         dropPlaceHolderText: 'Drop a column header here to group by any of these available columns: Currency, Market or Type',
-        deleteIconCssClass: 'mdi mdi-close text-color-danger',
+        deleteIconCssClass: 'mdi mdi-close color-danger',
         sortAscIconCssClass: 'mdi mdi-arrow-up',
         sortDescIconCssClass: 'mdi mdi-arrow-down',
       },
@@ -378,11 +377,11 @@ export default class Example18 {
       // but the cell highlight actually does that for us so we can skip it
     }
 
-    this.timer = window.setTimeout(this.startSimulation.bind(this), this.refreshRate || 0);
+    this.timer = setTimeout(this.startSimulation.bind(this), this.refreshRate || 0);
   }
 
   stopSimulation() {
-    window.clearTimeout(this.timer);
+    clearTimeout(this.timer);
   }
 
   findColumnById(columnName: string): Column {
@@ -397,7 +396,7 @@ export default class Example18 {
         this.sgb.slickGrid?.setCellCssStyles(`highlight_${[column.id]}${row}`, hash);
 
         // remove highlight after x amount of time
-        window.setTimeout(() => this.removeCellStyling(item, column, row), this.highlightDuration);
+        setTimeout(() => this.removeCellStyling(item, column, row), this.highlightDuration);
       }
     }
   }

@@ -1,15 +1,15 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  type Column,
   Filters,
+  OperatorType,
+  type Column,
+  type CurrentColumn,
   type GridOption,
+  type GridState,
   type GridStateChange,
   type Metrics,
-  OperatorType,
-  type GridState,
-  type CurrentColumn,
 } from '@slickgrid-universal/common';
-import { GridOdataService, type OdataServiceApi, type OdataOption } from '@slickgrid-universal/odata';
+import { GridOdataService, type OdataOption, type OdataServiceApi } from '@slickgrid-universal/odata';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 
 import { ExampleGridOptions } from './example-grid-options';
@@ -422,7 +422,7 @@ export default class Example09 {
       }
       const updatedData = filteredData.slice(firstRow, firstRow + top);
 
-      window.setTimeout(() => {
+      setTimeout(() => {
         const backendResult = { query };
         if (!this.isCountEnabled) {
           backendResult['totalRecordCount'] = countTotalItems;

@@ -1,17 +1,16 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
 import {
-  type Column,
   createDomElement,
-  Filters,
-  Formatters,
-  type GridOption,
-  SlickEventHandler,
   Editors,
   ExtensionName,
+  Filters,
+  Formatters,
+  SlickEventHandler,
+  type Column,
+  type GridOption,
 } from '@slickgrid-universal/common';
 import { SlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import './example20.scss';
 
@@ -295,7 +294,7 @@ export default class Example20 {
   /** Loading template, can be an HTML string or an HTML Element */
   loadingTemplate() {
     const headerElm = createDomElement('h5', { className: 'title is-5' });
-    headerElm.appendChild(createDomElement('i', { className: 'mdi mdi-load mdi-spin-1s mdi-40px' }));
+    headerElm.appendChild(createDomElement('i', { className: 'mdi mdi-load mdi-spin-1s font-40px' }));
     headerElm.appendChild(document.createTextNode('Loading...'));
 
     return headerElm;
@@ -352,7 +351,7 @@ export default class Example20 {
 
     // fill the template on async delay
     return new Promise((resolve) => {
-      window.setTimeout(() => {
+      setTimeout(() => {
         const itemDetail = item;
 
         // let's add some extra properties to our item for a better async simulation
@@ -409,7 +408,7 @@ export default class Example20 {
       this.statusClass = 'notification is-light is-danger is-narrow';
 
       // remove message after 2sec.
-      window.setTimeout(() => {
+      setTimeout(() => {
         this.status = '';
         this.statusClass = '';
       }, 2000);

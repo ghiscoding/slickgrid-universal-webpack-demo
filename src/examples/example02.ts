@@ -1,25 +1,24 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   Aggregators,
-  type Column,
   Editors,
   Filters,
   Formatters,
-  type GridOption,
-  type Grouping,
   GroupTotalFormatters,
-  type SliderOption,
   SortComparers,
   SortDirectionNumber,
+  type Column,
+  type GridOption,
+  type Grouping,
+  type SliderOption,
 } from '@slickgrid-universal/common';
-import { BindingEventService } from '@slickgrid-universal/binding';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TextExportService } from '@slickgrid-universal/text-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import '../material-styles.scss';
 
-const NB_ITEMS = 500;
+const NB_ITEMS = 5000;
 
 function randomBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -49,7 +48,7 @@ export default class Example02 {
     this._bindingEventService.bind(
       gridContainerElm,
       'onbeforeexporttoexcel',
-      () => (this.loadingClass = 'mdi mdi-load mdi-spin-1s mdi-22px')
+      () => (this.loadingClass = 'mdi mdi-load mdi-spin-1s font-22px')
     );
     this._bindingEventService.bind(gridContainerElm, 'onafterexporttoexcel', () => (this.loadingClass = ''));
     this._bindingEventService.bind(gridContainerElm, 'onbeforesort', () => {
@@ -70,7 +69,7 @@ export default class Example02 {
     );
 
     // you could group by duration on page load (must be AFTER the DataView is created, so after GridBundle)
-    // this.groupByDuration();
+    this.groupByDuration();
 
     // override CSS template to be Material Design
     // await import('@slickgrid-universal/common/dist/styles/sass/slickgrid-theme-material.scss');
@@ -250,7 +249,7 @@ export default class Example02 {
           ],
 
           // Select Filters can also support collection that are async, it could be a Promise (shown below) or Fetch result
-          // collectionAsync: new Promise<any>(resolve => window.setTimeout(() => {
+          // collectionAsync: new Promise<any>(resolve => setTimeout(() => {
           //   resolve([{ value: '', label: '' }, { value: true, label: 'True' }, { value: false, label: 'False' }]);
           // }, 250)),
         },
@@ -404,7 +403,7 @@ export default class Example02 {
     this.sgb?.dataView?.setGrouping([
       {
         getter: 'duration',
-        formatter: (g) => `Duration: ${g.value}  <span class="text-green">(${g.count} items)</span>`,
+        formatter: (g) => `Duration: ${g.value} <span class="text-green">(${g.count} items)</span>`,
         aggregators: [new Aggregators.Sum('duration'), new Aggregators.Sum('cost')],
         aggregateCollapsed: true,
         lazyTotalsCalculation: true,
@@ -431,7 +430,7 @@ export default class Example02 {
     this.sgb?.dataView?.setGrouping([
       {
         getter: 'duration',
-        formatter: (g) => `Duration: ${g.value}  <span class="text-green">(${g.count} items)</span>`,
+        formatter: (g) => `Duration: ${g.value} <span class="text-green">(${g.count} items)</span>`,
         aggregators: [new Aggregators.Sum('duration'), new Aggregators.Sum('cost')],
         aggregateCollapsed: true,
         lazyTotalsCalculation: true,

@@ -1,29 +1,27 @@
+import { BindingEventService } from '@slickgrid-universal/binding';
 import {
+  Editors,
+  EventNamingStyle,
+  Filters,
+  formatNumber,
+  Formatters,
+  SlickGlobalEditorLock,
+  SortComparers,
   type AutocompleterOption,
   type Column,
   type CompositeEditorModalType,
   type EditCommand,
-  Editors,
-  EventNamingStyle,
-  Filters,
   type Formatter,
-  Formatters,
   type GridOption,
   type LongTextEditorOption,
   type OnCompositeEditorChangeEventArgs,
-  SlickGlobalEditorLock,
   type SliderOption,
-  SortComparers,
   type VanillaCalendarOption,
-
-  // utilities
-  formatNumber,
 } from '@slickgrid-universal/common';
-import { BindingEventService } from '@slickgrid-universal/binding';
+import { SlickCompositeEditor, SlickCompositeEditorComponent } from '@slickgrid-universal/composite-editor-component';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { type SlickerGridInstance } from '@slickgrid-universal/vanilla-bundle';
 import { Slicker, type VanillaForceGridBundle } from '@slickgrid-universal/vanilla-force-bundle';
-import { SlickCompositeEditor, SlickCompositeEditorComponent } from '@slickgrid-universal/composite-editor-component';
 import { type MultipleSelectOption } from 'multiple-select-vanilla';
 
 import { ExampleGridOptions } from './example-grid-options';
@@ -66,6 +64,7 @@ function checkItemIsEditable(dataContext, columnDef, grid) {
       // case 'completed':
       // case 'duration':
       // case 'title':
+      //   isEditable = !!dataContext?.completed;
       // case 'product':
       // case 'origin':
       // isEditable = dataContext.percentComplete < 50;
@@ -159,7 +158,7 @@ export default class Example12 {
     this.columnDefinitions = [
       {
         id: 'title',
-        name: '<span title="Task must always be followed by a number" class="text-color-warning-dark mdi mdi-alert-outline"></span> Title <span title="Title is always rendered as UPPERCASE" class="mdi mdi-information-outline"></span>',
+        name: '<span title="Task must always be followed by a number" class="color-warning-dark mdi mdi-alert-outline"></span> Title <span title="Title is always rendered as UPPERCASE" class="mdi mdi-information-outline"></span>',
         field: 'title',
         sortable: true,
         minWidth: 75,
@@ -170,6 +169,7 @@ export default class Example12 {
         editor: {
           model: Editors.longText,
           massUpdate: false,
+          compositeEditorFormOrder: 0, // you can use this option to always keep same order and make this the 1st input
           required: true,
           alwaysSaveOnEnterKey: true,
           maxLength: 12,
@@ -201,6 +201,7 @@ export default class Example12 {
         },
         editor: {
           model: Editors.float,
+          compositeEditorFormOrder: 2, // inverse order of Duration & Percent Complete in the form
           massUpdate: true,
           decimal: 2,
           valueStep: 1,
@@ -236,6 +237,7 @@ export default class Example12 {
         editor: {
           model: Editors.slider,
           massUpdate: true,
+          compositeEditorFormOrder: 1, // inverse order of Duration & Percent Complete in the form
           minValue: 0,
           maxValue: 100,
         },
@@ -357,7 +359,7 @@ export default class Example12 {
           } as VanillaCalendarOption,
           massUpdate: true,
           validator: (value, args) => {
-            const dataContext = args && args.item;
+            const dataContext = args?.item;
             if (dataContext && dataContext.completed && !value) {
               return { valid: false, msg: 'You must provide a "Finish" date when "Completed" is checked.' };
             }
@@ -450,8 +452,7 @@ export default class Example12 {
         maxWidth: 70,
         excludeFromExport: true,
         cssClass: 'justify-center flex',
-        formatter: () =>
-          `<div class="button-style action-btn"><span class="mdi mdi-dots-vertical mdi-22px text-color-primary"></span></div>`,
+        formatter: () => `<div class="button-style action-btn"><span class="mdi mdi-dots-vertical font-22px color-primary"></span></div>`,
         cellMenu: {
           hideCloseButton: false,
           commandTitle: 'Commands',
@@ -1022,11 +1023,11 @@ export default class Example12 {
     return `<div class="autocomplete-container-list">
       <div class="autocomplete-left">
         <!--<img src="http://i.stack.imgur.com/pC1Tv.jpg" width="50" />-->
-        <span class="mdi ${item.icon} mdi-26px"></span>
+        <span class="mdi ${item.icon} font-26px"></span>
       </div>
       <div>
         <span class="autocomplete-top-left">
-          <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} mdi-14px"></span>
+          <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} font-14px"></span>
           ${item.itemName}
         </span>
         <div>
@@ -1040,11 +1041,11 @@ export default class Example12 {
     return `<div class="autocomplete-container-list">
       <div class="autocomplete-left">
         <!--<img src="http://i.stack.imgur.com/pC1Tv.jpg" width="50" />-->
-        <span class="mdi ${item.icon} mdi-26px"></span>
+        <span class="mdi ${item.icon} font-26px"></span>
       </div>
       <div>
         <span class="autocomplete-top-left">
-          <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} mdi-14px"></span>
+          <span class="mdi ${item.itemTypeName === 'I' ? 'mdi-information-outline' : 'mdi-content-copy'} font-14px"></span>
           ${item.itemName}
         </span>
         <span class="autocomplete-top-right">${formatNumber(item.listPrice, 2, 2, false, '$')}</span>
@@ -1069,7 +1070,7 @@ export default class Example12 {
         modalTitle = 'Clone - {{title}}';
         break;
       case 'edit':
-        modalTitle = 'Editing - {{title}} (<span class="text-color-muted">id:</span> <span class="text-color-primary">{{id}}</span>)'; // 'Editing - {{title}} ({{product.itemName}})'
+        modalTitle = 'Editing - {{title}} (<span class="color-muted">id:</span> <span class="color-primary">{{id}}</span>)'; // 'Editing - {{title}} ({{product.itemName}})'
         break;
       case 'mass-update':
         modalTitle = 'Mass Update All Records';
@@ -1079,7 +1080,7 @@ export default class Example12 {
         break;
     }
 
-    window.setTimeout(() => {
+    setTimeout(() => {
       this.compositeEditorInstance?.openDetails({
         headerTitle: modalTitle,
         modalType,
@@ -1112,7 +1113,7 @@ export default class Example12 {
 
             // simulate a backend server call which will reject if the "% Complete" is below 50%
             return new Promise((resolve, reject) => {
-              window.setTimeout(
+              setTimeout(
                 () =>
                   formValues.percentComplete >= 50 ? resolve(true) : reject('Unfortunately we only accept a minimum of 50% Completion...'),
                 serverResponseDelay
@@ -1123,7 +1124,7 @@ export default class Example12 {
             // we'll just apply the change without any rejection from the server and
             // note that we also have access to the "dataContext" which is only available for these modal
             console.log(`${modalType} item data context`, dataContextOrUpdatedDatasetPreview);
-            return new Promise((resolve) => window.setTimeout(() => resolve(true), serverResponseDelay));
+            return new Promise((resolve) => setTimeout(() => resolve(true), serverResponseDelay));
           }
         },
       });

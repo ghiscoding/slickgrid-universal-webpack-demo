@@ -1,6 +1,6 @@
 import { format } from '@formkit/tempo';
-import { type Column, Filters, type GridOption, type OnRowCountChangedEventArgs } from '@slickgrid-universal/common';
 import { BindingEventService } from '@slickgrid-universal/binding';
+import { Filters, type Column, type GridOption, type OnRowCountChangedEventArgs } from '@slickgrid-universal/common';
 import { GraphqlService, type GraphqlPaginatedResult, type GraphqlServiceApi } from '@slickgrid-universal/graphql';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { type MultipleSelectOption } from 'multiple-select-vanilla';
@@ -338,7 +338,7 @@ export default class Example27 {
     };
 
     return new Promise<GraphqlPaginatedResult>((resolve) => {
-      window.setTimeout(() => {
+      setTimeout(() => {
         this.graphqlQuery = this.gridOptions.backendServiceApi!.service.buildQuery();
         resolve(mockedResult);
       }, this.serverWaitDelay);

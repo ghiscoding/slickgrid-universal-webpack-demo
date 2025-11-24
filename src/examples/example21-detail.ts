@@ -1,6 +1,5 @@
-import { createDomElement, emptyElement, type GridState, type Column, type GridOption } from '@slickgrid-universal/common';
+import { createDomElement, emptyElement, type Column, type GridOption, type GridState } from '@slickgrid-universal/common';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import './example21-detail.scss';
 
 export interface Distributor {
@@ -101,14 +100,14 @@ export class InnerGridExample {
     //   `;
     const fragment = new DocumentFragment();
     const rowDetailContainer = createDomElement('div', { className: this.innerGridClass });
-    rowDetailContainer.appendChild(
+    const innerGrid = createDomElement('div', { className: `innergrid innergrid-${this.itemDetail.id}` });
+    const gridContainer = createDomElement('div', { className: 'container' });
+    gridContainer.appendChild(
       createDomElement('h4', {
         className: 'title is-4',
         textContent: `${this.itemDetail.companyName} - Order Details (id: ${this.itemDetail.id})`,
       })
     );
-    const innerGrid = createDomElement('div', { className: `innergrid innergrid-${this.itemDetail.id}` });
-    const gridContainer = createDomElement('div', { className: 'container' });
     gridContainer.appendChild(innerGrid);
     rowDetailContainer.appendChild(gridContainer);
     fragment.appendChild(rowDetailContainer);

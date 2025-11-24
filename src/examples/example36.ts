@@ -1,21 +1,20 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
 import {
   Aggregators,
-  type Column,
   createDomElement,
   ExtensionName,
   Filters,
   Formatters,
-  type GridOption,
-  type Grouping,
   GroupTotalFormatters,
   SlickEventHandler,
   SortComparers,
   SortDirectionNumber,
+  type Column,
+  type GridOption,
+  type Grouping,
 } from '@slickgrid-universal/common';
 import { SlickRowDetailView } from '@slickgrid-universal/row-detail-view-plugin';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import './example36.scss';
 import { showToast } from './utilities';
@@ -209,6 +208,8 @@ export default class Example36 {
         preTemplate: this.loadingTemplate.bind(this),
         postTemplate: this.loadView.bind(this),
         process: this.simulateServerAsyncCall.bind(this),
+        loadOnce: true,
+        singleRowExpand: false,
 
         // how many grid rows do we want to use for the detail panel
         // also note that the detail view adds an extra 1 row for padding purposes
@@ -265,14 +266,19 @@ export default class Example36 {
     });
 
     this._eventHandler.subscribe(this.rowDetail.onAfterRowDetailToggle, (_e, args) => {
-      console.log('after toggling row detail', args.item);
+      // console.log('after toggling row detail', args.item);
       if (args.item._collapsed) {
         this.disposeRowDetailElementListeners(args.item.id);
+      } else {
+        // reset & recreate event listeners associated to that row detail
+        this.disposeRowDetailElementListeners(args.item.id);
+        this.addDeleteRowOnClickListener(args.item.id);
+        this.addAssigneeOnClickListener(args.item.id);
       }
     });
 
     this._eventHandler.subscribe(this.rowDetail.onAsyncEndUpdate, (_e, args) => {
-      console.log('finished updating the post async template', args);
+      // console.log('finished updating the post async template', args);
       this.addDeleteRowOnClickListener(args.item.id);
       this.addAssigneeOnClickListener(args.item.id);
     });
@@ -284,7 +290,8 @@ export default class Example36 {
     });
 
     this._eventHandler.subscribe(this.rowDetail.onRowBackToViewportRange, (_e, args) => {
-      // this.addDeleteRowOnClickListener(args.item.id);
+      // console.log('row is back to viewport range', args);
+      this.addDeleteRowOnClickListener(args.item.id);
       this.addAssigneeOnClickListener(args.item.id);
     });
   }
@@ -346,7 +353,7 @@ export default class Example36 {
         <div class="container">
           <div class="columns">
             <div class="column is-half">
-            <div class="detail"><label>Assignee:</label> <input class="input is-small is-8 column mt-1" id="assignee_${itemDetail.id}" type="text" value="${itemDetail.assignee}"/></div>
+            <div class="detail"><label>Assignee:</label> <input class="input is-small is-8 column mt-1 assignee" id="assignee_${itemDetail.id}" type="text" value="${itemDetail.assignee}"/></div>
               <div class="detail"><label>Reporter:</label> <span>${itemDetail.reporter}</span></div>
               <div class="detail"><label>Duration:</label> <span>${itemDetail.duration}</span></div>
               <div class="detail"><label>% Complete:</label> <span>${itemDetail.percentComplete}</span></div>
