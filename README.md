@@ -1,4 +1,4 @@
-# [![Webpack](https://avatars.githubusercontent.com/u/2105791?s=65&v=4)](https://webpack.js.org/) Slickgrid-Universal WebPack Demo
+# <a href="https://webpack.js.org/"><img src="https://webpack.js.org/icon-square-small.9e8aff7a67a5dd20.svg" height="60" alt="WebPack"/></a> Slickgrid-Universal WebPack Demo
 ## Demo of the [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) library
 
 This project is demoing multiple examples of [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal), the binding & routing are very basic and **not at all recommended for production release**, it was created for demo purpose only so please keep that in mind.
