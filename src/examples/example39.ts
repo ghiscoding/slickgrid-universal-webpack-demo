@@ -28,8 +28,8 @@ export default class Example01 {
   gridOptions2!: GridOption;
   columnDefinitions1!: Column[];
   columnDefinitions2!: Column[];
-  dataset1!: any[];
-  dataset2!: any[];
+  dataset1!: Customer[];
+  dataset2!: OrderData[];
   sgb1!: SlickVanillaGridBundle;
   sgb2!: SlickVanillaGridBundle;
   isGrid2WithPagination = true;
@@ -117,9 +117,11 @@ export default class Example01 {
   handleOnCellClicked(event: CustomEvent<{ args: OnClickEventArgs }>) {
     const args = event?.detail?.args;
     const item = this.sgb1?.dataView?.getItem(args.row) as Customer;
-    this.sgb1?.slickGrid?.setSelectedRows([args.row]);
-    this.sgb2.dataset = this.mockDetailData(item);
-    this.selectedName = `${item.name} - ${item.company}`;
+    if (item) {
+      this.sgb1?.slickGrid?.setSelectedRows([args.row]);
+      this.sgb2.dataset = this.mockDetailData(item);
+      this.selectedName = `${item.name} - ${item.company}`;
+    }
   }
 
   mockMasterData() {
