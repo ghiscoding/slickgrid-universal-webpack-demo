@@ -1,14 +1,14 @@
 import { Renderer } from '../renderer';
 
-export function loadComponent<T = any>(containerElement: HTMLDivElement, componentModuleId: string, bindings?: any): T {
+export function loadComponent<T = any>(containerElement: HTMLDivElement, htmlView: string, vmModule: any, bindings?: any): T | null {
   if (containerElement) {
     const renderer = new Renderer(containerElement);
-    const viewModel = renderer.loadViewModel(require(`${componentModuleId}.ts`));
+    const viewModel = renderer.loadViewModel(vmModule);
     if (viewModel?.dispose) {
       window.onunload = viewModel.dispose; // dispose when leaving SPA
     }
 
-    renderer.loadView(require(`${componentModuleId}.html`));
+    renderer.loadView(htmlView);
     if (viewModel?.attached && renderer.className) {
       const viewModelObj = {};
       viewModelObj[renderer.className] = viewModel;
@@ -29,16 +29,27 @@ export function randomNumber(min: number, max: number, floor = true) {
 
 export function showToast(msg: string, type: 'danger' | 'info' | 'warning', time = 2000) {
   const div = document.createElement('div');
+  div.setAttribute('popover', '');
   div.className = `notification is-light is-${type} is-small is-narrow toast`;
+  div.style.display = 'block';
   div.style.position = 'absolute';
-  div.style.left = '50%';
-  div.style.top = '20px';
-  div.style.transform = 'translate(-50%)';
   div.style.zIndex = '999';
   div.textContent = msg;
   document.body.appendChild(div);
 
-  setTimeout(() => div.remove(), time);
+  // When popover is supported, use it to display the message.
+  // Baseline 2024: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/showPopover
+  if (typeof div.showPopover === 'function') {
+    div.style.margin = '0 auto';
+    div.style.marginTop = '20px';
+    div.style.borderWidth = '0px';
+    div.showPopover();
+    setTimeout(() => {
+      div.hidePopover();
+      div.remove();
+    }, time);
+    return;
+  }
 }
 
 export function zeroPadding(input: string | number) {

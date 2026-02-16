@@ -3,7 +3,6 @@ import {
   Editors,
   Filters,
   Formatters,
-  OperatorType,
   type AutocompleterOption,
   type Column,
   type ColumnEditorDualInput,
@@ -18,9 +17,6 @@ import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanil
 import { ExampleGridOptions } from './example-grid-options';
 import fetchJsonp from './jsonp';
 import './example04.scss';
-
-// const URL_COUNTRIES_COLLECTION = 'assets/data/countries.json';
-// const URL_COUNTRY_NAMES_COLLECTION = 'assets/data/country_names.json';
 
 // you can create custom validator to pass to an inline editor
 const myCustomTitleValidator = (value) => {
@@ -126,7 +122,7 @@ export default class Example04 {
           collectionFilterBy: {
             property: 'value',
             value: 0,
-            operator: OperatorType.notEqual,
+            operator: '!=',
           },
           // collectionOverride: (updatedCollection, args) => {
           //   console.log(args);
@@ -263,10 +259,10 @@ export default class Example04 {
         // formatter: (_, __, val) => typeof val === 'string' ? val : val.name,
         // editor: {
         //   model: Editors.autocompleter,
-        //   // collectionAsync: fetch(URL_COUNTRY_NAMES_COLLECTION),
+        //   // collectionAsync: fetch(COUNTRY_NAMES_COLLECTION_URL),
         //   placeholder: '🔎︎ search country',
         //   customStructure: { label: 'name', value: 'code' },
-        //   // collectionAsync: fetch(URL_COUNTRIES_COLLECTION),
+        //   // collectionAsync: fetch(COUNTRIES_COLLECTION_URL),
 
         //   enableRenderHtml: true,
         //   collection: [{ code: true, name: 'True', labelPrefix: `<i class="mdi mdi-pin-outline"></i> ` }, { code: false, name: 'False', labelSuffix: '<i class="mdi mdi-close"></i>' }],
@@ -290,10 +286,10 @@ export default class Example04 {
         },
         // filter: {
         //   model: Filters.autocompleter,
-        //   // collectionAsync: fetch(URL_COUNTRY_NAMES_COLLECTION),
+        //   // collectionAsync: fetch(COUNTRY_NAMES_COLLECTION_URL),
         //   placeholder: '🔎︎ search country',
         //   customStructure: { label: 'name', value: 'code' },
-        //   collectionAsync: fetch(URL_COUNTRIES_COLLECTION),
+        //   collectionAsync: fetch(COUNTRIES_COLLECTION_URL),
 
         //   // enableRenderHtml: true,
         //   // collection: [{ code: true, name: 'True', labelPrefix: `<i class="mdi mdi-pin-outline"></i> ` }, { code: false, name: 'False', labelSuffix: '<i class="mdi mdi-close"></i>' }],
@@ -407,7 +403,7 @@ export default class Example04 {
         sanitizeDataExport: true,
       },
       externalResources: [new ExcelExportService()],
-      rowSelectionOptions: {
+      selectionOptions: {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: false,
       },
@@ -418,7 +414,7 @@ export default class Example04 {
         name: 'Sel', // column name will only show when `hideInColumnTitleRow` is true
         onExtensionRegistered: (instance) => (this.checkboxSelectorInstance = instance),
       },
-      enableRowSelection: true,
+      enableSelection: true,
       frozenColumn: this.frozenColumnCount,
       frozenRow: this.frozenRowCount,
       // frozenBottom: true, // if you want to freeze the bottom instead of the top, you can enable this property

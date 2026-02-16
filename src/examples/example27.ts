@@ -4,9 +4,9 @@ import { Filters, type Column, type GridOption, type OnRowCountChangedEventArgs 
 import { GraphqlService, type GraphqlPaginatedResult, type GraphqlServiceApi } from '@slickgrid-universal/graphql';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { type MultipleSelectOption } from 'multiple-select-vanilla';
+import type { TranslateService } from '../translate.service';
 
 import { ExampleGridOptions } from './example-grid-options';
-import type { TranslateService } from '../translate.service';
 import './example27.scss';
 import '../material-styles.scss';
 

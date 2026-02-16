@@ -1,5 +1,5 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
-import { Formatters, HybridSelectionModelOption, OnClickEventArgs, type Column, type GridOption } from '@slickgrid-universal/common';
+import { ExtensionName, Formatters, OnClickEventArgs, type Column, type GridOption } from '@slickgrid-universal/common';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { ExampleGridOptions } from './example-grid-options';
 import '../material-styles.scss';
@@ -60,13 +60,16 @@ export default class Example01 {
     this.sgb2.dataset = this.mockDetailData(this.dataset1[0]);
 
     // bind any of the grid events
-    this._bindingEventService.bind(document.querySelector('.grid39-1') as HTMLDivElement, 'onclick', ((event: CustomEvent<{ args: OnClickEventArgs }>) => this.handleOnCellClicked(event)) as EventListener);
+    this._bindingEventService.bind(document.querySelector('.grid39-1') as HTMLDivElement, 'onclick', ((
+      event: CustomEvent<{ args: OnClickEventArgs }>
+    ) => this.handleOnCellClicked(event)) as EventListener);
     document.body.classList.add('material-theme');
   }
 
   dispose() {
     this.sgb1?.dispose();
     this.sgb2?.dispose();
+    document.body.classList.remove('material-theme');
   }
 
   /* Define grid Options and Columns */
@@ -83,10 +86,10 @@ export default class Example01 {
       gridHeight: 225,
       gridWidth: 800,
       rowHeight: 33,
-      enableHybridSelection: true,
-      rowSelectionOptions: {
+      enableSelection: true,
+      selectionOptions: {
         selectionType: 'row',
-      } as HybridSelectionModelOption,
+      },
     };
 
     this.columnDefinitions2 = [
@@ -223,5 +226,22 @@ export default class Example01 {
     }
 
     return orderData;
+  }
+
+  // Toggle the Pagination of Grid2
+  // IMPORTANT, the Pagination MUST BE CREATED on initial page load before you can start toggling it
+  // Basically you cannot toggle a Pagination that doesn't exist (must created at the time as the grid)
+  togglePaginationGrid2() {
+    this.isGrid2WithPagination = !this.isGrid2WithPagination;
+    this.sgb2.paginationService!.togglePaginationVisibility(this.isGrid2WithPagination);
+  }
+
+  toggleGridMenu(e: MouseEvent) {
+    if (this.sgb2?.extensionService) {
+      const gridMenuInstance = this.sgb2.extensionService.getExtensionInstanceByName(ExtensionName.gridMenu);
+      // open the external button Grid Menu, you can also optionally pass Grid Menu options as 2nd argument
+      // for example we want to align our external button on the right without affecting the menu within the grid which will stay aligned on the left
+      gridMenuInstance.showGridMenu(e, { dropSide: 'right' });
+    }
   }
 }

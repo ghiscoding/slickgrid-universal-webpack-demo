@@ -12,7 +12,6 @@ import {
 } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import { randomNumber } from './utilities';
 
@@ -135,8 +134,8 @@ export default class Example34 {
       enableExcelExport: true,
       externalResources: [new ExcelExportService()],
       enableCheckboxSelector: true,
-      enableRowSelection: true,
-      rowSelectionOptions: {
+      enableSelection: true,
+      selectionOptions: {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: false,
       },

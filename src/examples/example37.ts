@@ -136,11 +136,10 @@ export default class Example37 {
       externalResources: [new ExcelExportService()],
 
       // enable new hybrid selection model (rows & cells)
-      enableHybridSelection: true,
-      rowSelectionOptions: {
-        // True (Single Selection), False (Multiple Selections)
-        selectActiveRow: true,
+      enableSelection: true,
+      selectionOptions: {
         rowSelectColumnIds: ['id'],
+        selectionType: 'mixed',
       },
 
       // when using the ExcelCopyBuffer, you can see what the selection range is
@@ -151,17 +150,21 @@ export default class Example37 {
         replaceNewlinesWith: ' ',
       },
     };
+
     this.gridOptions2 = {
       ...this.gridOptions1,
       // you can also enable checkbox selection & row selection, make sure to use `rowSelectColumnIds: ['id', '_checkbox_selector']`
       enableCheckboxSelector: true,
-      enableRowSelection: true,
-      rowSelectionOptions: {
+      enableSelection: true,
+      selectionOptions: {
         // True (Single Selection), False (Multiple Selections)
         selectActiveRow: false,
 
         // you could use "row" selection to override the hybrid mode
         selectionType: 'row',
+
+        // allow using the mouse drag selection to select multiple rows
+        dragToSelect: true,
       },
     };
   }

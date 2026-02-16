@@ -1,6 +1,7 @@
 import { BindingEventService } from '@slickgrid-universal/binding';
 import { Editors, type Column, type GridOption, type ItemMetadata } from '@slickgrid-universal/common';
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
+import { PdfExportService } from '@slickgrid-universal/pdf-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
 import { ExampleGridOptions } from './example-grid-options';
 import './example32.scss';
@@ -12,6 +13,7 @@ export default class Example32 {
   gridOptions: GridOption;
   dataset: any[] = [];
   excelExportService: ExcelExportService;
+  pdfExportService: PdfExportService;
   sgb: SlickVanillaGridBundle;
   gridContainerElm: HTMLDivElement;
   showEmployeeId = true;
@@ -112,6 +114,7 @@ export default class Example32 {
   constructor() {
     this._bindingEventService = new BindingEventService();
     this.excelExportService = new ExcelExportService();
+    this.pdfExportService = new PdfExportService();
   }
 
   attached() {
@@ -168,7 +171,12 @@ export default class Example32 {
       enableCellRowSpan: true,
       enableHeaderMenu: false,
       enableExcelExport: true,
-      externalResources: [this.excelExportService],
+      enablePdfExport: true,
+      pdfExportOptions: {
+        fontSize: 7,
+        headerFontSize: 8,
+      },
+      externalResources: [this.excelExportService, this.pdfExportService],
       enableExcelCopyBuffer: true,
       autoEdit: true,
       editable: false,
@@ -189,6 +197,10 @@ export default class Example32 {
 
   exportToExcel() {
     this.excelExportService.exportToExcel({ filename: 'export', format: 'xlsx' });
+  }
+
+  exportToPdf() {
+    this.pdfExportService.exportToPdf({ filename: 'export', pageOrientation: 'landscape' });
   }
 
   navigateDown() {
@@ -446,13 +458,30 @@ export default class Example32 {
       }
     }
 
-    // update column definitions
+    // 1. update column definitions via grid.setColumns()
+    // this will shift colspan/rowspan to the left or right accordingly
     if (this.showEmployeeId) {
       this.columnDefinitions.unshift({ id: 'employeeID', name: 'Employee ID', field: 'employeeID', width: 100 });
     } else {
       this.columnDefinitions.splice(0, 1);
     }
     this.sgb.slickGrid?.setColumns(this.columnDefinitions);
+
+    // --- OR ---
+    // 2. OR update via "hidden" column flag & increase/decrease column index accordingly in the metadata
+    // this approach will keep colspan/rowspan "as-is" but will hide the EmployeeID column
+    /*
+    const colDirIdx = this.showEmployeeId ? -1 : 1;
+    for (const row of Object.keys(this.metadata)) {
+      newMetadata[row] = { columns: {} };
+      for (const col of Object.keys((this.metadata as any)[row].columns)) {
+        newMetadata[row].columns[Number(col) + colDirIdx] = (this.metadata as any)[row].columns[col];
+      }
+    }
+    this.sgb.slickGrid?.setOptions({ frozenColumn: this.showEmployeeId ? 0 : 1 });
+    this.sgb.slickGrid?.updateColumnById('employeeID', { hidden: !this.showEmployeeId });
+    this.sgb.slickGrid?.updateColumns();
+    */
 
     // update & remap rowspans
     this.metadata = newMetadata;
