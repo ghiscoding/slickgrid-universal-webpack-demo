@@ -97,6 +97,7 @@ export default class Example01 {
       gridHeight: 225,
       gridWidth: 800,
       rowHeight: 33,
+      enableCellNavigation: true,
       gridMenu: {
         // autoResizeColumns: false, // disable auto-resize columns after closing the Grid Menu
         hideToggleDarkModeCommand: false, // disabled command by default
@@ -244,6 +245,14 @@ export default class Example01 {
     }
 
     return mockDataset;
+  }
+
+  resetGrid1() {
+    // const cols = this.sgb1.slickGrid?.getColumns() || [];
+    const cols = this.columnDefinitions1.slice();
+    cols.forEach((c) => (c.hidden = false));
+    this.sgb1.slickGrid?.setColumns(cols);
+    this.sgb1.slickGrid?.autosizeColumns();
   }
 
   toggleDarkModeGrid1() {
