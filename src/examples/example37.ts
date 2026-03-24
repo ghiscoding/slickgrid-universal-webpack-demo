@@ -20,6 +20,8 @@ export default class Example37 {
 
   gridFocus() {
     this.sgb1.slickGrid?.focus();
+    // this.sgb1.slickGrid?.setActiveCell(0, 0);
+    // this.sgb1.slickGrid?.getCanvasNode()?.focus();
   }
 
   attached() {
