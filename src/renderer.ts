@@ -13,7 +13,7 @@ export class Renderer {
   private _observers: BindingService[] = [];
 
   constructor(private viewTemplate: HTMLElement) {
-    this.viewTemplate.textContent = 'Loading...';
+    this.viewTemplate.textContent = `Loading...`;
   }
 
   get className(): string {
@@ -73,7 +73,7 @@ export class Renderer {
     let output = '';
 
     // // wait a cycle so that the View is rendered before observing anything
-    //window.setTimeout(() => {
+    //setTimeout(() => {
     //   const elements = document.querySelectorAll<HTMLElement>(`[${eventName}\\\.${eventType}]`);
     //   let args: any = /\(\s*([^)]+?)\s*\)/.exec(fnArgs);
     //   if (args?.[1]) {
@@ -97,7 +97,7 @@ export class Renderer {
    */
   parsePropertyBinding(match: string, domAttribute: string, bindingType: string, variableName: string) {
     // wait a cycle so that the View is rendered before observing anything
-    window.setTimeout(() => {
+    setTimeout(() => {
       const elements = document.querySelectorAll<HTMLElement>(`[${domAttribute}\\.${bindingType}=${variableName}]`);
       const attribute = domAttribute.toLowerCase();
 

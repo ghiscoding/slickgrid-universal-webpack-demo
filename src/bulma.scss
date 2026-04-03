@@ -1,7 +1,7 @@
 @use 'bulma/bulma';
 
 [data-theme=light], .theme-light {
-  --bulma-body-color: black;
+  --bulma-body-color: black !important;
   --bulma-body-background-color: white !important;
   .button {
     // --bulma-scheme-main-l: 99%;
@@ -9,7 +9,7 @@
   }
 }
 [data-theme=dark], .theme-dark {
-  --bulma-body-color: white;
+  --bulma-body-color: white !important;
   --bulma-body-background-color: #33393e !important;
   .button {
     border-color: #585858;
@@ -29,17 +29,17 @@ html, body {
 
   .title {
     --bulma-title-weight: 600;
-    margin-bottom: 24px;
+    // margin-bottom: 18px;
   }
-  .button {
+  .button.is-small {
     --bulma-button-weight: 400;
     --bulma-button-padding-horizontal: 0.75em;
     box-shadow: none;
     border-radius: 2px;
     height: 30px;
-    span.mdi {
-      margin-right: 4px;
-    }
+    display: inline-flex;
+    column-gap: 4px;
+    justify-content: space-between;
   }
   .navbar-item, .navbar-link {
     color: white;
