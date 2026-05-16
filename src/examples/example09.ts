@@ -10,7 +10,6 @@ import {
 } from '@slickgrid-universal/common';
 import { GridOdataService, type OdataOption, type OdataServiceApi } from '@slickgrid-universal/odata';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-
 import { ExampleGridOptions } from './example-grid-options';
 import './example09.scss';
 
@@ -155,17 +154,17 @@ export default class Example09 {
       presets: localStorage.getItem(STORAGE_KEY)
         ? (JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') as GridState)
         : {
-          // you can also type operator as string, e.g.: operator: 'EQ'
-          filters: [
-            // { columnId: 'name', searchTerms: ['w'], operator: 'StartsWith' },
-            { columnId: 'gender', searchTerms: ['male'], operator: '=' },
-          ],
-          sorters: [
-            // direction can be written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
-            { columnId: 'name', direction: 'asc' },
-          ],
-          pagination: { pageNumber: 2, pageSize: 20 },
-        },
+            // you can also type operator as string, e.g.: operator: 'EQ'
+            filters: [
+              // { columnId: 'name', searchTerms: ['w'], operator: 'StartsWith' },
+              { columnId: 'gender', searchTerms: ['male'], operator: '=' },
+            ],
+            sorters: [
+              // direction can be written as 'asc' (uppercase or lowercase) and/or use the SortDirection type
+              { columnId: 'name', direction: 'asc' },
+            ],
+            pagination: { pageNumber: 2, pageSize: 20 },
+          },
       backendServiceApi: {
         service: new GridOdataService(),
         options: {
@@ -328,7 +327,13 @@ export default class Example09 {
       }
 
       // read the JSON and create a fresh copy of the data that we are free to modify
-      let data = require('./data/customers_100.json') as { name: string; gender: string; company: string; id: string, category: { id: string; name: string } }[];
+      let data = require('./data/customers_100.json') as {
+        name: string;
+        gender: string;
+        company: string;
+        id: string;
+        category: { id: string; name: string };
+      }[];
       data = JSON.parse(JSON.stringify(data));
 
       // Sort the data

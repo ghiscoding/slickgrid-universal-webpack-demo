@@ -2,9 +2,9 @@ import { Filters, Formatters, type Column, type GridOption } from '@slickgrid-un
 import { ExcelExportService } from '@slickgrid-universal/excel-export';
 import { TextExportService } from '@slickgrid-universal/text-export';
 import { Slicker, type SlickVanillaGridBundle } from '@slickgrid-universal/vanilla-bundle';
-import './example35.scss';
 import { ExampleGridOptions } from './example-grid-options';
 import { showToast } from './utilities';
+import './example35.scss';
 
 interface Chapter {
   id: string;
