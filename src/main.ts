@@ -6,7 +6,7 @@ import './styles.scss';
 
 class Main {
   app!: App;
-  constructor(private renderer: Renderer) { }
+  constructor(private renderer: Renderer) {}
 
   async loadApp() {
     this.app = this.renderer.loadViewModel(require('./app.ts'));
@@ -15,7 +15,7 @@ class Main {
     const translate = new TranslateService();
     translate.setup({
       loadPath: 'assets/i18n/{{lang}}.json',
-      lang: 'en'
+      lang: 'en',
     });
     await translate.use('en');
 
@@ -29,7 +29,7 @@ class Main {
 }
 
 // Create main object and add handlers for it
-const renderer = new Renderer(document.querySelector('[app=main]'));
+const renderer = new Renderer(document.querySelector('[app=main]')!);
 const main = new Main(renderer);
 main.loadApp();
 

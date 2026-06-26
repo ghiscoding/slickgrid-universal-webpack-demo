@@ -19,7 +19,7 @@ export class TranslateService implements TranslaterService {
   protected _currentLanguage = 'en';
   protected _locales: { [language: string]: Locales } = {};
   protected _pubSubServices: PubSubService[] = [];
-  protected _options;
+  protected _options: any;
   protected templateMatcher = /{{\s?([^{}\s]*)\s?}}/g;
 
   /**
@@ -52,7 +52,7 @@ export class TranslateService implements TranslaterService {
     });
   }
 
-  isDefined(value) {
+  isDefined(value: any) {
     return typeof value !== 'undefined' && value !== null;
   }
 
@@ -62,18 +62,18 @@ export class TranslateService implements TranslaterService {
    * @param params
    * @returns
    */
-  interpolateString(expr, params) {
+  interpolateString(expr: string, params: string[]) {
     if (!params) {
       return expr;
     }
 
-    return expr.replace(this.templateMatcher, (substring, b) => {
+    return expr.replace(this.templateMatcher, (substring: string, b: any) => {
       const r = this.getValue(params, b);
       return this.isDefined(r) ? r : substring;
     });
   }
 
-  getValue(target, key) {
+  getValue(target: any, key: any) {
     const keys = typeof key === 'string' ? key.split('.') : [key];
     key = '';
     do {

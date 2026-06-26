@@ -10,7 +10,7 @@ export function loadComponent<T = any>(containerElement: HTMLDivElement, htmlVie
 
     renderer.loadView(htmlView);
     if (viewModel?.attached && renderer.className) {
-      const viewModelObj = {};
+      const viewModelObj = {} as any;
       viewModelObj[renderer.className] = viewModel;
       viewModel.attached();
       if (viewModel?.bind) {
