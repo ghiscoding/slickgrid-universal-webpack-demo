@@ -28,7 +28,7 @@
   },
   "main": "src/slickgrid-universal/index",
   "dependencies": {
-    "@faker-js/faker": "^10.4.0",
+    "@faker-js/faker": "^10.5.0",
     "@fnando/sparkline": "^0.3.10",
     "@formkit/tempo": "^1.1.0",
     "@slickgrid-universal/common": "^10.8.2",
@@ -47,7 +47,7 @@
     "@slickgrid-universal/web-mcp": "^10.8.2",
     "alien-signals": "^3.2.1",
     "bulma": "^1.0.4",
-    "dompurify": "^3.4.3",
+    "dompurify": "^3.4.11",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
