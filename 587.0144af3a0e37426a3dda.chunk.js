@@ -1,4 +1,4 @@
-"use strict";(()=>{(globalThis.webpackChunkwebpack_demo_vanilla_bundle=globalThis.webpackChunkwebpack_demo_vanilla_bundle||[]).push([[587],{50587(MQ,nt,st){st.r(nt);/*!
+"use strict";(()=>{(globalThis.webpackChunkwebpack_demo_vanilla_bundle||(globalThis.webpackChunkwebpack_demo_vanilla_bundle=[])).push([[587],{50587(MQ,nt,st){st.r(nt);/*!
  * html2canvas 1.4.1 <https://html2canvas.hertzen.com>
  * Copyright (c) 2022 Niklas von Hertzen <https://hertzen.com>
  * Released under MIT License
