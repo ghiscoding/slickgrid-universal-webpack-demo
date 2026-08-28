@@ -1,7 +1,7 @@
 import type { RouterConfig } from './interfaces';
 
 export class AppRouting {
-  constructor(config: RouterConfig) {
+  constructor(private config: RouterConfig) {
     config.pushState = false;
     config.routes = [
       { route: 'example01', name: 'example01', title: 'Example01', moduleId: './examples/example01' },
@@ -49,8 +49,13 @@ export class AppRouting {
       { route: 'example43', name: 'example43', title: 'Example43', moduleId: './examples/example43' },
       { route: 'example44', name: 'example44', title: 'Example44', moduleId: './examples/example44' },
       { route: 'example45', name: 'example45', title: 'Example45', moduleId: './examples/example45' },
+      { route: 'example46', name: 'example46', title: 'Example46', moduleId: './examples/example46' },
       { route: '', redirect: 'example01' },
       { route: '**', redirect: 'example01' },
     ];
+  }
+
+  getRoutes() {
+    return this.config.routes;
   }
 }
