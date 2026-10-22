@@ -1,7 +1,7 @@
 ## Archiving the repo
 
 > [!WARNING]
-> Since WebPack is barely use nowadays, this repo won't be updated anymore. See [Slickgrid-Universal Vite Demo](https://github.com/ghiscoding/slickgrid-universal-vite-demo) or [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) project
+> Since WebPack is barely use nowadays, this repo won't be receiving updates anymore. For more updates, see [Slickgrid-Universal Vite Demo](https://github.com/ghiscoding/slickgrid-universal-vite-demo) or [Slickgrid-Universal](https://github.com/ghiscoding/slickgrid-universal) project
 
 # <a href="https://webpack.js.org/"><img src="https://webpack.js.org/icon-square-small.9e8aff7a67a5dd20.svg" height="60" alt="WebPack"/></a> Slickgrid-Universal WebPack Demo
 
